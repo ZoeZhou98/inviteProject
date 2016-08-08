@@ -1,0 +1,59 @@
+{% extends 'Base.html' %}
+
+{% block title %}上传失败的ID{% endblock%}
+{% block content %}
+<div class="container-fluid  main-body">
+    <div class="row">
+      <div class="col-sm-6">
+        <ol class="breadcrumb" style="margin-bottom: 0px;">
+            <li><a href="/talents/first_page/">首页</a></li>
+            <li><a href="/talents/first_page/">简历管理</a></li>
+            <li class="active">导入失败的简历ID</li>
+        </ol>
+      </div>
+    </div>
+{% if inters %}
+<p>
+<table class="table table-condensed table-bordered table-responsive table-hover">
+  <thead>
+    <tr>
+      <th>锁定的用户</th>
+      <th>简历ID</th>
+	  <th>简历来源</th>
+      <th>推荐人</th> 
+    </tr>
+  </thead>
+  <tbody>
+          {% for inter in inters %}
+	        <tr>
+		    <td>{{ inter.user_name }}</td>
+		    <td>{{ inter.resume_id }}</td>
+		    <td>{{ inter.source }}</td>
+            <td>{{ inter.referrerID.username }}</td>
+	        </tr>
+	      {% endfor %}
+
+	      
+  </tbody>
+</table>
+{% if inters.has_previous %}
+    <a class='paginator' title='上一页' href='?page={{ inters.previous_page_number }}'><span>&lt;&lt;</span></a>
+{% endif %}
+{% for page in inters.paginator.page_range %}
+    {% if page = inters.number %}
+        <a class='paginator_current' title='当前页:{{ page }}'><span>{{ page }}</span></a>
+    {% else %}
+        <a class='paginator' href='?page={{ page }}' title='{{ page }}'><span>{{ page }}</span></a>
+    {% endif %} 
+{% endfor %}
+{% if inters.has_next %}
+    <a class='paginator' title='下一页' href='?page={{ inters.next_page_number }}'><span>&gt;&gt;</span></a>
+{% endif %}
+</div>
+{% else %}
+<p> 没有记录 </p>
+{% endif %}
+
+</div>
+	        
+{% endblock %}

@@ -1,0 +1,95 @@
+<!--页面展示表格css模版 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="//cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+    <link href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet" media="screen">
+    <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <title>
+    {% block title %}{% endblock %}
+  </title>
+  {% block head %}
+  {% endblock %}
+  {% block last_head %}
+  {% endblock %}
+</head>
+
+<body>
+{% block thead%}
+{% endblock %}
+<!--
+    <div class="row">
+        <div class="col-sm-6">
+            <h3 style="margin:8px"><span class="label label-success">{% block body-title %}{% endblock %}</span></h3>
+        </div>
+        <div class="col-sm-6 ">
+            <form action="" method="get">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search for...">
+                    <span class="input-group-btn">
+                        <button class="btn btn-info" type="submit">搜索</button>
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>      
+    <p>
+-->
+{% block content %}
+{% endblock %}
+{% block middle %}
+{% endblock %}
+
+{% block page %}
+{% if paging %}
+<div style="display:block;" class="fixed-table-pagination">
+  <span class="pull-right pagination-detail">
+    <ul class="pagination">
+      {% if paging.has_previous %}
+          <li><a class="paginator" title="上一页" href="?page_size={{ page_size }}&page={{ paging.previous_page_number }}{{ search_url }}">上一页</a></li>
+      {% endif %}
+      {% for page in paging.paginator.page_range %}
+        {% if page == paging.number %} 
+          <li class="active"><a class="paginator_current" title="当前页:{{ page }}"><span>{{ page }}</span></a></li>
+      {% elif page == 1 %}
+          <li><a class="paginator" href="?page_size={{ page_size }}&page={{ page }}{{ search_url }}" title="{{ page }}"><span>首页</span></a></li>
+        {% elif page == paging.paginator.num_pages %}
+          <li><a class="paginator" href="?page_size={{ page_size }}&page={{ page }}{{ search_url }}" title="{{ page }}"><span>末页</span></a></li>
+      {% elif page <= paging.number|add:"3" and page >= paging.number|add:"-3"  %}
+          <li><a class="paginator" href="?page_size={{ page_size }}&page={{ page }}{{ search_url }}" title="{{ page }}"><span>{{ page }}</span></a></li>
+        {% endif %} 
+      {% endfor %}
+      {% if paging.has_next %}
+          <li><a class="paginator" title="下一页" href="?page_size={{ page_size }}&page={{ paging.next_page_number }}{{ search_url }}"><span>下一页</span></a></li>
+      {% endif %}
+    </ul>
+  </span>
+
+  <span class="pull-left pagination-detail">
+    <span class="pagination-info">&nbsp;Showing {{ page_left }} to {{ page_right }} of {{ record_count }}&nbsp;rows</span>
+    <span class="page-list">
+        <div class="btn-group dropup"> 
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" name="page_size" aria-haspopup="true" aria-expanded="false">
+               <span class="page-size">{{ page_size }}</span> 
+               <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li {% if page_size == 15 %}class="active"{% endif %}><a href="?page_size=15{{ search_url }}">15</a></li>
+                <li {% if page_size == 50 %}class="active"{% endif %}><a href="?page_size=50{{ search_url }}">50</a></li>
+                <li {% if page_size == 100 %}class="active"{% endif %}><a href="?page_size=100{{ search_url }}">100</a></li>
+                <li {% if page_size == record_count %}class="active"{% endif %}><a href="?page_size={{ record_count }}{{ search_url }}">All</a></li>
+            </ul>
+        </div> records per page
+    </span>
+  </span>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block footers %}
+{% endblock %}
+{% block script %}
+{% endblock %}
+</body>
+</html>

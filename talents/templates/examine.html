@@ -1,0 +1,180 @@
+{% extends 'Base.html' %}
+{% load bootstrap_toolkit %}
+{% block head %}
+ <script>
+$(function refreshParent(){
+//window.opener.location.href=window.opener.location.href;
+if ({{ shu }} == 1)
+{
+document.getElementById("Btn").disabled="disabled";
+window.opener.parent.scroll();
+window.opener.refreshPage();   
+window.close();
+}
+})
+</script>
+ 
+    <!--[if lt IE 9]>  
+    <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>  
+    <![endif]-->  
+<!--    <link href="/static/js/userjs/station.css" rel="stylesheet" type="text/css">-->
+    <script src="/media/TMP/station_name.js?t={{ date|safe }}" type="text/javascript"></script>
+    <script src="/media/TMP/favorite_name.js?t={{ date|safe }}" type="text/javascript"></script>
+    <script src="/static/js/userjs/city_name1.js" type="text/javascript"></script>
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-sm-6">
+        <h3 style="margin:8px"><span class="label label-success">审批意见</span></h3>
+    </div>
+</div>
+<p>
+
+<div class="container-fluid">
+<table class="table table-condensed table-bordered table-responsive table-hover" style="table-layout:fixed">
+<tr>
+<td width=200>岗位名称</td>
+<td colspan=3 width=600>{{ position.PositionName }}</td>
+</tr>
+<tr>
+<td width=200>申请人</td>
+<td width=200>{{ position.UserID.username }} </td>
+<td width=200>联系电话</td>
+<td width=200>{{ position.UserID.mobile }}</td>
+</tr>
+<!--
+<tr>
+<td width=800 colspan=4 class="active">部门情况</td>
+</tr>
+-->
+<tr>
+<td width=200>一级部门</td>
+<td width=200>{{ position.Depart }}</td>
+<td width=200>二级部门</td>
+<td width=200>{{ position.SecondDepartment }}</td>
+</tr>
+<tr>
+<td width=200>该岗位现有人数</td>
+<td width=200>{{ position.ExistingPersonNum }}人</td>
+<td width=200> 招聘人数</td>
+<td width=200>{{ position.NeedPersonNum }}人</td>
+</tr>
+<tr>
+<td width=200>薪资范围</td>
+<td width=200>{{ position.Salary }}</td>
+<td width=200>工作地点（区）</td>
+<td width=200>{{ position.Workplace }}</td>
+</tr>
+<tr>
+<td width=200>项目组名称</td>
+<td width=200>{{ position.ProjectName }}</td>
+<td width=200 > 招聘周期</td>
+<td width=200>{{ position.RecruitTime }}</td>
+</tr>
+<tr>
+<td width=200 style="word-break:break-all;overflow:hidden;">招聘理由</td>
+ {% if position.RecruitReason == 1 %} <td colspan=3>原有人员离职后增补人员</td> {% elif position.RecruitReason == 2 %}<td colspan=3> 业务拓展后新增工作岗位</td> {% else %} <td colspan=3>其他情况：{{ position.add_reason }} </td>{% endif %}
+</tr>
+<tr>
+<td width=200>招聘渠道</td>
+{% if position.RecruitWay == 1 %} <td colspan=3>在招聘网站发布职位</td> {% elif position.RecruitWay == 2 %} <td colspan=3>伯乐奖职位，奖励金额</td> {% else %} <td colspan=3>其他渠道</td>{% endif %} 
+</tr>
+<tr>
+<td width=200>招聘人员工作内容 </td>
+<td colspan=3 width=600 style="word-break:break-all;overflow:hidden;">{{ position.WorkContent }}</td>
+</tr>
+<tr>
+<td width=200>招聘人员工作要求</td>
+<td colspan=3 width=600 style="word-break:break-all;overflow:hidden;">{{ position.CandidateRequirement }}</td>
+</tr>
+<tr>
+<td colspan=4 width=800 style="text-align:center">审批记录</td>
+</tr>
+{% for examine in examines %} 
+<tr>
+<td width=200 > {{ examine.UserID.username }}</td>
+<td width=200> {{ examine.Result }}</td>
+<td colspan=2 width=400>{% if examine.Result and examine.Result != "审批中" %} {{ examine.Time|date:"Y-m-d" }} {% endif %}</td>
+
+</tr>
+<tr>
+<td colspan=4 style="font-family:verdana;font-size:12px; line-height:150%">{% if examine.comment %} {{ examine.comment }}{% endif %}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<div class="container-fluid">        
+    <form class="form-horizontal" action='' method="POST" >
+    {% csrf_token %}
+        <table class="table table-condensed table-bordered table-responsive table-hover" style="table-layout:fixed">
+          <tr>
+            <td>
+              <div class="control-group required">
+                <label class="control-label" >审批人</label>
+                  <div class="controls">
+                    <input class="form-control" type="text" disabled value={{ member }}>
+                  </div>
+              </div>
+            </td>
+          </tr>  
+			
+            {{ form|as_bootstrap:"horizontal" }}
+            <!--
+            <tr><td><div class="control-group required"><p class="controls" style="color:blue">重要：若选择不同意下面部分不填。</p></div></td></tr>
+			<tr><td><div class="control-group required"><label class="control-label">下一步审批人</label><div class="controls"><input name="fromStationText" maxlength="15" id="fromStationText" style="width:100px;" class="input_20txt_gray" type="text" /></div>
+<p class="controls" style="color:green">注意：若审批已到最后，需部门总经理审批，此项不选，在下面的输入框中输入部门总经理邮箱.</p>
+</td></tr>
+-->
+<!--
+        {% if rule = "总经理" %}
+          <tr>
+            <td>
+               <div class="control-group required">
+                <label class="control-label" for="id_sendemail">收件人</label>
+                  <div class="controls">
+                    <input id="receiver" name="receiver" type="text" placeholder="heli@nantian.com.cn"/>
+                  </div>
+               </div>
+            </td>
+          </tr>
+
+         <tr>
+           <td>
+            <div class="control-group required">
+               <label class="control-label" for="id_password">发件人</label>
+                <div class="controls">
+                  <input type="text" ID="txtUserName" name="txtUserName" value={{ User.email }} onblur="GetPwdAndChk()">
+                </div>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <div class="control-group required">
+              <label class="control-label" for="id_password">邮件密码</label>
+                <div class="controls">
+                  <input id="txtPassword" name="txtPassword" type="password">
+                  <input type="checkbox" ID="chkRememberPwd" /> 记住密码
+                 {% if errors %}           
+                    {% for error in errors %}
+                        <span style="color:#b94a48;">{{error}}</span>
+                    {% endfor %}
+                 {% endif %}
+                </div>
+            </div>
+          </td>
+        </tr> 
+         {% endif %} 
+         -->
+      </table>           
+      <div>
+        <p class="form-actions"> 
+        <script type="text/javascript" src="/static/js/datetime.js"></script>
+            <input type="submit" value="确认" id="Btn" class="btn btn-primary" > </input>
+        </p>
+      </div>
+  </form>
+</div>
+{% endblock %}

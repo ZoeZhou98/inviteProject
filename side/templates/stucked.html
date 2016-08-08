@@ -1,0 +1,427 @@
+{% extends 'Base.html' %}
+{% block title %}需要安排的面试{% endblock %}
+{% block head %}
+    <!--下一步面试官选框css -->
+    <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+    <link href="/static/js/userjs/station.css" rel="stylesheet" type="text/css">
+    <script src="/media/TMP/station_name.js?t={{ date|safe }}" type="text/javascript"></script>
+    <script src="/media/TMP/favorite_name.js?t={{ date|safe }}" type="text/javascript"></script>
+    <script src="/static/js/userjs/city_name1.js" type="text/javascript"></script>
+    <script language="javascript">
+// --列头全选框被单击---
+function ChkAllClick(sonName, cbAllId){
+    var arrSon = document.getElementsByName(sonName);
+ var cbAll = document.getElementById(cbAllId);
+ 
+ var tempState=cbAll.checked;
+ for(i=0;i<arrSon.length;i++) {
+  if(arrSon[i].checked!=tempState)
+	  {
+           arrSon[i].click();   
+ 		}
+  }
+}
+
+// --子项复选框被单击---
+function ChkSonClick(sonName, cbAllId) {
+ var arrSon = document.getElementsByName(sonName);
+ var cbAll = document.getElementById(cbAllId);
+ for(var i=0; i<arrSon.length; i++) {
+     if(!arrSon[i].checked) {
+	  cbAll.checked = false;
+     return;
+     }
+ }
+ cbAll.checked = true;
+}
+
+// --反选被单击---
+function ChkOppClick(sonName){
+ var arrSon = document.getElementsByName(sonName);
+ for(i=0;i<arrSon.length;i++) {
+  arrSon[i].click();
+ }
+}
+</script>
+{% endblock %}
+{% block thead%}
+{% endblock %}
+{% block content %}
+        <script type="text/javascript">
+    function refresh1()
+    {
+    window.location.reload();
+    }
+    function opa(RID)
+    {
+    var xmlhttp;
+    if (window.XMLHttpRequest)
+      {// code for IE7+, Firefox, Chrome, Opera, Safari
+      xmlhttp=new XMLHttpRequest();
+      }
+    else
+      {// code for IE6, IE5
+      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+      }
+    xmlhttp.onreadystatechange=function()
+      {
+      if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+            alert(xmlhttp.responseText);
+            if(window.location.href.indexOf("/stucked/")>0)
+            {
+                window.parent.scroll();
+            }
+            if(window.location.href.indexOf("/mystucked/")>0)
+            {
+                window.parent.parent.scroll();
+            }
+            $('#mymodal').modal('hide');
+            //document.getElementById("show").style.display = "none";
+            $("#hid").click();
+        }
+      }
+      var name = document.getElementById('fromStationText').value;
+        if (RID == '|')
+        {
+          alert("请选择要处理的对象");
+         }
+        else{
+            if (name!='')
+            {
+                xmlhttp.open("GET","/side/agency"+"?name="+name +"&RID="+RID,true);
+                xmlhttp.send();
+            }
+            else
+            {
+                alert("请选择代处理人")
+            }
+         }
+       }
+</script>
+
+ <script type="text/javascript">
+    function loadXMLDoc2(obj,resm)
+    {
+    var xmlhttp;
+    if (window.XMLHttpRequest)
+      {// code for IE7+, Firefox, Chrome, Opera, Safari
+      xmlhttp=new XMLHttpRequest();
+      }
+    else
+      {// code for IE6, IE5
+      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+      }
+    xmlhttp.onreadystatechange=function()
+      {
+      if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+			//alert("已写入");	
+			
+        }
+      }
+	 obj.href = obj.href+"?t="+ Math.random();
+	 parent.parent.document.getElementById("lock_next").style.display = "";
+	 parent.parent.document.getElementById("map").style.display = "None";
+	 parent.parent.document.getElementById("r").style.display = "None";
+	 //parent.parent.document.getElementById("show").style.display = "None";
+	 var i_a_label = document.getElementsByTagName('a');
+	 var now_href = window.location.href;
+	 for(i = 0; i <i_a_label.length;i++)
+	 {
+		if(i_a_label[i].href.indexOf("/media")==-1 && i_a_label[i].href != "javascript:void(0);")
+		{
+			
+			i_a_label[i].href = now_href;
+		}
+	 }
+	 parent.parent.pass_a(i_a_label,obj.href,now_href)
+     //var url = "/mywrite/"+resm+"/"+"?t="+ Math.random();
+     //xmlhttp.open("GET",url,true);
+     //xmlhttp.send();
+	// var u = "/talents/resumemanage/?page_size={{ page_size }}&Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage=&Cedu={{ Cedu }}&t="+Math.random();
+	// parent.document.getElementById("r").href = u;
+     }
+      </script> 
+
+<div class="row">
+    <div class="col-sm-6">
+        <ol class="breadcrumb" style="margin-bottom: 0px;">
+            <li><a href="/talents/first_page/">首页</a></li>
+            <li><a href="/talents/first_page/">面试管理</a></li>
+            <li class="active">待处理的面试</li>
+        </ol>
+    </div>
+    <div class="col-xs-1 col-xs-offset-5" style="text-align:right;">
+        <input type="button" class="btn btn-info" name="Submit" onclick="opid()" value="代处理">
+    </div>  
+</div>
+<p>
+<div class="modal fade"  id="mymodal" >
+<div class="modal-dialog" >
+<div class="modal-content" >
+<div class="modal-header">
+<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+<h4 class="modal-title" id="mymodal">代处理人</h4>
+</div>
+<div class="modal-body">
+<div style="top:0;left:0;z-index:1000;POSITION: absolute;">
+  <div style="overflow: hidden; left: 323px; top: 90.5px; display: none;" id="form_cities">
+      <div id="top_cities">简码/汉字或↑↓</div>
+          <div id="panel_cities"></div>
+              <div style="display: block;" id="flip_cities">
+                 «向前&nbsp;&nbsp;&nbsp;<a href="" class="cityflip" onclick="city_showlist(1);return false;">向后»</a>
+      </div>
+  </div>
+</div>
+
+<div style="top:0;left:0;z-index:1000;POSITION: absolute;">
+    <div style="overflow: hidden; display: none; left: 323px; top: 90.5px;" id="form_cities2">
+    <div id="top_cities1"> </div>
+    <div id="panel_cities2"></div>
+    </div>
+    </div>
+ <label class="control-label" > 代处理人:</label>
+ <input name="fromStation" id="fromStation" type="hidden" />
+ <input  name="fromStationText" maxlength="15" id="fromStationText" style="width:100px;" class="input_20txt_gray" type="text" />
+ <input type="button" value="确认" id="trey"/>
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+</div>
+</div>
+</div>
+</div>
+<div class=" container-fluid main-body" style="padding-right:0px;padding-left:0px;">
+<a href={% url 'side:stucked' %}  style="display:none;"><span id="hid">mm</span></a>
+<table class="table table-condensed table table-bordered table-responsive table-hover">
+  <thead>
+    <tr>
+      <th><INPUT name="chkAll" id="chkAll" title="全选" onClick="ChkAllClick('chkSon','chkAll')" type="checkbox" />全选</th>
+      <th>姓名</th>
+      <th>性别</th>
+      <th>年龄</th>
+      <th>联系电话</th>
+      <th>邮箱</th>
+      <th>工作年限</th>
+      <th>状态</th>
+      <th>招聘岗位</th>
+      <th>水平</th>
+      <th>代处理</th>
+	  <th>推荐人</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+    <tbody id="show" style="background:#B0C4DE;display:none;">
+          <tr> <td><label class="control-label" > 代处理人:</label></td><td><input name="fromStation" id="fromStation" type="hidden" /><input  name="fromStationText" maxlength="15" id="fromStationText" style="width:100px;" class="input_20txt_gray" type="text" /></td><td></td><td><input type="button" value="确认" id="trey"/></td></tr> 
+  </tbody>
+   {% for inter2,side2s,inter2rz,inter2ss in sides %}		
+	      
+  <tbody>
+          <tr id={{ inter2.resume.id|add:1000 }} onclick="opid2(this)">
+          <td><INPUT name="chkSon" id="{{ inter2rz }}" type="checkbox"  value='{{ inter2.resume.id }}' onclick="ChkSonClick('chkSon','chkAll')" /></td>
+		  <td>{{ inter2.resume.CandidateName }}</td>
+		  <td>{{ inter2.resume.CandidateSex }}</td>
+		  <td>{{ inter2.resume.CandidateAge }}</td>
+		  <td class="autocut">{{ inter2.resume.CandidatePhone }}</td>
+		  <td class="autocut">{{ inter2.resume.CandidateEmail }}</td>
+		  <td>{{ inter2.resume.CandidateProfile }}</td>
+		  <td>{{ inter2.resume.Status }}</td>
+		  <td class="autocut">{{ inter2.resume.Station.PositionName }}</td>
+		  <td>{{ inter2.resume.Level }}</td>
+          {% if inter2.resume.Agency %}
+          <td>代处理</td>
+          {% else %}
+          <td></td>
+          {% endif %}
+		  <td>{{ inter2.resume.referrerID.username }}</td>
+          <span id={{ inter2.resume.id|add:1000 }} onclick="opid2miss(this)">
+          <td id={{ inter2.resume.id|add:1000 }} onclick="opid2miss(this)">
+			
+           {% if inter2.InterStatus == "发邀请函" %}
+            <a href="javascript:void(0);" onclick="window.open('{% url 'side:invitation' inter2.id %}','','height=1000px,width=1000px')">发邀请函</a>
+           {% elif inter2.resume.Status == "发邮件" %}
+            <a href="javascript:void(0);" onclick="window.open('{% url 'side:sent_omail' inter2.id %}','','height=1000px,width=1000px')">发邮件</a>
+           {% elif inter2.resume.Status == "填写offer信息" %}
+            <a href="javascript:void(0);" onclick="window.open('{% url 'side:offer' inter2.id %}','','height=1000px,width=1000px')">填写offer信息</a>
+            {% elif inter2.resume.Status == "审批offer信息" %}
+            <a href="javascript:void(0);" onclick="window.open('{% url 'side:exoffer' inter2.id %}','','height=1000px,width=1000px')">审批offer信息</a>
+          {% else %} 
+            <a href="javascript:void(0);" onclick="window.open ('/side/newinterview/'+{{ inter2.resume.id }}, '','height=1000px,width=1000px')">处理</a>
+          {% endif %}
+            /<a href={{ inter2.resume.Addr }} onclick="loadXMLDoc2(this,{{ inter2.resume.id }})">查看简历</a>/<a href={% url 'side:Interview_resume' inter2.resume.id %}>面试记录</a>
+           {% if inter2.resume.Status == "填写offer信息" or inter2.resume.Status == "审批offer信息" or inter2.resume.Status == "发邮件" %}
+            {% else %}
+            /<a href="javascript:void(0);" onclick="window.open('{% url 'side:retreat' inter2.id %}','','height=1000px,width=1000px')">退回</a>
+            {% endif %}
+
+            /<a href="{% url 'updata_resume'  inter2.resume.id  %}">更新简历</a></td>
+            </span>
+			
+	      </tr>
+  </tbody>
+  <tbody id={{ inter2ss }} style="display:none;">
+
+          {% if side2s %} 
+  		  {% for side,changes in side2s %}
+	      <tr>
+          <td  colspan="12" class="autocut" style ="color:blue;text-align:left;">
+		    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>面试过程:</label>&nbsp;{{ side.InterviewProcess }}&nbsp;&nbsp;&nbsp;&nbsp;<label>面试官:</label>&nbsp;{{ side.user.username }}&nbsp;&nbsp;&nbsp;&nbsp;<label>候选人水平:</label>&nbsp;{{ side.Level }}&nbsp;&nbsp;&nbsp;&nbsp;<label>面试时间:</label>&nbsp;{{ side.Time|date:"Y-m-d" }}&nbsp;&nbsp;&nbsp;&nbsp;<label>面试评价:</label>&nbsp;{{ side.InterviewResults }}
+          </td>
+	      </tr>
+          {% if changes %}
+          {% for change in changes %}
+	      <tr>
+          <td  colspan="12" class="autocut" style ="color:red;text-align:left;">
+		    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>类型:</label>&nbsp;{{ change.Ctype }}&nbsp;&nbsp;&nbsp;&nbsp;<label>原因:</label>&nbsp;{{ change.Creason }}&nbsp;&nbsp;&nbsp;&nbsp;<label>操作人:</label>&nbsp;{{ change.Cname }}&nbsp;&nbsp;&nbsp;&nbsp;<label>时间:</label>&nbsp;{{ change.Ctime|date:"Y-m-d" }}&nbsp;&nbsp;&nbsp;&nbsp;<label>备注:</label>&nbsp;{{ change.Cnotes }}
+          </td>
+           
+	      </tr>
+	      {% endfor %}
+          {% endif %}
+	      {% endfor %}
+          {% endif %}
+	      {% endfor %} 
+          
+  </tbody>	      
+ {% for inter,inte2s,interss,interz in inters %}
+  <tbody>
+	      <tr id={{ inter.id }} onclick="opid3(this)" >
+          <td><INPUT name="chkSon" id="{{ interz }}" type="checkbox"  value='{{ inter.id }}' onclick="ChkSonClick('chkSon','chkAll')" /></td>
+		  <td>{{ inter.CandidateName }}</td>
+		  <td>{{ inter.CandidateSex }}</td>
+		  <td>{{ inter.CandidateAge }}</td>
+		  <td class="autocut">{{ inter.CandidatePhone }}</td>
+		  <td class="autocut">{{ inter.CandidateEmail }}</td>
+		  <td>{{ inter.CandidateProfile }}</td>
+		  <td>{{ inter.Status }}</td>
+		  <td class="autocut">{{ inter.Station.PositionName }}</td>
+		  <td>{{ inter.Level }}</td>
+          {% if inter.Agency %}
+          <td>代处理({{ inter.UserID.username }})</td>
+          {% else %}
+          <td></td>
+          {% endif %}
+		  <td>{{ inter.referrerID.username }}</td>
+          <span id={{ inter.id }} onclick="opid3miss(this)">
+          <td ><a href="javascript:void(0);" onclick="window.open ('/side/newinterview/'+{{ inter.id }}, '', 'height=1000px,width=1000px')">处理</a>/<a href={{ inter.Addr }}  onclick="loadXMLDoc2(this,{{ inter.id }})">查看简历</a>/<a href="{% url 'updata_resume'  inter.id  %}">更新简历</a></td>
+          </span>
+	      </tr>
+  </tbody>
+  <tbody id={{ interss }} style="display:none;">
+
+          {% if inte2s %} 
+  		  {% for inte,change1s in inte2s %}
+	      <tr>
+          <td  colspan="12" class="autocut" style ="color:blue;text-align:left;">
+		    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>面试过程:</label>&nbsp;{{ inte.InterviewProcess }}&nbsp;&nbsp;&nbsp;&nbsp;<label>面试官:</label>&nbsp;{{ inte.user.username }}&nbsp;&nbsp;&nbsp;&nbsp;<label>候选人水平:</label>&nbsp;{{ inte.Level }}&nbsp;&nbsp;&nbsp;&nbsp;<label>面试时间:</label>&nbsp;{{ inte.Time|date:"Y-m-d" }}&nbsp;&nbsp;&nbsp;&nbsp;<label>面试评价:</label>&nbsp;{{ inte.InterviewResults }}
+          </td>
+	      </tr>
+          {% if change1s %}
+          {% for change1 in change1s %}
+	      <tr>
+          <td  colspan="12" class="autocut" style ="color:red;text-align:left;">
+		    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>类型:</label>&nbsp;{{ change1.Ctype }}&nbsp;&nbsp;&nbsp;&nbsp;<label>原因:</label>&nbsp;{{ change1.Creason }}&nbsp;&nbsp;&nbsp;&nbsp;<label>操作人:</label>&nbsp;{{ change1.Cname }}&nbsp;&nbsp;&nbsp;&nbsp;<label>时间:</label>&nbsp;{{ change1.Ctime|date:"Y-m-d" }}&nbsp;&nbsp;&nbsp;&nbsp;<label>备注:</label>&nbsp;{{ change1.Cnotes }}
+          </td>
+           
+	      </tr>
+	      {% endfor %}
+          {% endif %}
+	      {% endfor %}
+          {% endif %}
+	      {% endfor %} 
+          
+  </tbody>	      
+</table>
+
+
+	    </div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+   function opid(){  
+   // if(document.getElementById("show").style.display == "")
+   // {
+   //     document.getElementById("show").style.display = "none";
+   // }
+   // else 
+   // {
+   // document.getElementById("show").style.display = "";
+  //  }
+    jQuery.noConflict();
+    $('#mymodal').modal('toggle');
+    }
+    $("#trey").click(function(){
+        
+        var arrSon = document.getElementsByName('chkSon');
+        var s='|' 
+        for(i=0;i<arrSon.length;i++) {
+        if(arrSon[i].checked)
+        {  
+           s += arrSon[i].value+'|';
+ 		}
+        }
+        opa(s);
+    });
+
+
+</script>
+
+<script type="text/javascript">
+   function opid2(obj){
+    var df = obj.id-1000+"ss";
+
+    if(document.getElementById(df).style.display == "")
+    {
+        document.getElementById(df).style.display = "none";
+    }
+    else 
+    document.getElementById(df).style.display = "";
+   }
+
+
+</script>
+<script type="text/javascript">
+   function opid2miss(obj){
+    var df = obj.id-1000+"ss";
+    if(document.getElementById(df).style.display == "")
+    {
+        document.getElementById(df).style.display = "none";
+    }
+    else 
+    document.getElementById(df).style.display = "";
+
+   }
+
+
+</script>
+<script type="text/javascript">
+   function opid3(obj){
+    var df = obj.id+"ss";
+
+    if(document.getElementById(df).style.display == "")
+    {
+        document.getElementById(df).style.display = "none";
+    }
+    else 
+    document.getElementById(df).style.display = "";
+   }
+
+
+</script>
+<script type="text/javascript">
+   function opid3miss(obj){
+    var df = obj.id+"ss";
+    if(document.getElementById(df).style.display == "")
+    {
+        document.getElementById(df).style.display = "none";
+    }
+    else 
+    document.getElementById(df).style.display = "";
+
+   }
+
+
+</script>
+{% endblock %}
+

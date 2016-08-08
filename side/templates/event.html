@@ -1,0 +1,136 @@
+{% extends 'Base.html' %}
+{% block title %}待办事项{% endblock %}
+{% block content %}
+<div class="container-fluid main-body">
+<h1 style="text-align:center;">需安排面试的候选人</h1>
+<table class="table table-condensed table-bordered table-responsive table-hover" style="font-size:12px;">
+  <thead>
+    <tr>
+      <th>姓名</th>
+      <th>性别</th>
+      <th>年龄</th>
+      <th>联系电话</th>
+      <th>邮箱</th>
+      <th>概况</th>
+      <th>候选人状态</th>
+      <th>求职的职位</th>
+      <th>候选人水平</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+   {% for inter2,side1,inter2ss in sides %}		
+  <tbody>
+	      <tr id={{ inter2.id }} onclick="opid(this)">
+		  <td>{{ inter2.resume.CandidateName }}</td>
+		  <td>{{ inter2.resume.CandidateSex }}</td>
+		  <td>{{ inter2.resume.CandidateAge }}</td>
+		  <td>{{ inter2.resume.CandidatePhone }}</td>
+		  <td>{{ inter2.resume.CandidateEmail }}</td>
+		  <td>{{ inter2.resume.CandidateProfile }}</td>
+		  <td>{{ inter2.resume.Status }}</td>
+		  <td>{{ inter2.resume.PositionName }}</td>
+		  <td>{{ inter2.resume.Level }}</td>
+          <td><a href={% url 'side:newinterview' inter2.resume.id %}>去面试</a>/<a href={{ inter2.resume.Addr }}>查看简历</a>/<a href={% url 'side:Interview_resume' inter2.resume.id %}>面试记录</a></td>
+	      </tr>
+  </tbody>	      
+  <tbody id={{ inter2ss }} style="background:#DDDDFF;display:none;">
+
+          {% if side1 %} 
+  		  {% for side in side1 %}
+	      <tr style="background:#DDDDFF;">
+          <td  colspan="6" class="autocut" style ="text-align:left;">
+		    &nbsp;&nbsp;&nbsp;&nbsp; <label>面试过程:</label>&nbsp;{{ side.InterviewProcess }}&nbsp;&nbsp;&nbsp;&nbsp;<label>面试官:</label>&nbsp;{{ side.user.username }}&nbsp;&nbsp;&nbsp;&nbsp;<label>候选人水平:</label>&nbsp;{{ side.Level }}&nbsp;&nbsp;&nbsp;&nbsp;<label>面试时间:</label>&nbsp;{{ side.Time|date:"Y-m-d" }}&nbsp;&nbsp;&nbsp;&nbsp;<label>面试评价:</label>&nbsp;{{ side.InterviewResults }}
+          </td>
+	      </tr>
+	      {% endfor %}
+          {% endif %}
+	      {% endfor %} 
+          
+  </tbody>	      
+  <tbody>
+  		  {% for inter in inters %}
+	      <tr>
+		  <td>{{ inter.CandidateName }}</td>
+		  <td>{{ inter.CandidateSex }}</td>
+		  <td>{{ inter.CandidateAge }}</td>
+		  <td>{{ inter.CandidatePhone }}</td>
+		  <td>{{ inter.CandidateEmail }}</td>
+		  <td>{{ inter.CandidateProfile }}</td>
+		  <td>{{ inter.Status }}</td>
+		  <td>{{ inter.PositionName }}</td>
+		  <td>{{ inter.Level }}</td>
+          <td><a href={% url 'side:newinterview' inter.id %}>去面试</a>/<a href={{ inter.Addr }}>查看简历</a></td>
+	      </tr>
+	      {% endfor %}
+
+	      
+  </tbody>
+</table>
+	    </div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+   function opid(obj){
+    var df = obj.id+"ss";
+
+    if(document.getElementById(df).style.display == "")
+    {
+        document.getElementById(df).style.display = "none";
+    }
+    else 
+    document.getElementById(df).style.display = "";
+   }
+
+
+</script>
+{% endblock %}
+{% comment %}
+<!--
+{% block middle %}	
+
+	    <div class="container main-body1">
+
+<h1 style="text-align:center;">需要进一步处理的面试</h1>
+
+<table class="table table-condensed1">
+ <thead>
+    <tr>
+      <th><a href="/interviews?direction=asc&amp;sort=interview_time">面试时间</a></th>
+      <th> </th>
+      <th><a href="/interviews?direction=asc&amp;sort=first_name">候选人</a></th>
+      <th><a href="/interviews?direction=asc&amp;sort=title">求职职位</a></th>
+      <th><a href="/interviews?direction=asc&amp;sort=decision">面试结果</a></th>
+      <th><a href="/interviews?direction=asc&amp;sort=interviewer">面试官</a></th>
+      <th><a href="/interviews?direction=asc&amp;sort=operator">候选人水平</a></th>
+      <th><a href="/interviews?direction=asc&amp;sort=operator">面试过程</a></th>
+      <th><a href="/interviews?direction=asc&amp;sort=operator">候选人下一步状态</a></th>
+      <th><a href="/interviews?direction=asc&amp;sort=interviewer">下一步面试官</a></th>
+      <th>操作</th>
+    </tr>
+  </thead>
+  <tbody>
+  		  {% for inter in inters2 %}
+	      <tr>
+		  <td><p>{{ inter.Time|date:"Y-m-d H:i:s" }}</p></td>
+		  <td> </td>
+		  <td><p>{{ inter.resume.CandidateName }}</p></td>
+		  <td>{{ inter.resume.position.PositionName }}</td>
+		  <td><p>{{ inter.InterviewResults }}</p></td>
+		  <td>{{ inter.user.UserName }}</td>
+		  <td><p>{{ inter.Level }}</p></td>
+		  
+		  <td><p>{{ inter.InterviewProcess }}</p></td>
+		  <td><p>{{ inter.resume.ResumeStatus }}</p></td>
+		  <td>{{ inter.NextUser.UserName }}</td>
+		  
+          <td><a href={% url 'newinterview' inter.id %}>去面试</a></td>
+	      </tr>
+	      {% endfor %}
+	      
+  </tbody>
+</table>
+
+</div>
+{% endblock %}
+-->
+{% endcomment %}

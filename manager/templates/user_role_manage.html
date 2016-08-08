@@ -1,0 +1,43 @@
+{% extends 'Base.html'%}
+{% block head %}
+<link href="//cdn.bootcss.com/bootstrap-table/1.9.1/bootstrap-table.css" rel="stylesheet">
+<link href="//cdn.bootcss.com/x-editable/1.5.1/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+{% endblock %}
+{% block content %}
+<table class="table table-condensed table-bordered table-responsive table-hover" style="font-size:12px;margin-bottom:-5px">
+<thead>
+<tr> 
+<th scope="col">用户名</th>
+<th scope="col">角色</th>
+<th scope="col">部门</th>
+<th scope="col">上级角色</th>
+<th scope="col"> 操作</th>
+</tr>
+</thead>
+{% for user_role in user_roles %}
+<tbody>
+<tr>
+<td> {{ user_role.UserID.username }}</td>
+<td> {{ user_role.RoleID.name }}</td>
+<td>{{ user_role.RoleID.DepartmentID }}</td>
+<td> {{ user_role.RoleID.superior_role }}</td>
+<td><a href="/manager/delete_user_role/{{ user_role.id }}" onclick="delete_confirm()">删除</a>/<a href="/manager/update_user_role/{{ user_role.id }}">修改</a></td>
+</tr>
+</tbody>
+{% endfor %}
+</table>
+
+<script type="text/javascript">
+function delete_confirm()
+{
+ if (event.srcElement.outerText == "删除")
+  {
+  event.returnValue = confirm("删除是不可恢复的，你确认要删除吗？");
+  }
+}
+    //document.onclick = delete_confirm;
+</script>
+{% endblock %}

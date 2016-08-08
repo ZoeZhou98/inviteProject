@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<script src="//cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+<link href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+<script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>修改</title>
+
+<script language="javascript"> 
+function change1() 
+{ 
+document.getElementById("stuck").className="active";
+document.getElementById("process").className="";
+document.getElementById("interviews").className="";
+
+} 
+function change2() 
+{ 
+document.getElementById("stuck").className="";
+document.getElementById("update_user_role").className="active";
+document.getElementById("update_user_power").className="";
+
+} 
+function change3() 
+{ 
+document.getElementById("stuck").className="";
+document.getElementById("update_user_role").className="";
+document.getElementById("update_user_power").className="active";
+
+} 
+</script>
+</head>
+<body>
+<div class="row">
+    <div class="col-sm-6">
+        <ol class="breadcrumb" style="margin-bottom: 0px;">
+            <li><a href="/talents/first_page/">首页</a></li>
+            <li><a href="/talents/first_page/">系统管理</a></li>
+			<li><a href="/manager/user_manage/">用户管理</a></li>
+            <li class="active">修改</li>
+        </ol>
+    </div>
+</div>
+<div class="wrap">
+
+    <ul class="nav nav-tabs">
+		
+        <li role="presentation" id = "update_user_rule" class="active"><a target="myr" href="/manager/user_rule_manage/{{ user_id }}" onclick="change1()">修改角色</a></li>
+		<li role="presentation" id = "update_user_role"><a target="myr" href="/manager/user_role_manage/{{ user_id }}" onclick="change2()">修改职位</a></li>
+        <li role="presentation" id="update_user_power"><a target="myr" href="/manager/user_power_manage/{{ user_id }}" onclick="change3()">修改权限</a></li>
+    </ul>
+     <script language="javascript" type="text/javascript"> 
+     function dyniframesize(down) { 
+      var pTar = null; 
+      if (document.getElementById){ 
+      pTar = document.getElementById(down); 
+      } 
+      else{ 
+      eval('pTar = ' + down + ';'); 
+      } 
+      if (pTar && !window.opera){ 
+      //begin resizing iframe 
+      pTar.style.display="block" 
+      if (pTar.contentDocument && pTar.contentDocument.body.offsetHeight){ 
+      //ns6 syntax 
+      pTar.height = pTar.contentDocument.body.offsetHeight+20; 
+    //  pTar.width = pTar.contentDocument.body.scrollWidth+20; 
+      } 
+      else if (pTar.Document && pTar.Document.body.scrollHeight){ 
+      //ie5+ syntax 
+      pTar.height = pTar.Document.body.scrollHeight; 
+     // pTar.width = pTar.Document.body.scrollWidth; 
+      } 
+      } 
+      } 
+      </script>
+    <div class="embed-responsive embed-responsive-16by9">
+        <iframe name="myr" id="ir" onload="javascript:dyniframesize('ir');" src="/manager/user_rule_manage/{{ user_id }}"></iframe>
+    </div>
+</div>
+</body>
+</html>

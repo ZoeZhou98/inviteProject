@@ -1,0 +1,161 @@
+{% extends 'base1.html' %}
+{% load staticfiles %}
+{% load bootstrap_toolkit %}
+{% load url from future %} 
+{% block title %}offer邮箱{% endblock %}
+{% block last_head %}
+<link rel="stylesheet" href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css">
+<script src="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<!--<link rel="stylesheet" href="jqueryui/style.css">-->
+<style>
+.ui-autocomplete {
+max-height: 130px;
+width: 280px;
+overflow-y: auto;
+/* prevent horizontal scrollbar */
+overflow-x: hidden;
+}
+* html .ui-autocomplete {
+height: 130px;
+}
+</style>
+<SCRIPT LANGUAGE="javascript"> 
+$(document).ready(function(){
+     var  shi= "{{ finish  }}";
+    if(shi=="goto")
+    {
+       
+        window.opener.refresh1(); 
+        <!--window.opener.ifm.location.reload(true);-->
+        <!--window.opener.location.href=window.opener.location.href;--> 
+        if(window.opener.location.href.indexOf("/stucked/")>0)
+        {
+            window.opener.parent.scroll();
+        }
+        if(window.opener.location.href.indexOf("/mystucked/")>0)
+        {
+            window.opener.parent.parent.scroll();
+        }
+        window.close();
+    }    
+    
+    });
+</script>
+<script>
+var availableTags=[] 
+function get_emails()
+{
+    var xmlhttp;
+    if (window.XMLHttpRequest)
+      {// code for IE7+, Firefox, Chrome, Opera, Safari
+      xmlhttp=new XMLHttpRequest();
+      }
+    else
+      {// code for IE6, IE5
+      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+      }
+    xmlhttp.onreadystatechange=function()
+      {
+      if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+            //temp=xmlhttp.responseText.replace("value",'value');
+            //temp=temp.replace("label",'label');
+            availableTags=xmlhttp.responseText.split(";");
+            //availableTags=[xmlhttp.responseText];
+            var i=0;
+            for(i;i<availableTags.length;i++) 
+            {
+                //availableTags[i]=String(availableTags[i]);
+                if(availableTags[i])
+                {
+                    availableTags[i]=eval('('+ availableTags[i] +')');
+                }
+                //availableTags[i]=jQuery.parseJSON(availableTags[i]);
+               // alert(availableTags[i]);
+            }
+            //availableTags=availableTags.replace("value",'value');
+            //availableTags=availableTags.replace("label",'label');
+            
+        }
+      }
+     xmlhttp.open("GET","/side/get_emails/?t=" + Math.random(),true);
+     xmlhttp.send();
+}
+$(function() {
+get_emails();
+//var availableTags = [
+//    {label:"C nihao ",value:"nihao"},
+//    {label:"C++ ssdad",value:"ssdad"},
+//];
+function split( val ) {
+  return val.split( /\n\s*/ );
+}
+function extractLast( term ) {
+  return split( term ).pop();
+}
+
+$( "#id_cc" )
+  // 当选择一个条目时不离开文本域
+  .bind( "keydown", function( event ) {
+    if ( event.keyCode === $.ui.keyCode.TAB &&
+        $( this ).data( "ui-autocomplete" ).menu.active ) {
+      event.preventDefault();
+    }
+  })
+  .autocomplete(availableTags,{
+    minLength: 1,
+    source: function( request, response ) {
+      // 回到 autocomplete，但是提取最后的条目
+      response( $.ui.autocomplete.filter(
+        availableTags, extractLast( request.term ) ) );
+    },
+    //max: 5,
+    //scroll: true,
+    //matchContains: true,
+    //scrollHeight: 110,
+    focus: function() {
+      // 防止在获得焦点时插入值
+      return false;
+    },
+    select: function( event, ui ) {
+      var terms = split( this.value );
+      // 移除当前输入
+      terms.pop();
+      // 添加被选项
+      terms.push( ui.item.value );
+      // 添加占位符，在结尾添加换行
+      terms.push( "" );
+      this.value = terms.join( "\n" );
+      return false;
+    }
+  });
+});
+</script>
+
+{% endblock %}  
+{% block content %}
+<div class="container-fluid " >
+<!--
+    <div class="row">
+        <div class="col-sm-6">
+            <h3 style="margin:8px"><span class="label label-success">发送邮件</span></h3>
+        </div>
+    </div>
+-->
+<form method="POST" action="" class="form-horizontal" >
+            <table>
+            <tr><td><div class="controls"></div></td><td><div style="color:red;" class="controls">{{ mailerror }}</div></td></tr>
+            <tr><td><div class="controls"></div></td><td><div class="control-group required"><label class="control-label" for="id_tomail">收件邮箱</label><div class="controls"><input id="id_tomail" name="tomail" type="text" value="{{ tomail|default_if_none:"" }}"  /></div></div></td></tr>
+            <tr><td><div class="controls"></div></td><td><div class="control-group required"><label class="control-label" for="id_cc">抄送人</label><div class="controls">
+            <textarea id="id_cc" name="cc" rows="5" value="{{ cc|default_if_none:"" }}" placeholder="若填写多个抄送人请换行,请不要添加其他字符." />{{ cc }}</textarea>
+            <span style="color:blue">注意：若填写多个抄送人请换行,请不要添加其他字符.</span>
+            </div></div></td></tr>
+</tbody>   
+            <tr><td><div class="controls"></div></td><td><div class="form-actions" >  
+                <input type="submit" value="发送"  class="btn btn-primary" />
+                <a href="javascript:void(0);" type="button" class="btn btn-warning" onclick=winclose()> 返回</a>
+            </div></td></tr>
+            </table>
+</form>
+</div>
+{% endblock %}

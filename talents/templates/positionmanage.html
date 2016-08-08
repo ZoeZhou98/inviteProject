@@ -1,0 +1,142 @@
+{% extends 'Base.html' %}
+{% block content %}
+    <div class="row">
+        <div class="col-sm-6">
+          <ol class="breadcrumb" style="margin-bottom: 0px;">
+            <li><a href="/talents/first_page/">首页</a></li>
+            <li><a href="/talents/first_page/">岗位管理</a></li>
+            <li class="active">正在发布的岗位</li>
+          </ol>
+        </div>
+        <!-- -->
+        <div class="col-sm-6 ">
+            <form action="/talents/position_search_form/" method="get">
+                <div class="input-group">
+                    <input type="text" name="PName" class="form-control" placeholder="Search for...">
+                    <span class="input-group-btn">
+                        <button class="btn btn-info" type="submit">搜索</button>
+                   <a href="/talents/positionmanage/">
+                        <button class="btn btn-warning btn-info" type="submit">返回</button>
+                   </a>
+                    </span>
+                </div>
+            </form>
+        </div>
+       <!-- -->
+    </div>		
+<p>
+{% if Position_Exam %}
+<div>
+  <table class="table table-condensed table-bordered table-responsive table-hover">
+	<thead>
+      <tr>
+		<th>岗位名称</th>
+		<th>岗位地点</th>
+		<th>负责人</th>
+		<th>电话</th>
+		<th>一级部门</th>
+		<th>二级部门</th>
+        <th>三级工作小组</th>
+		<th>还需人数</th>
+		<th>招聘人数</th>
+        <th>已招聘人数</th>
+		<th>操作</th>
+	  </tr>
+	</thead>
+	{% for position,needperson,position_exams,position_exam_id in Position_Exam %}
+	<tbody>
+	     <tr id={{ position.id }} onclick="opid(this)">
+		    <td>{{ position.PositionName }}</td>
+		    <td>{{ position.Workplace }}</td>
+		    <td>{{ position.UserID.username }}</td>
+		    <td>{{ position.UserID.mobile }}</td>
+		    <td>{{ position.Depart }}</td>
+		    <td>{{ position.SecondDepartment }}</td>
+            <td>{{ position.ProjectName }}</td>
+		    <td>{{ needperson }}</td>
+		    <td>{{ position.NeedPersonNum }}</td>
+		    <td>{{ position.recruitednum }}</td>
+            <td><a href={% url 'talents:positionprofile' position.id %}>详情</a></td>
+		</tr>
+	  
+	</tbody>
+	    
+    <tbody id= {{ position_exam_id }} style="display:none;">
+    {% if position_exams %}
+        <tr style="color:red;">
+            <td colspan="11">
+	            {{ position.UserID.username }}(申请)
+	            {% for position_exam in position_exams %}
+               -->     {{ position_exam.UserID.username }}({{ position_exam.Result }})   {% endfor %}
+             
+            </td>
+        </tr>
+    {% endif %}
+         
+    </tbody>
+
+    {% endfor %}
+</table>
+<!-- 服务器端实现分页功能-->
+<div style="display: block;" class="fixed-table-pagination">
+    <span class="pull-right pagination-detail">
+        <ul class="pagination">
+            {% if Position_Exam.has_previous %}
+                <li><a class='paginator' title='上一页' href='?page_size={{ page_size }}&page={{ Position_Exam.previous_page_number }}'>上一页</a></li>
+            {% endif %}
+        {% for page in Position_Exam.paginator.page_range %}
+            {% if page = Position_Exam.number %}
+                <li class="active"><a class="paginator_current" title='当前页:{{ page }}'><span>{{ page }}</span></a></li>
+            {% elif page == 1 %}
+                <li><a class='paginator' href='?page_size={{ page_size }}&page={{ page }}' title='{{ page }}'><span>首页</span></a></li>
+            {% elif page == Position_Exam.paginator.num_pages %}
+                <li><a class='paginator' href='?page_size={{ page_size }}&page={{ page }}' title='{{ page }}'><span>末页</span></a></li>
+            {% elif page <= Position_Exam.number|add:"3" and page >= Position_Exam.number|add:"-3"  %}
+                <li><a class='paginator' href='?page_size={{ page_size }}&page={{ page }}' title='{{ page }}'><span>{{ page }}</span></a></li>
+            {% endif %} 
+        {% endfor %}
+            {% if Position_Exam.has_next %}
+                <li><a class='paginator' title='下一页' href='?page_size={{ page_size }}&page={{ Position_Exam.next_page_number }}'><span>下一页</span></a></li>
+            {% endif %}
+        </ul>
+    </span>
+    
+    <span class="pull-left pagination-detail">
+        <span class="pagination-info">Showing {{ page_left }} to {{ page_right }} of {{ record_count }}&nbsp;rows</span>
+        <span class="page-list">
+            <div class="btn-group dropup"> 
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" name="page_size" aria-haspopup="true" aria-expanded="false">
+                   <span class="page-size">{{ page_size }}</span> 
+                   <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li {% if page_size == 15 %}class="active"{% endif %}><a href="/talents/positionmanage/?page_size=15">15</a></li>
+                    <li {% if page_size == 50 %}class="active"{% endif %}><a href="/talents/positionmanage/?page_size=50">50</a></li>
+                    <li {% if page_size == 100 %}class="active"{% endif %}><a href="/talents/positionmanage/?page_size=100">100</a></li>
+                    <li {% if page_size == record_count %}class="active"{% endif %}><a href="/talents/positionmanage/?page_size={{ record_count }}">All</a></li>
+                </ul>
+            </div> records per page
+        </span>
+    </span>
+</div>
+
+ {% else %}
+ <p align="left">没有找到相关记录.</p>
+   {% endif %}
+
+<script type="text/javascript">
+   function opid(obj){
+    var df = obj.id+"id";
+
+    if(document.getElementById(df).style.display == "")
+    {
+        document.getElementById(df).style.display = "none";
+    }
+    else 
+    document.getElementById(df).style.display = "";
+   }
+
+
+</script>
+{% endblock %}
+ 

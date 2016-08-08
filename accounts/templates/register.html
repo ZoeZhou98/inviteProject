@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="container">
+<div class="login">
+    {% if errors %}
+        <li>
+            {% for error in errors %}
+             <p style="color: red;">
+                 {{error}}.
+             </p>
+              {% endfor %}
+        </li>
+    {% endif %}
+    <form method="post">
+    <div>        
+        <tr>
+            <td>
+                <label for = "account">姓名:</label>
+            </td>
+            <td>
+                <input type='text' class="form-control" placeholder="中文名" name = 'account' value = {{ username }}>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label >密码:</label>
+            </td>
+            <td>
+              <input type='password' class="form-control"  name = 'password'>
+            </td>
+        </tr>
+         <tr>
+             <td>
+                <label >再次输入密码:</label>
+             </td>
+             <td>
+                 <input type='password' class="form-control" name ='password2'>
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 <label>邮箱:</label>
+             </td>
+             <td>
+                 <input type='email' class="form-control" name = 'email' value = {{ email }}>
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 <label for="mobile">手机:</label>
+             </td>
+             <td>
+                 <input type='text' class="form-control" name = 'mobile' value = {{ mobile }}>
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 <label for="rule">职位:</label>
+             </td>
+             <td>
+                 <select class="form-control" name = 'role'>
+		                <option value=""></option>
+                        {% for role_department in roles_departments %}
+                     
+                         <option value={{ role_department.id }}>{{ role_department.name }} {{role_department.DepartmentID.name}}</option> 
+                        {% endfor %}
+                </select> 
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 <label for="rule">角色:</label>
+             </td>
+             <td>
+                 <select class="form-control" name = 'rule'>
+                 <option value=""></option>
+                 {% for x in rules %}                    
+                     <option value = {{ x.id }}>{{ x.name }} </option> 
+                {% endfor %}
+             </td>
+         </tr>
+            <p class="form-actions">
+                <input type = 'submit' class="btn btn-primary" placeholder="注册" value="注册">
+                <span style="font-size:86px;">&nbsp;&nbsp;&nbsp;</span>
+                <a href="/accounts/login/"><input type = 'button' class="btn btn-success" value="返回登录页面"></a>
+            </p>
+    </div>
+    </form>
+
+</div>
+</section>
+{% endblock %}

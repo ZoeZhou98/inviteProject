@@ -1,0 +1,78 @@
+{% extends 'Base.html' %}
+
+{% block title %}需要下载的简历{% endblock%}
+{% block content %}
+{% if inters %}
+<input type = "button"  name = "tableExcel" value = "导出表格" onclick = "method1()">
+<div class="container-fluid ">
+  <div class="row">
+     <div class="col-sm-6">
+        <ol class="breadcrumb" style="margin-bottom: 0px;">
+            <li><a href="/talents/first_page/">首页</a></li>
+            <li><a href="/talents/first_page/">简历管理</a></li>
+            <li class="active">需要下载的简历</li>
+        </ol>
+     </div>
+  </div>
+  <p>
+  <div class="row">
+    <table class="table table-condensed table-bordered table-responsive table-hover" id = "tableExcel">
+      <thead>
+        <tr>
+          <th>锁定的用户</th>
+          <th>简历ID</th>
+	      <th>简历来源</th>
+          <th>推荐人</th>
+          <th>上传时间</th>
+		  <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+          {% for inter in inters %}
+	      <tr>
+		    <td>{{ inter.user_name }}</td>
+		    <td>{{ inter.resume_id }}</td>
+		    <td>{{ inter.source }}</td>
+            <td>{{ inter.referrerID.username }}</td>
+            <td>{{ inter.Time|date:"Y-m-d H:i:s" }}</td>
+			<td><a class='paginator' title='填写备注' href='/manage_importedid?id={{ inter.id }}'>填写备注</span></a></td>
+	      </tr>
+	      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% if inters.has_previous %}
+    <a class='paginator' title='上一页' href='?page={{ inters.previous_page_number }}'><span>&lt;&lt;</span></a>
+{% endif %}
+{% for page in inters.paginator.page_range %}
+    {% if page = inters.number %}
+        <a class='paginator_current' title='当前页:{{ page }}'><span>{{ page }}</span></a>
+    {% else %}
+        <a class='paginator' href='?page={{ page }}' title='{{ page }}'><span>{{ page }}</span></a>
+    {% endif %} 
+{% endfor %}
+{% if inters.has_next %}
+    <a class='paginator' title='下一页' href='?page={{ inters.next_page_number }}'><span>&gt;&gt;</span></a>
+{% endif %}
+</div>
+{% else %}
+<p> 没有记录 </p>
+{% endif %}
+</div>
+<script type="text/javascript">
+function method1() {
+
+    var curTbl = document.getElementById("tableExcel");
+    var oXL = new ActiveXObject("Excel.Application");
+    var oWB = oXL.Workbooks.Add();
+    var oSheet = oWB.ActiveSheet;
+    var sel = document.body.createTextRange();
+    sel.moveToElementText(curTbl);
+                            //sel.select();
+    sel.execCommand("Copy");
+    oSheet.Paste();
+    oXL.Visible = true;
+
+ }
+</script>
+{% endblock %}

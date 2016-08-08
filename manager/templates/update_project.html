@@ -1,0 +1,75 @@
+{% extends 'Base.html' %}
+{% load staticfiles %}
+{% load bootstrap_toolkit %}
+{% load url from future %}  
+{% block content %}
+<form class="form-horizontal" method="POST" >
+  <div class="container-fluid">
+    {% csrf_token %}
+    <div class="row">        
+        <div class="col-sm-3">
+          <div class="input-group">
+            <span class="input-group-addon" id="2_department">* 项目组名称:</span>
+            <input type="text" class="form-control" name="name" value={{ project.name }}> 
+          </div>
+        </div>    
+  </div> 
+  <div class="row">        
+        <div class="col-sm-3">
+          <div class="input-group">
+            <span class="input-group-addon" id="2_department">*项目负责人</span>
+            <select class="form-control" name='project_manager' id="project_manager" aria-describedby="project_manager">
+                
+                {% for x in users %}
+					{% if x.id == project.project_manager.id %}
+                    <option value ="{{ x.id }}" selected="selected">{{ x }}</option>
+					{% else %}
+					<option value ="{{ x.id }}">{{ x }}</option>
+					{% endif %}
+				{% endfor %}
+			</select>
+          </div>
+        </div>    
+  </div> 
+  <div class="row">        
+        <div class="col-sm-3">
+          <div class="input-group">
+            <span class="input-group-addon" id="2_level">* 招聘发起人:</span>
+             <select class="form-control" name='recruiter' id="recruiter" aria-describedby="recruiter">
+                {% for x in users %}
+					{% if x.id == project.recruiter.id %}
+                    <option value ="{{ x.id }}" selected="selected">{{ x }}</option>
+					{% else %}
+					<option value ="{{ x.id }}">{{ x }}</option>
+					{% endif %}
+				{% endfor %}
+			</select>
+          </div>
+        </div>    
+  </div> 
+  <div class="row">        
+        <div class="col-sm-3">
+          <div class="input-group">
+            <span class="input-group-addon" id="2_level">* 所属客户:</span>
+             <select class="form-control" name='customer' id="customer" aria-describedby="customer">
+			    {% for x in customers %}
+					{% if x.id == project.customer.id %}
+                    <option value ="{{ x.id }}" selected="selected">{{ x }}</option>
+					{% else %}
+					<option value ="{{ x.id }}">{{ x }}</option>
+					{% endif %}
+				{% endfor %}    
+			 </select>
+          </div>
+        </div>    
+  </div> 
+  <div class="row">  
+        <div class="col-sm-3">
+            <input type="submit" value="修改" class="btn btn-primary" id="btn1">  
+        </div>
+        <div class="col-sm-3"> 
+            <a class="" align="right" role="button" name="Submit" onclick="javascript:history.back(-1);">返回</a>
+        </div>
+    </div>
+</form>
+{% endblock %}

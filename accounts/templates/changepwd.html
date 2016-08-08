@@ -1,0 +1,46 @@
+<!DOCTYPE html>  
+{% load bootstrap_toolkit %}
+{% load staticfiles %}                                                                                                                                                         
+{% load url from future %}
+<html lang="en">  
+<head>  
+    <meta charset="utf-8">  
+    <title>用户修改密码</title>  
+    <meta name="description" content="">  
+    {% bootstrap_stylesheet_tag %}  
+    {% bootstrap_stylesheet_tag "responsive" %} 
+    <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+    {% bootstrap_javascript_tag %} 
+    {% block extra_head %}{% endblock %} 
+</head>  
+<body>  
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-6">
+        <ol class="breadcrumb" style="margin-bottom: 0px;">
+            <li><a href="/talents/first_page/">首页</a>&nbsp;&nbsp;/&nbsp;&nbsp;</li>
+            <li><a href="/talents/first_page/">账户管理</a>&nbsp;&nbsp;/&nbsp;&nbsp;</li>
+            <li class="active">修改密码</li>
+        </ol>
+      </div>
+    </div>
+    <p>
+    {% if oldpassword_is_wrong %}  
+    <div class="alert alert-error">  
+        <button type="button" class="close" data-dismiss="alert">×</button>  
+            <h4>错误!</h4>原密码不正确  
+    </div>  
+    {% endif %}  
+    <div class="well">  
+        <form class="form-horizontal" action="" method="post">  
+            {% csrf_token %}  
+            {{ form|as_bootstrap:"horizontal" }}  
+            <div class="form-actions">  
+                <input type="submit" value="确认修改" class="btn btn-primary">  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="{% url 'talents:first_page' %}"><input type = 'button' class="btn btn-success" value="返回"></a>
+            </div>  
+        </form>  
+    </div>  
+  </div>
+</body>  
+</html>

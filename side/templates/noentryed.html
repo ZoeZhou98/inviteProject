@@ -1,0 +1,59 @@
+{% extends 'table-base.html' %}
+
+{% block title %}发offer未入职的员工{% endblock%}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-6">
+        <ol class="breadcrumb" style="margin-bottom: 0px;">
+            <li><a href="/talents/first_page/">首页</a></li>
+            <li><a href="/talents/first_page/">入职管理</a></li>
+            <li class="active">发offer未入职的员工</li>
+        </ol>
+      </div>
+    </div>
+    <p>
+
+<table class="table table-condensed table-bordered table-responsive table-hover" style="font-size:12px;">
+  <thead>
+    <tr>
+      <th>姓名</th>
+      <th>性别</th>
+      <th>年龄</th>
+      <th>联系电话</th>
+      <th>邮箱</th>
+      <th>工作年限</th>
+      <th>状态</th>
+      <th>求职职位</th>
+      <th>未入职记录</th>
+      <th>锁定用户</th>
+      <th>未入职录入时间</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+  <tbody>
+  		  {% for inter in inters %}
+	      <tr>
+		  <td>{{ inter.resume.CandidateName }}</td>
+		  <td>{{ inter.resume.CandidateSex }}</td>
+		  <td>{{ inter.resume.CandidateAge }}</td>
+		  <td class="autocut">{{ inter.resume.CandidatePhone }}</td>
+		  <td class="autocut">{{ inter.resume.CandidateEmail }}</td>
+		  <td>{{ inter.resume.CandidateProfile }}</td>
+		  <td>{{ inter.resume.Status }}</td>
+		  <td class="autocut">{{ inter.resume.PositionName }}</td>
+		  <td>{{ inter.EntryResults }}</td>
+		  <td>{{ inter.resume.UserID.username }}</td>
+		  <td>{{ inter.Time|date:"Y-m-d H:i:s" }}</td>
+		  <td><a href={{ inter.resume.Addr }} >查看简历</a>/<a href={% url 'side:Interview_resume' inter.resume.id %} >面试记录</a>/<a href={% url 'side:entryrecord' inter.resume.id %}>入职办理记录</a>
+            /<a href="{% url 'updata_resume'  inter.resume.id  %}">更新简历</a></td>
+            </td>
+	      </tr>
+	      {% endfor %}
+
+	      
+  </tbody>
+</table>
+</div>
+	    
+{% endblock %}

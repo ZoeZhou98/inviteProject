@@ -1,0 +1,54 @@
+<!--页面展示表格css模版 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--<link rel="stylesheet" type="text/css" media="screen" href="/static/style-table/css-table.css" />-->
+<script src="//cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+<link href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet" media="screen"/>
+<!--<script type="text/javascript" src="/static/style-table/js/style-table.js"></script>-->
+<script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<title>
+{% block title %}{% endblock %}
+</title>
+{% block head %}
+{% endblock %}
+{% block last_head %}
+{% endblock %}
+</head>
+
+<body>
+{% block thead%}
+<div style="top:0;left:0;z-index:1000;POSITION: absolute;">
+  <div style="overflow: hidden; left: 323px; top: 90.5px; display: none;" id="form_cities">
+      <div id="top_cities">简码/汉字或↑↓</div>
+          <div id="panel_cities"></div>
+              <div style="display: block;" id="flip_cities">
+                 «向前&nbsp;&nbsp;&nbsp;<a href="" class="cityflip" onclick="city_showlist(1);return false;">向后»</a>
+      </div>
+  </div>
+</div>
+
+<div style="top:0;left:0;z-index:1000;POSITION: absolute;">
+    <div style="overflow: hidden; display: none; left: 323px; top: 90.5px;" id="form_cities2">
+    <div id="top_cities1"> </div>
+    <div id="panel_cities2"></div>
+    </div>
+    </div>
+{% endblock %}
+{% block content %}
+{% endblock %}
+{% block middle %}
+{% endblock %}
+{% block footers %}
+{% endblock %}
+{% block script %}
+{% endblock %}
+<script language=javascript> 
+function winclose() { //刷新父页面
+window.opener.location.reload();//刷新 
+window.close();//关闭 
+} 
+</script> 
+</body>
+</html>

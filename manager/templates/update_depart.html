@@ -1,0 +1,55 @@
+{% extends 'Base.html' %}
+{% load staticfiles %}
+{% load bootstrap_toolkit %}
+{% load url from future %}  
+{% block content %}
+<form class="form-horizontal" method="POST" >
+  <div class="container-fluid">
+    {% csrf_token %}
+    <div class="row">        
+        <div class="col-sm-3">
+          <div class="input-group">
+            <span class="input-group-addon" id="2_department">* 部门名称:</span>
+            <input type="text" class="form-control" name="name" value={{ depart.name }}> 
+          </div>
+        </div>    
+  </div> 
+  <div class="row">        
+        <div class="col-sm-3">
+          <div class="input-group">
+            <span class="input-group-addon" id="2_department">*上级部门</span>
+            <select class="form-control" name='superior_depart' id="superior_depart" aria-describedby="superior_depart">
+                <option value="">---------</option>
+                {% for x in departs %}
+					{% if x.id == depart.superior_department.id %}
+                    <option value ="{{ x.id }}" selected="selected">{{ x }}</option>
+					{% else %}
+					<option value ="{{ x.id }}">{{ x }}</option>
+					{% endif %}
+				{% endfor %}
+			</select>
+          </div>
+        </div>    
+  </div> 
+  <div class="row">        
+        <div class="col-sm-3">
+          <div class="input-group">
+            <span class="input-group-addon" id="2_level">* 部门等级:</span>
+             <select class="form-control" name='level' id="level" aria-describedby="level">
+			        <option value="">---------</option>
+                    <option value ="1">一级部门</option>
+					<option value ="2">二级部门</option>
+			</select>
+          </div>
+        </div>    
+  </div> 
+  <div class="row">  
+        <div class="col-sm-3">
+            <input type="submit" value="修改" class="btn btn-primary" id="btn1">  
+        </div>
+        <div class="col-sm-3"> 
+            <a class="" align="right" role="button" name="Submit" onclick="javascript:history.back(-1);">返回</a>
+        </div>
+    </div>
+</form>
+{% endblock %}

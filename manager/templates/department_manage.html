@@ -1,0 +1,44 @@
+{% extends 'Base.html'%}
+{% block head %}
+<link href="//cdn.bootcss.com/bootstrap-table/1.9.1/bootstrap-table.css" rel="stylesheet">
+<link href="//cdn.bootcss.com/x-editable/1.5.1/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+{% endblock %}
+{% block content %}
+  <div class="row">
+        <div class="col-sm-3">
+          <ol class="breadcrumb" style="margin-bottom: 0px;">
+            <li><a href="/talents/first_page/">首页</a></li>
+            <li><a href="/talents/first_page/">系统管理</a></li>
+            <li class="active">部门管理</li>
+          </ol>
+        </div>
+  </div>
+  <div class="row">
+		<div class="col-sm-3">
+            <a href="/manager/add_department">添加部门</a>   
+        </div>
+  </div>
+<table class="table table-condensed table-bordered table-responsive table-hover" style="font-size:12px;margin-bottom:-5px">
+<thead>
+<tr> 
+<th scope="col">部门名称</th>
+<th scope="col">上级部门</th>
+<th scope="col">部门级别</th>
+<th scope="col">操作</th>
+</tr>
+</thead>
+{% for depart in departs %}
+<tbody>
+<tr>
+<td>{{ depart.name }}</td>
+<td>{{ depart.superior_department }}</td>
+<td>{{ depart.level }}</td>
+<td><a href="/manager/delete_depart/{{ depart.id }}">删除</a>/<a href="/manager/update_depart/{{ depart.id}}">修改</a></td>
+</tr>
+</tbody>
+{% endfor %}
+</table>
+{% endblock %}

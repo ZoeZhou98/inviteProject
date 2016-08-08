@@ -1,0 +1,78 @@
+{% extends 'base1.html' %}
+{% load staticfiles %}
+{% load bootstrap_toolkit %}
+{% load url from future %} 
+{% block title %}退回{% endblock %}
+{% block last_head %}
+<SCRIPT LANGUAGE="javascript">   
+$(document).ready(function(){
+     var  shi1= "{{ finish  }}";
+    if(shi1=="goto")
+    {
+       
+        window.opener.refresh1(); 
+        <!--window.opener.ifm.location.reload(true);-->
+        <!--window.opener.location.href=window.opener.location.href;--> 
+        if(window.opener.location.href.indexOf("/stucked/")>0)
+        {
+            window.opener.parent.scroll();
+        }
+        if(window.opener.location.href.indexOf("/mystucked/")>0)
+        {
+            window.opener.parent.parent.scroll();
+        }
+        window.close();
+    }    
+     var  shi= "{{ error }}";
+    if(shi=="权限不够不能退回")
+    {
+        alert(shi);
+        $("#hid").click();
+    }    
+    
+    });
+</SCRIPT> 
+{% endblock %}
+{% block content %}
+    
+<div class="container-fluid" style="padding-right:0px;padding-left:0px;">
+<!--
+    <div class="row">
+        <div class="col-sm-6">
+            <h3 style="margin:8px"><span class="label label-success">退回</span></h3>
+        </div>
+    </div>
+-->
+<a href={% url 'side:stucked' %}  style="display:none;"><span id="hid">mm</span></a>
+{% if error1 %}
+        <p style="color: red;">
+            {{ error1 }}
+        </p>
+{% endif %}
+<form method="POST" action="" class="form-horizontal">
+            {% csrf_token %}
+            <table>
+            
+            <tr>
+        <div class="control-group required">
+        <label class="control-label" for="id_Ctype">*退回类型</label>
+    <div class="controls">   
+ <select id="id_Ctype" name="Ctype" onchange="sunc(this)">
+<option value="退回上一步">退回上一步</option>
+<option value="退回开始">退回开始</option>
+</select>
+</div></div></tr>
+			
+			<tr>{{ form.Creason|as_bootstrap:"horizontal" }}</tr>
+            <tr><div class="control-group required"><label class="control-label" >*填写人</label><div class="controls"><input  type="text" name="Cname" value={{ username }} readonly="readonly"/></div></div></tr>
+    		
+    		</table>       
+            <p class="form-actions">  
+                <input type="submit" value="提交" class="btn btn-primary">  
+                <a href="/side/stucked/" type="button" class="btn btn-warning" onclick=winclose()> 返回</a>
+            </p>             
+</form>
+ 
+
+	    </div>
+{% endblock %}

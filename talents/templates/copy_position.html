@@ -1,0 +1,172 @@
+<!DOCTYPE html>  
+{% load staticfiles %}
+{% load bootstrap_toolkit %}
+{% load url from future %}  
+<html lang="en">  
+<head>  
+    <meta charset="utf-8">  
+    <title>职位申请</title>  
+    <meta name="description" content="">  
+    {% bootstrap_stylesheet_tag %}  
+    {% bootstrap_stylesheet_tag "responsive" %} 
+    <style type="text/css">  
+        body {  
+            padding-top: 60px;  
+        }  
+    </style>  
+    <!--[if lt IE 9]>  
+    <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>  
+    <![endif]-->  
+    <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+    <link href="/static/js/userjs/station.css" rel="stylesheet" type="text/css">
+    <script src="/media/TMP/station_name.js?t={{ date|safe }}" type="text/javascript"></script>
+    <script src="/media/TMP/favorite_name.js?t={{ date|safe }}" type="text/javascript"></script>
+    <script src="/static/js/userjs/city_name1.js" type="text/javascript"></script>
+    {% bootstrap_javascript_tag %} 
+    {% block extra_head %}{% endblock %}  
+</head> 
+<body> 
+    <div style="top:0;left:0;z-index:1000;POSITION: absolute;">
+    <div style="overflow: hidden; display: none; left: 323px; top: 90.5px;" id="form_cities2">
+
+    <div id="panel_cities2"></div>
+    </div>
+    </div>
+  
+<h2> 职位申请</h2>
+<div   class="well"> 
+    <form class="form-horizontal" method="POST">
+    
+      <div>
+        <tr>
+             <td><div class="control-group required">
+                 <label for="SecondDepartment" class="control-label">* 二级部门:</label><div class="controls">
+             <select name = 'SecondDepartment'>
+				{% for x in departments %}
+					<option value ="{{ x.id }}">{{ x.name }}</option>
+				{% endfor %}
+			</select>
+             
+              
+             </td>
+         </tr></div></div>
+        <tr>
+            <td><div class="control-group required"> <label for = "PositionName" class="control-label">* 职位名称:</label><div class="controls"> <input type='text' class="form-control" name = 'PositionName' value = {{ PositionName }}></div></div><td></tr>
+    
+         <tr>
+             <td>
+                <div class="control-group required">
+                 <label for = "Phone1" class="control-label">* 联系电话 :</label><div class="controls">
+             
+             
+                 <input type='text' class="form-control" name = 'Phone1' value = {{ Phone1 }}>
+            </div>
+</div>
+             </td>
+         </tr>
+          <tr>
+             <td><div class="control-group required">
+                 <label for="ExistingPersonNum" class="control-label">* 该岗位现有人数 :</label><div class="controls">
+             
+             
+                 <input type='number' class="form-control" min="0" name = 'ExistingPersonNum' value = {{ ExistingPersonNum }}>
+             </td>
+         </tr></div></div>
+          <tr>
+             <td><div class="control-group required">
+                 <label for="NeedPersonNum" class="control-label">* 招聘人数:</label><div class="controls">
+                 <input type='number' class="form-control" min="1" name = 'NeedPersonNum' value ={{ NeedPersonNum }}>
+             </td>
+         </tr></div></div>
+          <tr>
+             <td>
+                <div class="control-group required">
+                 <label for="Workplace" class="control-label">* 工作地点:</label>
+             
+             <div class="controls">
+                 <input type='text' class="form-control" name = 'Workplace' value = {{ Workplace }}>
+             </td>
+         </tr></div></div>
+          <tr>
+             <td>
+                <div class="control-group required">
+                 <label for="ProjectName" class="control-label">项目组名称:</label><div class="controls">
+                 <input type='text' class="form-control" name = 'ProjectName' value = {{ ProjectName }}>
+             </td>
+         </tr>
+            </div></div>
+          <tr>
+             <td><div class="control-group required">
+                 <label for="LowSalary" class="control-label">最低工资:</label><div class="controls">
+                 <input type='number' class="form-control" min="0" name = 'LowSalary' value = {{ LowSalary }}>
+             </td>
+         </tr></div><div>
+          <tr>
+             <td><div class="control-group required">
+                 <label for="HighSalary" class="control-label">最高工资:</label>
+             <div class="controls">
+                 <input type='number' class="form-control" min="0" name = 'HighSalary' value={{ HighSalary }}>
+             </td>
+         </tr>
+         </div></div>
+           <tr><td><div class="control-group required">
+                 <label class="control-label" for="id_RecruitReason">* 招聘原因 </label>
+              <div class="controls">
+                    <select id="id_RecruitReason" name="RecruitReason"> {% if RecruitReason == 1 %}<option value="1" selected="true">1.原有人员离职后增补人员</option> {% else %} <option value="1">1.原有人员离职后增补人员<{% endif %}{% if RecruitReason == 2 %}<option value="2" selected="true">2.业务拓展后新增工作岗位</option>{% else %} <option value="2">2.业务拓展后新增工作岗位</option>{% endif %}{% if RecruitReason == 3 %}<option value="3" selected="true">3.其他情况</option>{% else %} <option value="3">3.其他情况</option>{% endif %}</select></td></tr></div></div>
+          <tr>
+             <td><div class="control-group required">
+                 <label for="id_WorkContent" class="control-label">* 工作内容:</label><div class="controls">
+                 <textarea cols="40"  class="form-control" name = 'WorkContent' rows="10"> {{ WorkContent }}</textarea>
+             </td>
+         </tr> </div></div>
+          <tr>
+             <td><div class="control-group required">
+                 <label for="CandidateRequirement" class="control-label">* 招聘要求:</label><div class="controls">
+             
+             
+                 <textarea cols="40" class="form-control" name = 'CandidateRequirement' rows="10"> {{ CandidateRequirement }} </textarea>
+             </td>
+         </tr> </div></div>
+          <tr>
+             <td><div class="control-group required">
+                 <label for="id_RecruitTime"class="control-label">* 招聘时间:</label><div class="controls">
+                 <input type='text' class="form-control" id = 'id_RecruitTime' name = 'RecruitTime' value = {{ RecruitTime|date:"Y-m-d H:i:s" }}>
+             </td>
+         </tr> </div></div>
+          <tr>
+             <td><div class="control-group required">
+                 <label for="Headline" class="control-label">* 截止时间:</label><div class="controls">
+                 <input type='text' class="form-control" id = 'id_Headline' name = 'Headline' value = {{ Headline|date:"Y-m-d H:i:s" }}>
+             </td>
+         </tr> </div></div>
+			<tr><td><div class="control-group required"><label class="control-label" for="id_RecruitWay">* 招聘方式</label><div class="controls"><select id="id_RecruitWay" name="RecruitWay" onchange = 'show(this)'>{% if RecruitWay == 1 %}<option value="1" selected="true">1.在招聘网站发布职位</option> {% else %} <option value="1" >1.在招聘网站发布职位</option> {% endif %}{% if RecruitWay == 2 %} <option value="2" selected="true">2.伯乐奖职位</option>{% else %} <option value="2">2.伯乐奖职位</option>>{% endif %}{% if RecruitWay == 3 %}<option value="3" selected="true">3.其他渠道</option> {% else %} <option value="3" >3.其他渠道</option>{% endif %}</select></div></div></td></tr>
+			<tr><td>
+			<div class="control-group required" style="display:none" id ='display'><label class="control-label" for="id_Awarding">伯乐奖金额</label><div class="controls"><input id="id_Awarding" name="Awarding" type="number" value="0"/></div></div>
+			</td></tr>
+
+         <script type="text/javascript" src="/static/js/datetime1.js"></script>
+         <script type="text/javascript" src="/static/js/datetime2.js"></script>
+         
+            <p class="form-actions">
+                <input type = 'submit' class="btn btn-primary" value="保存">
+                <span style="font-size:86px;">&nbsp;&nbsp;&nbsp;</span>
+               <!-- <a href="/"><input type = 'button' class="btn btn-success" value="返回"></a> -->
+            </p>
+<script>
+	function show(obj)
+{
+if(obj.value=="2")
+{
+document.getElementById("display").style.display = ""
+}
+else
+
+document.getElementById("display").style.display = "none"
+}
+</script>
+    </div>
+    </form>
+
+</div>
+</body>
+</html>

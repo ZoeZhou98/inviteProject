@@ -1,0 +1,130 @@
+{% extends 'Base.html'%}  
+{% block content %}
+   {% if error %}
+        <p style="color: red;">Please submit a search term.</p>
+   {% endif %}
+<div class="row">
+    <div class="col-sm-6">
+        <ol class="breadcrumb" style="margin-bottom: 0px;">
+            <li><a href="/talents/first_page/">首页</a></li>
+            <li><a href="/talents/first_page/">简历管理</a></li>
+            <li class="active">符合我发布岗位的简历</li>
+        </ol>
+    </div>
+</div>
+<p>
+<!--
+   <div>
+    <form action={% url 'talents:suitresume_search' %} method="get">
+        <input placeholder='输入搜索内容' type="text" name="PName" >
+        <input type="submit" value="Search">
+    </form>
+    </div>
+-->
+   <div >
+    <form class="form-inline" action="{% url 'talents:suitresume_search' %}" method="get"  onsubmit="return connect();">
+        <input class="form-control" placeholder='性别' type="text" id="Csex" name="Csex" value={{ Csex }}>
+        <input class="form-control" placeholder='工作年限' type="number" id="Cpro" name="Cpro" value={{ Cpro }}>
+        <input class="form-control" placeholder='职位' type="text"  id="Cpos" name="Cpos"value={{ Cpos }}>
+        <input class="form-control" placeholder='年龄' type="number" id="Cage" name="Cage" value={{ Cage }}>
+        <input class="form-control" placeholder='学历' type="text"  id="cedu" name="Cedu" value={{ Cedu }}>
+        <input class="btn btn-info" type="submit" value="搜索" >
+        <a href={% url "talents:resumemanage" %}> <input class="btn btn-warning" type="button" value="返回"></input></a>
+    </form>
+    </div>
+    {% for position,resume1 in resumes %}
+      <div class="panel panel-success">
+        <div id={{ position.id }} onclick="opid(this)" class="panel-heading">职位：{{ position.PositionName }}</div>
+        {% if resume1 %}
+        <table class="table table-condensed table-bordered table-responsive table-hover" id="{{ position.id }}id" style="display:"";">
+	    <thead>
+		<tr>
+		    <th scope="col">姓名</th>
+		    <th scope="col">性别</th>
+		    <th scope="col">年龄</th>
+		    <th scope="col">概况</th>
+		    <th scope="col">电话</th>
+		    <th scope="col">邮箱</th>
+		    <th scope="col">职位</th>
+		    <th scope="col">入库日期</th>
+		    <th scope="col">操作</th>
+		</tr>
+	    </thead>
+	    <tbody style="font-size:12px;">
+	     {% for resume in resume1 %}
+	     <tr>
+		    <td>{{ resume.CandidateName }}</td>
+		    <td>{{ resume.CandidateSex }}</td>
+		    <td>{{ resume.CandidateAge }}</td>
+		    <td class="autocut">{{ resume.CandidateProfile }}</td>
+		    <td class="autocut">{{ resume.CandidatePhone }}</td>
+		    <td class="autocut">{{ resume.CandidateEmail }}</td>
+		    <td class="autocut">{{ resume.PositionName }}</td>
+		    <td class="autocut">{{ resume.Time|date:"Y-m-d" }}</td>
+		    <td>
+		    <a href={{ resume.Addr }} id="w" value={{ resume.id }} onclick="loadXMLDoc2(this,{{ resume.id }})">简历</a>/
+		    <a href="{% url 'talents:input_pool' resume.id %}" >锁定</a></td>
+		</tr>
+	     {% endfor %}
+	    </tbody>
+        </table>
+      </div>
+<script type="text/javascript">
+    function loadXMLDoc2(obj,resm)
+    {
+    var xmlhttp;
+    if (window.XMLHttpRequest)
+      {// code for IE7+, Firefox, Chrome, Opera, Safari
+      xmlhttp=new XMLHttpRequest();
+      }
+    else
+      {// code for IE6, IE5
+      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+      }
+    xmlhttp.onreadystatechange=function()
+      {
+      if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+       // alert("已写入");
+        }
+      }
+     var url = "/mywrite/"+resm+"/"+"?t="+ Math.random();
+     xmlhttp.open("GET",url,true);
+     xmlhttp.send();
+     }
+      </script>     
+
+{% if resumes.has_previous %}
+    <a class='paginator' title='涓婁竴椤�' href='?page={{resumes.previous_page_number }}'><span>&lt;&lt;</span></a>
+{% endif %}
+{% for page in resumes.paginator.page_range %}
+    {% if page = resumes.number %}
+        <a class='paginator_current' title='褰撳墠椤�:{{ page }}'><span>{{ page }}</span></a>
+    {% else %}
+        <a class='paginator' href='?page={{ page }}' title='{{ page }}'><span>{{ page }}</span></a>
+    {% endif %} 
+{% endfor %}
+{% if resumes.has_next %}
+    <a class='paginator' title='涓嬩竴椤�' href='?page={{ resumes.next_page_number }}'><span>&gt;&gt;</span></a>
+{% endif %}
+</div>
+{% else %}
+<p align="left">没有记录 </p>
+{% endif %}
+{% endfor %}
+<script type="text/javascript">
+   function opid(obj){
+    var df = obj.id+"id";
+
+    if(document.getElementById(df).style.display == "")
+    {
+        document.getElementById(df).style.display = "none";
+    }
+    else 
+    document.getElementById(df).style.display = "";
+   }
+
+
+</script>
+{% endblock %}
+

@@ -1,0 +1,271 @@
+{% extends 'Base.html'%}
+{% block head %}
+<link href="//cdn.bootcss.com/bootstrap-table/1.9.1/bootstrap-table.css" rel="stylesheet">
+<link href="//cdn.bootcss.com/x-editable/1.5.1/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet">
+<!--
+<script src="//cdn.bootcss.com/bootstrap-table/1.9.1/bootstrap-table.js"></script>
+<script src="//cdn.bootcss.com/bootstrap-table/1.9.1/extensions/export/bootstrap-table-export.js"></script>
+<script src="//cdn.bootcss.com/bootstrap-table/1.9.1/extensions/editable/bootstrap-table-editable.js"></script>
+<script src="//cdn.bootcss.com/x-editable/1.5.1/bootstrap-editable/js/bootstrap-editable.js"></script>
+<script src="//cdn.bootcss.com/bootstrap-table/1.9.1/locale/bootstrap-table-zh-CN.js"></script>
+-->
+{% endblock %}
+{% block content %}
+   {% if error %}
+        <p style="color: red;">Please submit a search term.</p>
+   {% endif %}
+
+    <script >
+    function connect()
+    {
+        var PName=document.getElementById("PName").value;
+        var a=String("{{ query }}");
+           if ( a != '')
+            { 
+            PName=a +'+'+PName;
+            }
+            document.getElementById("PName").value=PName;
+            return true;
+    }
+    </script>     
+
+<div class="container-fluid" style="padding-right:0px;padding-left:0px;">
+    <div class="row">
+      <div class="col-sm-10 col-sm-offset-5"> 
+        <form class="form-inline">
+          {% if Csex %}
+          <a class="btn btn-danger btn-xs" href="/talents/resumemanage/?page_size={{ page_size }}&Csex=&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu={{ Cedu }}">性别：{{ Csex }}
+          <i class="glyphicon glyphicon-remove"></i>
+          </a>
+          {% endif %}
+          {% if Cpro %}
+          <a class="btn btn-danger btn-xs" href="/talents/resumemanage/?page_size={{ page_size }}&Csex={{ Csex }}&Cpro=&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu={{ Cedu }}">工作年限：>={{ Cpro }}年
+            <i class="glyphicon glyphicon-remove"></i>
+          </a>   
+          {% endif %}
+          {% if Cpos %} 
+          <a class="btn btn-danger btn-xs" href="/talents/resumemanage/?page_size={{ page_size }}&Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos=&Cage={{ Cage }}&Cedu={{ Cedu }}">职位：{{ Cpos }}
+            <i class="glyphicon glyphicon-remove"></i>
+          </a>  
+          {% endif %}
+          {% if Cage %}
+          <a class="btn btn-danger btn-xs" href="/talents/resumemanage/?page_size={{ page_size }}&Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage=&Cedu={{ Cedu }}">年龄 >={{ Cage }}岁
+            <i class="glyphicon glyphicon-remove"></i>
+          </a>
+          {% endif %}
+          {% if Cedu %}
+          <a class="btn btn-danger btn-xs" href="/talents/resumemanage/?page_size={{ page_size }}&Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu=">学历：
+            {% if Cedu == '1' %}
+                大专及以上
+            {% elif Cedu == '2' %}
+                本科及以上
+            {% elif Cedu  == '3' %}
+                硕士及以上
+            {% elif Cedu == '4' %}
+                博士及以上
+            {% else %}
+                不限
+            {% endif %}
+            <i class="glyphicon glyphicon-remove"></i>
+          </a>     
+          {% endif %}
+        </form>  
+      </div>
+    </div>
+<p>
+    <div class="row">
+        <div class="col-sm-2">
+            <h3 style="margin:8px"><span class="label label-success">简历一览</span></h3>
+        </div>
+        <div class="col-sm-10 col-xs-2 " style="text-align:right;">
+            <form class="form-inline" action="{% url 'talents:resumemanage' %}" method="get" onsubmit="return connect();">
+           <!-- <input class="form-control" style="width:100px" placeholder='性别' type="text" id="Csex" name="Csex" value={{ Csex }}></input>-->
+            <select class="form-control" id="Csex" name="Csex">
+                <option value="">性别</option>
+		        <option {% if Csex == '男' %}selected="selected"{% endif %} value="男">男</option>
+		        <option {% if Csex == '女' %}selected="selected"{% endif %} value="女">女</option>
+            </select>
+            <input style="width:100px" placeholder="工作年限" class="form-control" type="number" min="0" id="Cpro" name="Cpro" value={{ Cpro }}></input>
+            <input style="width:100px" placeholder="年龄" class="form-control" type="number" min="1" id="Cage" name="Cage" value={{ Cage }}></input>
+            <select class="form-control" id="cedu" name="Cedu">
+                <option value="">学历</option>
+                <option value="">不限</option>
+		        <option {% if Cedu == '1' %}selected="selected"{% endif %} value="1">大专及以上</option>
+		        <option {% if Cedu == '2' %}selected="selected"{% endif %} value="2">本科及以上</option>
+		        <option {% if Cedu == '3' %}selected="selected"{% endif %} value="3">硕士及以上</option>
+		        <option {% if Cedu == '4' %}selected="selected"{% endif %} value="4">博士及以上</option>
+            </select>
+            <input class="form-control" placeholder="职位" type="text" id="Cpos" name="Cpos" value={{ Cpos }}></input>
+            <button class="btn btn-info form-control" type="submit">搜索</button>
+            <a href={% url "talents:resumemanage" %}>
+                <button class="btn btn-warning form-control" type="button">返回</button>
+            </a>
+            <input style="display:none;" name="page_size" value={{ page_size }}>
+            <input style="display:none;" name="page" value={{ page }}>
+            </form>      
+        </div>
+    </div>
+</div>
+<p>
+{% if resumes %}
+<div>
+<table class="table table-condensed table-bordered table-responsive table-hover" style="font-size:12px;margin-bottom:-5px">
+	    <thead>
+		<tr>
+		    <th scope="col">姓名</th>
+		    <th scope="col">性别</th>
+            {% if age_id == 1 %}
+		    <th scope="col">年龄 <a href="/talents/resume_sort/{{ age_id }}/?Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu={{ Cedu }}&page_size={{ page_size }}" >▼</a></th>
+            {% else %}
+		    <th scope="col">年龄 <a href="/talents/resume_sort/{{ age_id }}/?Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu={{ Cedu }}&page_size={{ page_size }}">▲</a></th>
+            {% endif %} 
+            {% if exper_id == 3 %}
+		    <th scope="col">工作年限<a href="/talents/resume_sort/{{ exper_id }}/?Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu={{ Cedu }}&page_size={{ page_size }}">▼</a></th>
+            {% else %}
+            <th scope="col">工作年限<a href="/talents/resume_sort/{{ exper_id }}/?Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu={{ Cedu }}&page_size={{ page_size }}">▲ </a></th>
+            {% endif %} 
+            {% if edu_id == 5 %}
+			<th scope="col">学历<a href="/talents/resume_sort/{{ edu_id }}/?Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu={{ Cedu }}&page_size={{ page_size }}">▼</a></th>
+            {% else %}
+            <th scope="col">学历<a href="/talents/resume_sort/{{ edu_id }}/?Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu={{ Cedu }}&page_size={{ page_size }}">▲</a></th>
+            {% endif %} 
+		    <th scope="col">联系电话</th>
+		    <th scope="col">邮箱</th>
+		    <th scope="col">职位名称</th>
+		   
+            {% if date_id == 0 %}
+		    <th scope="col">投递日期<a href="/talents/resume_sort/{{ date_id }}/?Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu={{ Cedu }}&page_size={{ page_size }}">▼</a> </th>
+            {% else %}
+            <th scope="col">投递日期<a href="/talents/resume_sort/{{ date_id }}/?Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu={{ Cedu }}&page_size={{ page_size }}">▲</a> </th>
+            {% endif %} 
+		    <th scope="col">操作</th>
+		</tr>
+	    </thead>
+	    <tbody >
+	     {% for resume in resumes %}
+	     <tr name = {{ resume.id }}>
+		    <td>{{ resume.CandidateName }}</td>
+		    <td>{{ resume.CandidateSex }}</td>
+		    <td>{{ resume.CandidateAge }}</td>
+            {% if resume.CandidateProfile %}
+		    <td class="autocut">{{ resume.CandidateProfile }} 年</td>
+            {% else %}
+            <td class="autocut"> </td>
+            {% endif %}
+            
+			<td>{{ resume.Candidate_edu }}</td>
+		    <td class="autocut">{{ resume.CandidatePhone }}</td>
+		    <td class="autocut">{{ resume.CandidateEmail }}</td>
+		    <td class="autocut" data-width="20px">{{ resume.PositionName }}</td>
+		    
+		    <td class="autocut">{{ resume.Time|date:"Y-m-d" }}</td>
+		    <td>
+		    <a href={{ resume.Addr }} id="w" value={{ resume.id }}   onclick="loadXMLDoc2(this,{{ resume.id }})" >查看</a>/
+		    <a href="javascript:void(0);"  onclick="lock({{ resume.id }})" >锁定</a></td>
+		</tr>
+	     
+	     {% endfor %}
+	</tbody>
+</table>
+
+    <script type="text/javascript">
+    function loadXMLDoc2(obj,resm)
+    {
+    var xmlhttp;
+    if (window.XMLHttpRequest)
+      {// code for IE7+, Firefox, Chrome, Opera, Safari
+      xmlhttp=new XMLHttpRequest();
+      }
+    else
+      {// code for IE6, IE5
+      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+      }
+    xmlhttp.onreadystatechange=function()
+      {
+      if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+			//alert("已写入");	
+			
+        }
+      }
+	 var i_a_label = document.getElementsByTagName('a');
+	 parent.pass_a(i_a_label,obj.href)
+     var url = "/mywrite/"+resm+"/"+"?t="+ Math.random();
+     xmlhttp.open("GET",url,true);
+     xmlhttp.send();
+	// var u = "/talents/resumemanage/?page_size={{ page_size }}&Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage=&Cedu={{ Cedu }}&t="+Math.random();
+	// parent.document.getElementById("r").href = u;
+     }
+	 function lock(name)
+    {
+    var xmlhttp;
+    if (window.XMLHttpRequest)
+      {// code for IE7+, Firefox, Chrome, Opera, Safari
+      xmlhttp=new XMLHttpRequest();
+      }
+    else
+      {// code for IE6, IE5
+      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+      }
+    xmlhttp.onreadystatechange=function()
+      {
+      if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+			alert("已锁定");
+        }
+      }
+	 var nameNum =  document.getElementsByName(name).length;
+	 for( i = 0;i<nameNum; i++){  
+        document.getElementsByName(name)[i].style.display="none";//点击后隐藏
+    }
+     var url = "/talents/input_pool/"+name+"/"+"?t="+ Math.random();
+     xmlhttp.open("GET",url,true);
+     xmlhttp.send();
+     }
+      </script>     
+       
+<div class="fixed-table-pagination" style="display: block;">
+    <span class="pull-left pagination-detail">
+        <span class="pagination-info">&nbsp;Showing {{ page_left }} to {{ page_right }} of {{ record_count }}&nbsp;rows</span>
+        <span class="page-list">
+            <div class="btn-group dropup"> 
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" name="page_size" aria-haspopup="true" aria-expanded="false">
+                   <span class="page-size">{{ page_size }}</span> 
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li {% if page_size == 15 %}class="active"{% endif %}><a href="/talents/resumemanage/?page_size=15&Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu={{ Cedu }}">15</a></li>
+                    <li {% if page_size == 50 %}class="active"{% endif %}><a href="/talents/resumemanage/?page_size=50&Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu={{ Cedu }}">50</a></li>
+                    <li {% if page_size == 100 %}class="active"{% endif %}><a href="/talents/resumemanage/?page_size=100&Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu={{ Cedu }}">100</a></li>
+                    <li {% if page_size == record_count %}class="active"{% endif %}><a href="/talents/resumemanage/?page_size={{ record_count }}&Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu={{ Cedu }}">All</a></li>
+                </ul>
+            </div> records per page
+        </span>
+    </span>
+
+    <span class="pull-right ">
+    <ul class="pagination">
+    {% if resumes.has_previous %}
+    <li><a class='paginator' title='上一页' href='?page_size={{ page_size }}&page={{ resumes.previous_page_number }}&Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu={{ Cedu }}'>上一页</a></li>
+    {% endif %}
+    {% for page in resumes.paginator.page_range %}
+    {% if page == resumes.number %} 
+    <li class="active"><a class="paginator_current" title='当前页:{{ page }}'><span>{{ page }}</span></a></li>
+	{% elif page == 1 %}
+    <li><a class='paginator' href='?page_size={{ page_size }}&page={{ page }}&Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu={{ Cedu }}' title='{{ page }}'><span>首页</span></a></li>
+    {% elif page == resumes.paginator.num_pages %}
+    <li><a class='paginator' href='?page_size={{ page_size }}&page={{ page }}&Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu={{ Cedu }}' title='{{ page }}'><span>末页</span></a></li>
+	{% elif page <= resumes.number|add:"3" and page >= resumes.number|add:"-3"  %}
+	<li><a class='paginator' href='?page_size={{ page_size }}&page={{ page }}&Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu={{ Cedu }}' title='{{ page }}'><span>{{ page }}</span></a></li>
+    {% endif %} 
+    {% endfor %}
+    {% if resumes.has_next %}
+    <li><a class='paginator' title='下一页' href='?page_size={{ page_size }}&page={{ resumes.next_page_number }}&Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu={{ Cedu }}'><span>下一页</span></a></li>
+    {% endif %}
+    </ul>
+    </span>
+</div>
+{% else %}
+<p align="left"> 没有记录 </p>
+{% endif %}
+{% endblock %}

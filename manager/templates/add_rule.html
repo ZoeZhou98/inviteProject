@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<form class="form-horizontal" action=" " method="POST" >
+{% csrf_token %} 
+ {% for field in form %}
+      <div class="fieldWrapper">
+         {{ field.label_tag }}:{{ field }} 
+         {{ field.errors }}
+      </div>
+    {% endfor %}
+     <div class="fieldWrapper"><p><input type="submit" value="添加" /></p></div>
+     </form>
+</body>
+</html>

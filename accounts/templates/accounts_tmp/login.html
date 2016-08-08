@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+        
+
+        {% if errors %}
+            <li>
+                {% for error in errors %}
+                 <p style="color: red;">
+                    {{error}}
+                 </p>
+                  {% endfor %}
+            </li>
+        {% endif %}
+        <section class="container">
+            <div class="login">
+            <h1>登录</h1>
+            <form method="post">
+              <p><input type="text" placeholder="用户名/手机/邮箱" name="account"></p>
+              <p><input type="password" name="password" value="" placeholder="密码"></p>
+                                                
+              <p class="submit"><input type="submit" placeholder="Login" value="登录"></p>
+              <p><a href="/accounts/register">注册</a></p>
+            </form>
+            </div>
+       </section>
+{% endblock %}

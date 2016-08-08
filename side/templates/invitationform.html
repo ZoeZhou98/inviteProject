@@ -1,0 +1,249 @@
+{% extends 'base1.html' %}
+{% load bootstrap_toolkit %}
+{% load url from future %} 
+{% block title %}邀请函信息{% endblock %}
+{% block last_head %}
+<link rel="stylesheet" href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css">
+<script src="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<!--<link rel="stylesheet" href="jqueryui/style.css">-->
+<style>
+.ui-autocomplete {
+max-height: 130px;
+width: 280px;
+overflow-y: auto;
+/* prevent horizontal scrollbar */
+overflow-x: hidden;
+}
+* html .ui-autocomplete {
+height: 130px;
+}
+</style>
+<SCRIPT LANGUAGE="javascript">   
+$(document).ready(function(){
+     var  shi1= "{{ finish  }}";
+    if(shi1=="goto")
+    {
+       
+        window.opener.refresh1(); 
+        <!--window.opener.ifm.location.reload(true);-->
+        <!--window.opener.location.href=window.opener.location.href;--> 
+        if(window.opener.location.href.indexOf("/stucked/")>0)
+        {
+            window.opener.parent.scroll();
+        }
+        if(window.opener.location.href.indexOf("/mystucked/")>0)
+        {
+            window.opener.parent.parent.scroll();
+        }
+        window.close();
+    }    
+     var  shi= "{{ error }}";
+    if(shi=="数据已保存,邮件发送失败！")
+    {
+        alert(shi);
+        $("#hid").click();
+    }    
+    
+    });
+</SCRIPT> 
+<script>
+var availableTags=[] 
+function get_emails()
+{
+    var xmlhttp;
+    if (window.XMLHttpRequest)
+      {// code for IE7+, Firefox, Chrome, Opera, Safari
+      xmlhttp=new XMLHttpRequest();
+      }
+    else
+      {// code for IE6, IE5
+      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+      }
+    xmlhttp.onreadystatechange=function()
+      {
+      if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+            //temp=xmlhttp.responseText.replace("value",'value');
+            //temp=temp.replace("label",'label');
+            availableTags=xmlhttp.responseText.split(";");
+            //availableTags=[xmlhttp.responseText];
+            var i=0;
+            for(i;i<availableTags.length;i++) 
+            {
+                //availableTags[i]=String(availableTags[i]);
+                if(availableTags[i])
+                {
+                    availableTags[i]=eval('('+ availableTags[i] +')');
+                }
+                //availableTags[i]=jQuery.parseJSON(availableTags[i]);
+               // alert(availableTags[i]);
+            }
+            //availableTags=availableTags.replace("value",'value');
+            //availableTags=availableTags.replace("label",'label');
+            
+        }
+      }
+     xmlhttp.open("GET","/side/get_emails/?t=" + Math.random(),true);
+     xmlhttp.send();
+}
+$(function() {
+get_emails();
+//var availableTags = [
+//    {label:"C nihao ",value:"nihao"},
+//    {label:"C++ ssdad",value:"ssdad"},
+//];
+function split( val ) {
+  return val.split( /\n\s*/ );
+}
+function extractLast( term ) {
+  return split( term ).pop();
+}
+
+$( "#id_bcc" )
+  // 当选择一个条目时不离开文本域
+  .bind( "keydown", function( event ) {
+    if ( event.keyCode === $.ui.keyCode.TAB &&
+        $( this ).data( "ui-autocomplete" ).menu.active ) {
+      event.preventDefault();
+    }
+  })
+  .autocomplete(availableTags,{
+    minLength: 1,
+    source: function( request, response ) {
+      // 回到 autocomplete，但是提取最后的条目
+      response( $.ui.autocomplete.filter(
+        availableTags, extractLast( request.term ) ) );
+    },
+    //max: 5,
+    //scroll: true,
+    //matchContains: true,
+    //scrollHeight: 110,
+    focus: function() {
+      // 防止在获得焦点时插入值
+      return false;
+    },
+    select: function( event, ui ) {
+      var terms = split( this.value );
+      // 移除当前输入
+      terms.pop();
+      // 添加被选项
+      terms.push( ui.item.value );
+      // 添加占位符，在结尾添加换行
+      terms.push( "" );
+      this.value = terms.join( "\n" );
+      return false;
+    }
+  });
+});
+</script>
+{% endblock %}
+{% block content %}
+		
+<div class="container-fluid" style="padding-right:0px;padding-left:0px;">
+<!--
+    <div class="row">
+        <div class="col-sm-6">
+            <h3 style="margin:8px"><span class="label label-success">邀请函信息</span></h3>
+        </div>
+    </div>
+-->
+<a href={% url 'side:stucked' %}  style="display:none;"><span id="hid">mm</span></a>
+{% if error %}
+        <p style="color: red;">
+            {{ error }}
+        </p>
+{% endif %}
+<form method="POST" action="" class="form-horizontal" name="invit">
+            {% csrf_token %}
+            <table>
+            <tr>
+	    <div class="control-group required">
+	    	<label class="control-label" for="id_Imail">*候选人邮箱</label>
+			<div class="controls">
+				<input id="id_Imail" name="Imail" type="text" value="{{ Imail }}" />
+			</div>
+	   </div>
+	   </tr>
+
+			<tr>
+					{% if form.Itime.errors %}
+				        <div class="control-group error required">
+					{% else %}
+				        <div class="control-group required">
+					{% endif %}
+					            <label class="control-label" for="id_Itime">日期</label>
+							    <div class="controls">
+								<input id="id_Itime" name="Itime" type="date" />
+								{% if form.Itime.errors %}
+								<span class="help-inline error">请填写日期</span>
+								{% endif %}
+
+					</div>
+			</div>
+			</tr>
+			<tr>
+					{% if form.Itime.errors %}
+				        <div class="control-group error required">
+					{% else %}
+				        <div class="control-group required">
+					{% endif %}
+					            <label class="control-label" for="id_Itime">时间</label>
+							    <div class="controls">
+								<input id="id_Itime" name="time1" type="time" />
+								{% if form.Itime.errors %}
+								<span class="help-inline error">请填写时间</span>
+								{% endif %}
+								--<input id="id_Itime" name="time2" type="time" />
+								{% if form.Itime.errors %}
+								<span class="help-inline error">请填写时间</span>
+								{% endif %}
+
+					</div>
+			</div>
+			</tr>
+			<tr>{{ form.Iaddr|as_bootstrap:"horizontal" }}</tr>
+			<tr>{{ form.Iname|as_bootstrap:"horizontal" }}</tr>
+			<tr>{{ form.Iphone|as_bootstrap:"horizontal" }}</tr>
+            <tr>
+                    <div class="control-group required">
+                        <label class="control-label" for="id_bcc">密抄</label>
+                        <div class="controls">
+                        <textarea id="id_bcc" name="bcc" rows="5" value="{{ bcc|default_if_none:"" }}" placeholder="若填写多个密抄送人请换行,请不要添加其他字符.">{{ cc }}</textarea>
+                        <span style="color:blue">注意：若填写多个密抄送人请换行,请不要添加其他字符.</span>
+                        </div>
+                    </div>
+            </tr>
+    		
+    		</table>       
+            <p class="form-actions">  
+                <input type="submit" value="发送" name="judge"  class="btn btn-primary" onclick="return sub()" />
+                <input type="submit" value="跳过" name="judge"  class="btn btn-primary" onclick="return skip()" />  
+                <a href="javascript:void(0);" type="button" class="btn btn-warning" onclick=winclose()> 返回</a>
+            </p>             
+</form>
+	    </div>
+{% endblock %}
+{% block script %}
+<SCRIPT LANGUAGE="JavaScript">
+function sub(){
+if (confirm("您确定要发送吗？"))
+{
+    return true;
+}else
+{
+    return false;
+}
+}
+function skip(){
+if (confirm("您确定要不发送邀请函直接面试吗？"))
+{
+    return true;
+ }else
+ {
+    return false;
+ }
+
+}
+
+</SCRIPT>
+{% endblock %}

@@ -1,0 +1,64 @@
+ {% extends 'Base.html' %}
+ {% block content %}
+ <p>你搜索的： <strong>{{ query }}</strong></p>
+   {% if resumelist %}
+   <p>共找到{{ resumelist|length }} 份简历.</p>
+    <ul>
+    <table>
+	    <thead>
+		<tr>
+		    <th>姓名</th>
+		    <th>职位名称</th>
+		    <th>锁定人</th>
+		    <th>当前状态</th>
+		    <th>性别</th>
+		    <th>年龄</th>
+		    <th>简介</th>
+		    <th>联系电话</th>
+		    <th>邮箱</th>
+		    <th>创建日期</th>
+		    <th>操作</th>
+		</tr>
+	    </thead>
+	    <tbody>
+	    {% for resume in resumelist %}
+	     <tr>
+		    <td>{{ resume.CandidateName }}</td>
+		    <td class="autocut">{{ resume.PositionName }}</td>
+		    <td>{{ resume.UserID.username }}</td>
+		    <td>{{ resume.Status }}</td>
+		    <td>{{ resume.CandidateSex }}</td>
+		    <td>{{ resume.CandidateAge }}</td>
+		    <td class="autocut">{{ resume.CandidateProfile }}</td>
+		    <td>{{ resume.CandidatePhone }}</td>
+		    <td class="autocut">{{ resume.CandidateEmail }}</td>
+		    <td class="autocut">{{ resume.Time|date:"Y-m-d" }}</td>
+		    <td>
+		    <a href={{ resume.Addr }}>查看简历</a>/
+            <a href={% url 'side:Interview_resume' resume.id %}> 面试记录</a> </td>
+		</tr>
+	     
+	     {% endfor %}
+	     
+	</tbody>	
+</table>
+<!--
+{% if resumelist.has_previous %}
+    <a class='paginator' title='上一页' href='?page={{resumelist.previous_page_number }}'><span>&lt;&lt;</span></a>
+{% endif %}
+{% for page in resumelist.paginator.page_range %}
+    {% if page = resumelist.number %}
+        <a class='paginator_current' title='当前页:{{ page }}'><span>{{ page }}</span></a>
+    {% else %}
+        <a class='paginator' href='?page={{ page }}' title='{{ page }}'><span>{{ page }}</span></a>
+    {% endif %} 
+{% endfor %}
+{% if resumelist.has_next %}
+    <a class='paginator' title='下一页' href='?page={{ resumelist.next_page_number }}'><span>&gt;&gt;</span></a>
+{% endif %}
+-->
+</ul>
+{% else %}
+<p>No resume matched your search criteria.</p>
+{% endif %}
+{% endblock %}

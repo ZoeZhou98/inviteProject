@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<table>
+<thead>
+<tr> 
+<th>角色名称</th>
+<th>所属部门</th>
+<th>上级角色</th>
+<th> 操作</th>
+</tr>
+</thead>
+{% for role in roles %}
+<tbody>
+<tr>
+<td> {{ role.name }}</td>
+<td> {{ role.DepartmentID.name }}</td>
+<td> {{ role.superior_role.name }}</td>
+
+<td></td>
+</tr>
+</tbody>
+{% endfor %}
+</table>
+</body>
+</html>

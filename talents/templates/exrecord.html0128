@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<div ><style>table.customTableClassName {margin-bottom: 10px;border-collapse: collapse;display: table;}.customTableClassName td, .customTableClassName th {border: 1px solid #ddd;}</style></div>
+<div class="customTableClassName" cellspacing="0">
+
+<table cellspacing="0" table.customTableClassName {margin-bottom: 10px;border-collapse: collapse;display: table;}.customTableClassName td, .customTableClassName th {border: 1px solid #ddd;}>
+<tr>
+<td width=120 style="font-family:黑体">岗位名称</td>
+<td colspan=3 width=360 style="font-family:verdana;font-size:12px; line-height:150%">{{ position.PositionName }}</td>
+</tr>
+<tr>
+<td width=120 style="font-family:黑体">申请人</td>
+<td width=120 style="font-family:verdana;font-size:12px; line-height:150%">{{ position.UserID.username }} </td>
+<td width=120 style="font-family:黑体">联系电话</td>
+<td width=120 style="font-family:verdana;font-size:12px; line-height:150%">{{ position.UserID.mobile }}</td>
+</tr>
+<tr>
+<td style="font-family:黑体" width=480 colspan=4 align="center">部门情况</td>
+</tr>
+<tr>
+<td style="font-family:黑体" width=120>一级部门</td>
+<td width=120 style="font-family:verdana;font-size:12px; line-height:150%">{{ position.Depart }}</td>
+<td style="font-family:黑体" width=120>二级部门</td>
+<td width=120 style="font-family:verdana;font-size:12px; line-height:150%">{{ position.SecondDepartment }}</td>
+</tr>
+<tr>
+<td style="font-family:黑体" width=120>该岗位现有人数</td>
+<td width=120 style="font-family:verdana;font-size:12px; line-height:150%">{{ position.ExistingPersonNum }}人</td>
+<td style="font-family:黑体" width=120> 招聘人数</td>
+<td width=120 style="font-family:verdana;font-size:12px; line-height:150%">{{ position.NeedPersonNum }}人</td>
+</tr>
+<tr>
+<td style="font-family:黑体" width=120>薪资范围</td>
+<td width=120 style="font-family:verdana;font-size:12px; line-height:150%">{{ position.Salary }}</td>
+<td style="font-family:黑体" width=120>工作地点（区）</td>
+<td width=120 style="font-family:verdana;font-size:12px; line-height:150%">{{ position.Workplace }}</td>
+</tr>
+<tr>
+<td style="font-family:黑体" width=120>项目组名称</td>
+<td width=120 style="font-family:verdana;font-size:12px; line-height:150%">{{ position.ProjectName }}</td>
+<td style="font-family:黑体" width=120 > 招聘周期</td>
+<td width=120 style="font-family:verdana;font-size:12px; line-height:150%">{{ position.RecruitTime }}</td>
+</tr>
+<tr>
+<td style="font-family:黑体" width=120 >招聘理由</td>
+ {% if position.RecruitReason == 1 %} <td colspan=3 style="font-family:verdana;font-size:12px; line-height:150%">原有人员离职后增补人员</td> {% elif position.RecruitReason == 2 %}<td colspan=3 style="font-family:verdana;font-size:12px; line-height:150%"> 业务拓展后新增工作岗位</td> {% else %} <td colspan=3 style="font-family:verdana;font-size:12px; line-height:150%">其他情况 </td>{% endif %}
+</tr>
+<tr>
+<td style="font-family:黑体" width=120>招聘渠道</td>
+{% if position.RecruitWay == 1 %} <td colspan=3 style="font-family:verdana;font-size:12px; line-height:150%">在招聘网站发布职位</td> {% elif position.RecruitWay == 2 %} <td colspan=3 style="font-family:verdana;font-size:12px; line-height:150%">伯乐奖职位，奖励金额</td> {% else %} <td colspan=3 style="font-family:verdana;font-size:12px; line-height:150%">其他渠道</td>{% endif %} 
+</tr>
+<tr>
+<td style="font-family:黑体" width=120 style="word-break:break-all;overflow:hidden;">招聘人员工作内容 </td>
+<td colspan=3 width=360 style="font-family:verdana;font-size:12px; line-height:150%">{{ position.WorkContent }}</td>
+</tr>
+<tr>
+<td style="font-family:黑体" width=120 style="word-break:break-all;overflow:hidden;">招聘人员工作要求</td>
+<td colspan=3 width=360 style="font-family:verdana;font-size:12px; line-height:150%">{{ position.CandidateRequirement }}</td>
+</tr>
+<tr>
+<td style="font-family:黑体" colspan=4 width=480 align="center">审批记录</td>
+</tr>
+{% for examine in examines %} 
+<tr>
+<td width=120 style="font-family:verdana;font-size:12px; line-height:150%"> {{ examine.UserID.username }}</td>
+<td width=120 style="font-family:verdana;font-size:12px; line-height:150%"> {{ examine.Result }}</td>
+<td colspan=2 style="font-family:verdana;font-size:12px; line-height:150%">{{ examine.Time|date:"Y-m-d" }}</td>
+</tr>
+<tr>
+<td colspan=4 style="font-family:verdana;font-size:12px; line-height:150%">{{ examine.comment }}</td>
+</tr>
+{% endfor %}
+
+</table>
+</div>
+<br><p style="color: blue"><strong>审批意见: </strong>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; 
+
+ <a href="http://10.10.1.239/talents/agree_application/{{ position.id }}"><input type="button"  value='同意' ></input></a>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
+<a href="http://10.10.1.239/talents/disagree_application/{{ position.id }}"><input type="button" name = 'btn' value='不同意'></input></a></p>
+</br>
+</body>
+</html>

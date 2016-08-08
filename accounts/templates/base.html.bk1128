@@ -1,0 +1,49 @@
+{% load firstof from future %}{% load url from future %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>resume management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <!-- Bootstrap -->
+    <!--    ￼{% load staticfiles %} -->
+    <!--<link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">-->
+    <link href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="/static/css/style.css" rel="stylesheet" media="screen">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="http://labfile.oss.aliyuncs.com/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="http://labfile.oss.aliyuncs.com/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div id="header">
+        <div id="branding">
+            {% block branding %}
+            {% endblock %}
+        </div>
+        {% if member.is_active %}
+        <div id="user-tools">
+            {% block welcome-msg %}
+                你好：
+                <strong>{% firstof menber.get_short_name member.get_username %}</strong>.
+            {% endblock %}
+            {% block userlinks %}
+                {% if member.has_usable_password %}
+                <a href="{% url 'admin:password_change' %}"> 'Change password' </a> /
+                {% endif %}
+                <a href="{% url 'alogout' %}"> 注销 </a>
+                {% endblock %}
+        </div>
+        {% endif %}
+        {% block nav-global %}{% endblock %}
+    </div>
+
+    <script src="//cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    {% block content %}
+    {% endblock %}
+     </body>
+</html>
+

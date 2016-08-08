@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>面试邀请函</title>
+</head>
+<body>
+<p style="text-align: center;"><strong>面试邀请函</strong></p>
+<p>{{ invit.interview.resume.CandidateName }}先生/女士：</p>
+<p>　　您好! 我公司人力已收到您的简历，感谢您对我公司的信任和选择。</p>
+<p>　　经过人力初步筛选，我们认为您基本符合需求岗位的任职资格，因此正式通知您来我公司参加面试。</p>
+<p>　　具体要求详见如下。</p>
+<p>　　一、面试时间：{{ invit.Itime  }}</p>
+<p>　　二、面试地点：海淀区上地信息路10号（上地五街六街之间,信息路东侧）南天大厦一层</p>
+<p>　　三、公交乘车路线（详见附图）：</p>
+<p>　　1.可乘坐公交在上地五街下车向北约200米路东。</p>
+<p>　　2.如乘坐地铁13号线到上地站，可转公交447路等在上地五街下车，向北前行约200米即可到达。</p>
+<p>　　3.如坐地铁13号线到西二旗站下车,A出口，乘坐664或717路等到上地五街下车，马路对面向北（往回）走约150米即可。</p>                         
+<p>　　四、携带资料</p>
+<p>　　1.携带个人简历、身份证等相关证书及复印件</p>
+<p>　　五、联系方式</p>
+<p>　　1.联系人：{{ invit.Iname }}</p>
+<p>　　2.联系电话：{{ invit.Iphone }}</p>
+<p>　　3.如有其他不明事宜请与我们联系</p>
+<strong>　　4.该邮件由系统自动发送，请勿回复！！！</strong>
+<p>　　六、公司网址</p>
+<p>　　公司网址:<a href="http://www.nantian.com.cn/">http://www.nantian.com.cn/</a></p>
+<p>　　七、附件清单</p>
+<p>　　附件1：《北京南天软件公司地址电子地图》</p>
+　　　{% if invit.Inotes %}
+<p>　　八、备注</p>
+<p>　　1.{{ invit.Inotes }}</p>       
+　　　{% endif %}
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>  
+{% load staticfiles %}
+{% load bootstrap_toolkit %}
+{% load url from future %}  
+<html lang="en">  
+<head>  
+    <meta charset="utf-8">  
+    <title>用户修改信息</title>  
+    <meta name="description" content="">  
+    {% bootstrap_stylesheet_tag %}  
+    {% bootstrap_stylesheet_tag "responsive" %} 
+    <style type="text/css">  
+        body {  
+            padding-top: 60px;  
+        }  
+    </style>  
+    <!--[if lt IE 9]>  
+    <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>  
+    <![endif]-->  
+    <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+    {% bootstrap_javascript_tag %} 
+    {% block extra_head %}{% endblock %}  
+</head>  
+  
+<body>  
+  
+    <h2>修改信息</h2>  
+      
+    <div class="well">  
+        <form class="form-horizontal" action="" method="post">  
+            {% csrf_token %}  
+            {{ form|as_bootstrap:"horizontal" }}  
+            <p class="form-actions">  
+                <input type="submit" value="确认修改" class="btn btn-primary">  
+            </p>  
+        </form>  
+    </div>  
+  
+</body>  
+</html>

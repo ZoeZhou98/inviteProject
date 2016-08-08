@@ -1,0 +1,73 @@
+{% extends 'Base.html'%}
+{% block head %}
+<link href="//cdn.bootcss.com/bootstrap-table/1.9.1/bootstrap-table.css" rel="stylesheet">
+<link href="//cdn.bootcss.com/x-editable/1.5.1/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+{% endblock %}
+{% block content %}
+  <div class="row">
+        <div class="col-sm-3">
+          <ol class="breadcrumb" style="margin-bottom: 0px;">
+            <li><a href="/talents/first_page/">首页</a></li>
+            <li><a href="/talents/first_page/">系统管理</a></li>
+            <li class="active">现有用户</li>
+          </ol>
+        </div>
+  </div>
+  <div class="row">
+		<div class="col-sm-3">
+            <a href="/accounts/register">添加新用户</a> 
+            <a href="/manager/add_user_role">添加角色</a>
+            <a href="/manager/add_user_power">添加权限</a>
+        </div>
+        <div class="col-sm-9 col-xs-2 " style="text-align:right;">
+            <form class="form-inline" action="{% url 'manager:user_manage' %}" method="get" onsubmit="return connect();">
+            <input class="form-control" placeholder="姓名" type="text" id="cname" name="name" value={{ cname }}></input>
+            <input class="form-control" placeholder="角色" type="text" id="role" name="role" value={{ role }}></input>
+			<input class="form-control" placeholder="权限" type="text" id="power" name="power" value={{ power }}></input>
+			<select class="form-control" id="departments" name="departments">
+                <option value="">部门</option>
+		        {% for x in departments %}
+				   <option value="{{ x.id }}">{{ x.name }}</option>
+				{% endfor %}
+            </select>
+            <button class="btn btn-info form-control" type="submit">搜索</button>
+            <a href="{% url "manager:user_manage" %}">
+                <button class="btn btn-warning form-control" type="button">返回</button>
+            </a>
+            <input style="display:none;" name="page_size" value={{ page_size }}>
+            <input style="display:none;" name="page" value={{ page }}>
+            </form>      
+        </div>
+  </div>
+<table class="table table-condensed table-bordered table-responsive table-hover" style="font-size:12px;margin-bottom:-5px">
+<thead>
+<tr> 
+<th scope="col">用户名</th>
+<th scope="col">角色</th>
+<th scope="col">权限</th>
+<th scope="col">操作</th>
+</tr>
+</thead>
+{% for user,roles,powers in user_role_power %}
+<tbody>
+<tr>
+<td> {{ user.username }}</td>
+<td> 
+{% for role in roles %}
+ {{ role.RoleID }}&nbsp;&nbsp;&nbsp;&nbsp;
+ {% endfor %}
+</td>
+<td> 
+{% for power in powers %}
+{{ power.PowerID.name }}
+{% endfor %}
+</td>
+<td><a href="">删除</a>/<a href="/manager/updates/{{ user.id }}">修改</a></td>
+</tr>
+</tbody>
+{% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+ {% if errors %}
+        <li>
+
+            {% for error in errors %}
+             <p style="color: red;">
+                Please correct the error: {{error}} below.
+             </p>
+              {% endfor %}
+        </li>
+    {% endif %}
+<section class="container">
+<div class="login">
+
+    <form method="post">
+    <div>        
+        <tr>
+            <td>
+                <label for = "account">姓名:</label>
+            </td>
+            <td>
+                <input type='text' class="form-control" name = 'account'>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label >密码:</label>
+            </td>
+            <td>
+              <input type='password' class="form-control"  name = 'password'>
+            </td>
+        </tr>
+         <tr>
+             <td>
+                <label >再次输入密码:</label>
+             </td>
+             <td>
+                 <input type='password' class="form-control" name ='password2'>
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 <label>邮箱:</label>
+             </td>
+             <td>
+                 <input type="email" class="form-control" name = 'email'>
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 <label for="mobile">手机:</label>
+             </td>
+             <td>
+                 <input type='text' class="form-control" name = 'mobile'>
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 <label for="rule">职位:</label>
+             </td>
+             <td>
+                 <select class="form-control" name = 'rule'>
+		     <option value="二级部门经理">二级部门经理</option> 
+		     <option value="一级部门经理">一级部门经理</option> 
+		     <option value="总部门经理">总部门经理</option> 
+		     <option value="人力经理">人力经理</option> 
+		     <option value="人力助理">人力助理</option> 
+		 </select> 
+             </td>
+         </tr>
+          <tr>
+              <td>
+                   <input type = 'submit' class="form-control" placeholder="注册" value="注册">
+              </td>
+          </tr>
+    </div>
+    </form>
+
+</div>
+</section>
+{% endblock %}

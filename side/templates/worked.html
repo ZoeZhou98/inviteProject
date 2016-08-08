@@ -1,0 +1,126 @@
+{% extends 'table-base.html' %}
+{% block title %}过往面试记录{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-6">
+        <ol class="breadcrumb" style="margin-bottom: 0px;">
+            <li><a href="/talents/first_page/">首页</a></li>
+            <li><a href="/talents/first_page/">面试管理</a></li>
+            <li class="active">我处理过的面试</li>
+        </ol>
+      </div>
+
+    <div class="col-sm-6 ">
+        <form action="{% url 'side:worked_search' %}" method="get">
+            <div class="input-group">
+                <input type="text" name="PName" class="form-control" placeholder="Search for...">
+                <span class="input-group-btn">
+                    <button class="btn btn-info" type="submit">搜索</button>
+                </span>
+            </div>
+        </form>
+    </div>
+    </div>
+<table class="table table-condensed table-bordered table-responsive table-hover" style="font-size:12px;">
+  <thead>
+    <tr>
+      <th>面试时间</th>
+      <th>锁定人</th>
+      <th>候选人</th>
+      <th>招聘岗位</th>
+      <th>评价</th>
+      <th>面试官</th>
+      <th>水平</th>
+      <th>面试过程</th>
+      <th>面试结果</th>
+      <th>下一步处理人</th>
+      <th>是否有效</th>
+      <th>备注</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+          {% for inter,changes,interss in inters %}
+  <tbody>
+	      <tr id={{ inter.id }} onclick="opid(this)">
+		  <td>{{ inter.Time|date:"Y-m-d" }}</td>
+		  <td>{{ inter.lockuser.username }}</td>
+		  <td>{{ inter.resume.CandidateName }}</td>
+		  <td class="autocut">{{ inter.resume.Station.PositionName }}</td>
+		  <td class="autocut">{{ inter.InterviewResults }}</td>
+		  <td>{{ inter.user.username }}</td>
+		  <td>{{ inter.Level }}</td>
+		  
+		  <td>{{ inter.InterviewProcess }}</td>
+		  <td>{{ inter.InterStatus }}</td>
+            
+		  <td>
+            {% for nextuser in inter.NextUser.all %}
+            {{ nextuser.username }}
+	        {% endfor %}
+          </td>
+          <td>
+            {% if inter.Active %}
+            <span> 有效</span>
+            {% else %}
+            <span> 无效 </span>
+            {% endif %}
+          </td>
+          <td>{{ inter.Notes|default_if_none:"" }}</td>
+		  <td><a href={{ inter.resume.Addr }} >查看简历</a>
+          /<a href={% url 'side:Interview_resume' inter.resume.id %}>面试记录</a>
+		  {% if inter.resume.Status == "三面" and  inter.InterStatus == "发邀请函" and inter.Active %}
+		  /<a href="javascript:void(0);" onclick="window.open('{% url 'side:recover' inter.id %}','','height=1000px,width=1000px')">追回</a></td> 
+		  {% endif %}
+		  {% if inter.resume.Status == "二面" and  inter.InterStatus == "发邀请函" and inter.Active %}
+		  /<a href="javascript:void(0);" onclick="window.open('{% url 'side:recover' inter.id %}','','height=1000px,width=1000px')">追回</a></td> 
+		  {% endif %}
+		  {% if inter.resume.Status == "一面" and  inter.InterStatus == "发邀请函" and inter.Active %}
+		  /<a href="javascript:void(0);" onclick="window.open('{% url 'side:recover' inter.id %}','','height=1000px,width=1000px')">追回</a></td> 
+		  {% endif %}
+		  {% if localuser == inter.user or localuser in inter.NextUser.all %}
+		  {% if inter.Notes == "发offer" and inter.InterStatus != "填写offer信息" %}
+		  /<a href={% url 'side:lookoffer' inter.id %}>offer信息</a></td> 
+		  {% endif %}
+		  {% endif %}
+
+	      </tr>
+	      
+  </tbody>
+        <tbody id={{ interss }} style="display:none;">
+          {% if changes %}
+          {% for change in changes %}
+          <tr>
+          <td  colspan="11" class="autocut" style ="color:red;text-align:left;">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>类型:</label>&nbsp;{{ change.Ctype }}&nbsp;&nbsp;&nbsp;&nbsp;<label>原因:</label>&nbsp;{{ change.Creason }}&nbsp;&nbsp;&nbsp;&nbsp;<label>操作人:</label>&nbsp;{{ change.Cname }}&nbsp;&nbsp;&nbsp;&nbsp;<label>时间:</label>&nbsp;{{ change.Ctime|date:"Y-m-d" }}&nbsp;&nbsp;&nbsp;&nbsp;<label>备注:</label>&nbsp;{{ change.Cnotes }}
+          </td>
+          </tr>
+          {% endfor %}
+          {% endif %}
+  </tbody>
+          {% endfor %} 
+          
+</table>
+
+	    </div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+    function refresh1()
+    {
+    window.location.reload();
+    }
+   function opid(obj){
+    var df = obj.id+"ss";
+
+    if(document.getElementById(df).style.display == "")
+    {
+        document.getElementById(df).style.display = "none";
+    }
+    else 
+    document.getElementById(df).style.display = "";
+   }
+
+
+</script>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'Base.html' %}
+{% block title %}入职记录{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-6">
+        <ol class="breadcrumb" style="margin-bottom: 0px;">
+            <li><a href="/talents/first_page/">首页</a></li>
+            <li><a href="/talents/first_page/">面试管理</a></li>
+            <li class="active">入职记录</li>
+        </ol>
+      </div>
+    </div>
+<table class="table table-condensed table-bordered table-responsive table-hover" style="font-size:12px;">
+  <thead>
+    <tr>
+      <th>候选人</th>
+      <th>锁定人</th>
+      <th>求职职位</th>
+      <th>候选人状态</th>
+      <th>入职时间</th>
+      <th>操作人</th>
+      <th>入职职位</th>
+      <th>入职记录</th>
+    </tr>
+  </thead>
+  <tbody>
+          {% for erecord in erecords %}
+	      <tr>
+		  <td>{{ erecord.resume.CandidateName }}</td>
+		  <td>{{ erecord.resume.UserID.username }}</td>
+		  <td class="autocut">{{ erecord.resume.PositionName }}</td>
+		  <td>{{ erecord.resume.Status }}</td>
+		  <td>{{ erecord.Time|date:"Y-m-d" }}</td>
+		  <td class="autocut">{{ erecord.user.username }}</td>
+		  <td>{{ erecord.position }}</td>
+		  <td>{{ erecord.EntryResults }}</td>
+		  
+	      </tr>
+          {% endfor %}
+	      
+  </tbody>
+          
+</table>
+
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+</script>
+{% endblock %}

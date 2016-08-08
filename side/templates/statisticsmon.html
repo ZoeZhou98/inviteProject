@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+<link rel="stylesheet" type="text/css" media="screen" href="/static/style-table/css-table.css"/>
+  <script type="text/javascript" src="http://cdn.hcharts.cn/jquery/jquery-1.8.3.min.js"></script>
+  <script type="text/javascript" src="http://cdn.hcharts.cn/highcharts/highcharts.js"></script>
+  <script type="text/javascript" src="http://cdn.hcharts.cn/highcharts/modules/exporting.js"></script>
+  <script>
+    $(function () {
+    Highcharts.setOptions({
+            lang: {
+               　 printChart:"打印图表",
+                  downloadJPEG: "下载JPEG 图片" , 
+                  downloadPDF: "下载PDF文档"  ,
+                  downloadPNG: "下载PNG 图片"  ,
+                  downloadSVG: "下载SVG 矢量图" , 
+                  exportButtonTitle: "导出图片" 
+            }
+        });
+    $('#resume').highcharts({
+        
+        chart: {
+            backgroundColor: 'rgba(255, 255, 255, 0)',
+                plotBorderColor : null,
+                plotBackgroundColor: null,
+                plotBackgroundImage:null,
+                plotBorderWidth: null,
+                plotShadow: false,  
+        },
+        title: {
+            text: '简历被锁定率统计'
+        },
+        tooltip: {
+			formatter: function() {
+        
+            return '<b>'+ this.point.name +'</b>: '+ Highcharts.numberFormat(this.percentage, 1) +'% ('+
+                         Highcharts.numberFormat(this.y, 0, ',') +' )';
+			}
+		},
+		credits: {
+					enabled: false
+		},
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    color: '#000000',
+                    connectorColor: '#000000',
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                }
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: 'Browser share',
+            data: [
+                
+                {
+                    name: '被锁定的',
+                    y: {{ suitnum }},
+                    sliced: true,
+                    selected: true
+                },
+				['未被锁定的',   {{ nosuitnum }}],
+            ]
+        }]
+    });
+});	
+$(function () {
+    $('#side').highcharts({
+        chart: {
+            backgroundColor: 'rgba(255, 255, 255, 0)',
+                plotBorderColor : null,
+                plotBackgroundColor: null,
+                plotBackgroundImage:null,
+                plotBorderWidth: null,
+                plotShadow: false,  
+        },
+        title: {
+            text: '面试完成情况统计'
+        },
+        tooltip: {
+			formatter: function() {
+            return '<b>'+ this.point.name +'</b>: '+ Highcharts.numberFormat(this.percentage, 1) +'% ('+
+                         Highcharts.numberFormat(this.y, 0, ',') +' )';
+			}
+		},
+		credits: {
+					enabled: false
+		},
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    color: '#000000',
+                    connectorColor: '#000000',
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                }
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: 'Browser share',
+            data: [
+                
+                {
+                    name: '已完成面试',
+                    y: {{ internum }},
+                    sliced: true,
+                    selected: true
+                },
+				['未完成面试',   {{  nointernum }}],
+            ]
+        }]
+    });
+});	
+$(function () {
+        document.getElementById("df").style.display = "";
+    $('#entry').highcharts({
+        chart: {
+            backgroundColor: 'rgba(255, 255, 255, 0)',
+                plotBorderColor : null,
+                plotBackgroundColor: null,
+                plotBackgroundImage:null,
+                plotBorderWidth: null,
+                plotShadow: false,  
+        },
+        title: {
+            text: '入职情况统计'
+        },
+        tooltip: {
+			formatter: function() {
+            return '<b>'+ this.point.name +'</b>: '+ Highcharts.numberFormat(this.percentage, 1) +'% ('+
+                         Highcharts.numberFormat(this.y, 0, ',') +' )';
+			}
+		},
+		credits: {
+					enabled: false
+		},
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    color: '#000000',
+                    connectorColor: '#000000',
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                }
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: 'Browser share',
+            data: [
+                
+                {
+                    name: '已入职',
+                    y: {{ staffnum }},
+                    sliced: true,
+                    selected: true
+                },
+				['未入职',   {{ nostaffnum }}],
+            ]
+        }]
+    });
+});
+  </script>
+</head>
+<body>
+<br>
+<div style="float:center">
+<form method="POST" action="" class="form-horizontal">
+<b> 请输入要查询 </b><input type="number" id="year" name="year" min="2015" value={{ year }}></input><b> 年 </b><input type="number" min="1" max="12" d="month" name="month" value={{ month }}></input> <b>月 的统计</b><input type="submit" value="查询"  class="btn btn-primary">
+</form>
+</div>
+<br><br>
+<div>
+<div style="min-width:100%;height:360px"> 
+  <div id="resume" style="min-width:33%;height:250px;float:left"></div>
+  <div id="side" style="min-width:33%;height:250px;float:left"></div>
+  <div id="entry" style="min-width:33%;height:250px;float:left"></div>
+</div>
+</div>
+<div>
+<table style="display:none" id="df">
+    <thead><tr>
+        <th>筛选简历数</th>
+        <th>适岗简历数</th>
+        <th>面试通知人数</th>
+        <th>实际面试人数</th>
+        <th>通知录用数</th>
+        <th>实际入职人数</th>
+        <th>月招聘效率</th>
+        </tr>
+    </thead>
+    <tbody>
+         <tr>
+            <td>{{ readnum }}</td>
+            <td>{{ suitnum }}</td>
+            <td>{{ infromnum }}</td>
+            <td>{{ internum }}</td>
+            <td>{{ offernum }}</td>
+            <td>{{ staffnum }}</td>
+            <td>{% widthratio staffnum suitnum 100 %}%</td>
+        </tr>
+    </tbody> 
+</table>
+</div>
+</body>
+</html>

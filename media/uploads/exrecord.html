@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Insert title here</title>
+</head>
+<body>
+<div ><style>table.customTableClassName {margin-bottom: 10px;border-collapse: collapse;display: table;}.customTableClassName td, .customTableClassName th {border: 1px solid #ddd;}</style><div id="write-custom-write" style="font-size: 14px; font-family: 宋体;"></div>
+<div class="customTableClassName"  cellspacing="0">
+<table  cellspacing="0" table.customTableClassName {margin-bottom: 10px;border-collapse: collapse;display: table;}.customTableClassName td, .customTableClassName th {border: 1px solid #ddd;}>
+<tr>
+<td colspan=2 >岗位名称</td>
+<td colspan=2>{{ position.PositionName }}</td>
+</tr>
+<tr>
+<td colspan=4>部门情况</td>
+</tr>
+<tr>
+<td width=120>一级部门</td>
+<td width=120>{{ position.Department }}</td>
+<td width=120>二级部门</td>
+<td width=120>{{ position.SecondDepartment }}</td>
+</tr>
+<tr>
+<td width=120>该岗位现有人数</td>
+<td width=120>{{ position.ExistingPersonNum }}人</td>
+<td width=120> 招聘人数</td>
+<td width=120>{{ position.NeedPersonNum }}人</td>
+</tr>
+<tr>
+<td width=120>薪资范围</td>
+<td width=120>{{ salary }}</td>
+<td width=120>工作地点（区）</td>
+<td width=120>{{ position.Workplace }}</td>
+</tr>
+<tr>
+<td width=120>项目组名称</td>
+<td width=120>{{ position.ProjectName }}</td>
+<td width=120 > 招聘周期</td>
+<td width=120>{{ position.RecruitTime|date:"Y-m-d" }}--{{ position.Headline|date:"Y-m-d" }}</td>
+</tr>
+<tr>
+<td width=120 >招聘理由</td>
+ {% if position.RecruitReason == 1 %} <td colspan=3>原有人员离职后增补人员</td> {% elif position.RecruitReason == 2 %}<td colspan=3> 业务拓展后新增工作岗位</td> {% else %} <td colspan=3>其他情况 </td>{% endif %}
+</tr>
+<tr>
+<td width=120>招聘渠道</td>
+{% if position.RecruitWay == 1 %} <td colspan=3>在招聘网站发布职位</td> {% elif position.RecruitWay == 2 %} <td colspan=3>伯乐奖职位，奖励金额</td> {% else %} <td colspan=3>其他渠道</td>{% endif %} 
+</tr>
+<tr>
+<td width=120>招聘人员工作内容 </td>
+<td colspan=3 width=360>{{ position.WorkContent }}</td>
+</tr>
+<tr>
+<td width=120>招聘人员工作要求</td>
+<td colspan=3 width=360>{{ position.CandidateRequirement }}</td>
+</tr>
+<tr>
+<td colspan=4>审批记录</td>
+</tr>
+{% for examine in examines %} 
+<tr>
+<td width=120 > {{ examine.UserID.username }}</td>
+<td width=120> {{ examine.Result }}</td>
+<td colspan=2>{{ examine.Time|date:"Y-m-d" }}</td>
+</tr>
+{% endfor %}
+
+</table>
+</div>
+<br><p style="color: blue"><strong>审批意见: </strong>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; 
+
+ <a href="http://123.56.147.94/talents/agree_application/{{ position.id }}"><input type="button"  value='同意' ></input></a>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
+<a href="http://123.56.147.94/talents/disagree_application/{{ position.id }}"><input type="button" name = 'btn' value='不同意'></input></a></p>
+</br>
+</body>
+</html>

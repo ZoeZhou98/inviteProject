@@ -1,0 +1,187 @@
+<!DOCTYPE HTML>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>智联简历</title>
+    <link href="http://img00.zhaopin.cn/2012/css/rd/common.css" rel="stylesheet" type="text/css" />
+    <link href="http://img00.zhaopin.cn/2012/css/rd/rdnew_2.css" rel="stylesheet" type="text/css" />
+    <link href="http://img00.zhaopin.cn/2012/css/rd/rdnewlayer.css" rel="stylesheet"
+        type="text/css" />
+    <style media="print">
+        .resume-preview{
+            color:#000;
+        }
+        .resume-body-left{
+            width:auto;
+        }
+        .resume-preview-left {
+            box-shadow:none;
+            border:none;
+        }
+        h3 {
+            border-bottom:2px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="resume-preview clearfix">
+        <div class="resume-body-left">
+			<div class="resume-preview-head">
+				<img alt="" src="http://img02.zhaopin.cn/2012/img/rd/logo.png" width="133" height="71" align="right" class="headerlogo" />
+									<div class="resume-preview-title">
+						<span  class="resume-preview-list">
+							简历名称：<strong id="resumeName">网络工程师</strong>
+						</span><br />
+						<span class="resume-preview-list">
+							期望从事职业：
+							<strong id="desireIndustry">IT技术支持/维护工程师、网络工程师、网络与信息安全工程师、...</strong>
+						</span><br />
+						<span class="resume-preview-list">
+							简历更新时间：
+							<strong id="resumeUpdateTime">2016.02.25</strong>
+						</span>
+					</div>
+				
+				<div class="resume-preview-center">
+					<div class="center-left">
+						<div class="resume-left-tips">
+							<div class="resume-left-tips-span">
+								<span class="resume-left-tips-id">ID:JM072830301R90250004000</span>
+								<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+								<span></span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div id="resumeDetail">
+				<div class="resume-preview-main">
+					<div class="resume-preview-left">
+					<div style="height:1px;color:#fff;overflow:hidden;">招聘网</div>
+					<div class="resume-preview-main-title">
+													<div class="main-title-fl fc6699cc">王启明</div>
+							<div class="main-title-fr">手机 ：18611559651</div>
+											</div>     
+					<div class="summary">
+						<a target="_blank" href="http://rd.zhaopin.com/img/lookResumes.jpg"><img alt="" src="http://rd.zhaopin.com/img/lookResumes.jpg" width="93" height="131" align="right" class="headerImg" /></a>
+						<div class="summary-top">
+							<span>男&nbsp;&nbsp;&nbsp;&nbsp;25岁(1991年5月)&nbsp;&nbsp;&nbsp;&nbsp;4年工作经验&nbsp;&nbsp;&nbsp;&nbsp;本科&nbsp;&nbsp;&nbsp;&nbsp;未婚</span>
+							<br />
+							现居住地：北京  | 户口：白银 | 团员 | 有海外工作/学习经验
+						</div>
+						<div class="summary-bottom">
+															<br />
+								身份证：620423199105250018<br />手机：18611559651<br />E-mail：<a href="mailto:wqmscl@163.com">wqmscl@163.com</a>
+															
+						</div>
+					</div>
+											<div class="resume-preview-all">
+							<h3 class="fc6699cc">求职意向</h3>
+							<div class="resume-preview-top">
+								<table cellpadding="0" cellspacing="0" >
+																									<tr valign="top">
+										<td width="85" align="right">期望工作地区：</td>
+										<td>国外、北京</td>
+									</tr>   
+																																	<tr valign="top">
+										<td width="85" align="right">期望月薪：</td>
+										<td>10001-15000元/月</td>
+									</tr>   
+																																	<tr valign="top">
+										<td width="85" align="right">目前状况：</td>
+										<td>我目前在职，正考虑换个新环境（如有合适的工作机会，到岗时间一个月左右）</td>
+									</tr>
+																																	<tr valign="top">
+										<td width="85" align="right">期望工作性质：</td>
+										<td>全职</td>
+									</tr>                        
+																																	<tr valign="top">
+										<td width="85" align="right">期望从事职业：</td>
+										<td>IT技术支持/维护工程师、网络工程师、网络与信息安全工程师、IT技术支持/维护经理</td>                   
+									</tr>
+																																	<tr valign="top">
+										<td width="85" align="right">期望从事行业：</td>
+										<td>IT服务(系统/数据/维护)、通信/电信/网络设备、通信/电信运营、增值服务</td>
+									</tr>   
+																</table>
+							</div>
+						</div>
+					        
+																	<div class="resume-preview-all">
+								<h3 class="fc6699cc">自我评价</h3>          
+								<div class="resume-preview-dl rd-break">乐观、向上、有责任感、乐于助人。具有良好的团队精神、学习能力和创新能力；有较强的适应能力。如果您把信任和希望给我，那么我的自信,我的能力,我的激情，我的执着将是您最满意的答案。经验是积累出来的，希望贵公司能给我一个展现的平台，本人很希望成为贵公司的一员，我会通过自己的努力把工作做得最好。也祝愿贵公司事业蒸蒸日上。</div>
+							</div>   
+					        
+											<div class="resume-preview-all">
+							<h3 class="fc6699cc">工作经历</h3>
+															<h2>2012.09 - 至今&nbsp;&nbsp;北京威发新世纪信息技术有限公司&nbsp;&nbsp;（3年5个月）</h2>
+								<h5>网络工程师</h5>
+								<div class="resume-preview-dl">
+									通信/电信/网络设备 | 企业性质：外商独资
+								</div>
+																	<div class="resume-preview-dl">
+										<table cellpadding="0" cellspacing="0" >
+											<tr valign="top">
+												<td width="60">工作描述：</td>
+												<td>1、负责公司国内外新建网络项目的实施；<br />2、负责客户日常网络故障和紧急网络故障的处理；<br />3、以电话、邮件等方式为客户提供远程技术支持或现场支持；<br />4、编写项目实施文档及客户技术培训；</td>
+											</tr>
+										</table>
+																													</div>    
+																					</div>
+					        
+											<div class="resume-preview-all">
+							<h3 class="fc6699cc">项目经历</h3>
+																<h2>2015.05 - 2015.11&nbsp;&nbsp;FGCE-Casino项目实施</h2>
+															<div class="resume-preview-dl">
+									<table cellpadding="0" cellspacing="0" >
+																				                            
+										                            
+																					<tr valign="top">
+												<td width="60">责任描述：</td>
+												<td>项目实施工程师<br />项目的整体实施及后期的客户培训</td>
+											</tr>
+										                            
+																					<tr valign="top">
+												<td width="60">项目描述：</td>
+												<td>在俄罗斯海参崴新建赌场水晶老虎宫（Tigre De Cristal）现场负责整体网络新建，全网根据不同的功能划分出14个功能区块，核心的7个功能区块由两台物理的cisco nexus7000划分出7个VDC实现DC、HOH、WAN、SNS、NMS、L3G、L2G七个逻辑区域，其他区域根据网络需求连接到不同的VDC中，路由交换层面根据各个不同的应用流量划分对应的VLAN、VRF，涉及到VPC、VDC、VRF-Lite、PFS、等技术达到路由可控，在使用单播的同时针对有需求的区域同时使用组播路由；安全层面各个区域以重要性为原则在网络基础上部署cisco ASA防火墙、FirePowerIPS和Juniper SRX防火墙实现安全异构，配合使用Cisco FirePower IPS对全网流量做二次3-7层的过滤，涉及ACL、MPF、AnyconnectVPN、DMVPN、IPSecVPN、IPS等技术实现在整体网络可用的基础上对流量进行安全保护；无线、语音网络基于基础网络部署。</td>
+											</tr>  
+																			</table>
+								</div>
+																<h2>2014.12 - 2015.02&nbsp;&nbsp;FGCE-Casino staging阶段实施</h2>
+															<div class="resume-preview-dl">
+									<table cellpadding="0" cellspacing="0" >
+																				                            
+										                            
+																					<tr valign="top">
+												<td width="60">责任描述：</td>
+												<td>项目实施工程师<br />项目的整体实施</td>
+											</tr>
+										                            
+																					<tr valign="top">
+												<td width="60">项目描述：</td>
+												<td>在香港PCCW数据中心为FGCE-Casino搭建实施之前的整网环境，全网根据不同的功能划分出14个功能区块，核心的7个功能区块由两台物理的cisco nexus7000划分出7个VDC实现DC、HOH、WAN、SNS、NMS、L3G、L2G七个逻辑区域，其他区域根据网络需求连接到不同的VDC中，通过staging阶段的找到网络设计在真实网络环境中无法实现的部分以及网络设计中疏漏部分和错误部分，及时与团队协商解决方案，修改网络设计方案，在完善网络设计方案的同时为之后的现场实施节省了troubleshooting的时间。</td>
+											</tr>  
+																			</table>
+								</div>
+																<h2>2014.06 - 2014.11&nbsp;&nbsp;北京联通WLAN项目实施</h2>
+															<div class="resume-preview-dl">
+									<table cellpadding="0" cellspacing="0" >
+																				                            
+										                            
+																					<tr valign="top">
+												<td width="60">责任描述：</td>
+												<td>项目实施工程师<br />项目的整体实施及后期的客户培训</td>
+											</tr>
+										                            
+																					<tr valign="top">
+												<td width="60">项目描述：</td>
+												<td>北京联通金融街总部及西单、亦庄联通分公司、小汤山联通学院四个公司的整体WLAN改造，整个项目以思科无线解决方案为基础，包含了无线WLC、安全ISE、网管定位PI、MSE三个部分；思科WLC以HA的模式根据个公司AP接入点的数量部署，WLC集成ISE；PI、ISE集成联通内部AD和短信网关、邮件服务器；PI集成MSE；无线认证方式以内部员工认证、访客认证两部分；内部员工使用AD里的用户名密码以Dot1x方式进行认证，并针对不同级别的员工设置网络访问权限；访客用户使用自主注册通过短信或邮件方式得到访问网络的用户名密码；同时也可以通过内部员工使用赞助商门户帮访客申请临时账号；PI监控所有AP、POE交换机、WLC、ISE硬件设备性能的同时可以使用report分析所有AP使用流量、单个AP上行下行使用流量，每天的流量高峰期等网络流量；MSE集成到PI中，使PI可以定位到各个AP的位置，以及每个AP下接入终端的数量、位置、MAC地址，同时检测所有非法AP的位置，整体达到无线网络的有效、安全、可控的接入。</td>
+											</tr>  
+																			</table>
+								</div>
+																<h2>2013.05 - 2014.05&nbsp;&nbsp;珠海联通IPRan项目实施</h2>
+															<div class="resume-preview-dl">
+									<table cellpadding="0" cellspacing="0" >
+																				                            
+										                          

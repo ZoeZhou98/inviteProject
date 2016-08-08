@@ -1,0 +1,381 @@
+
+{% extends 'Base.html'%}
+{% block table %}
+<link href="//cdn.bootcss.com/bootstrap-table/1.9.1/bootstrap-table.css" rel="stylesheet">
+<script src="//cdn.bootcss.com/bootstrap-table/1.9.1/bootstrap-table.js"></script>
+<script src="//cdn.bootcss.com/bootstrap-table/1.9.1/extensions/export/bootstrap-table-export.js"></script>
+<script src="//cdn.bootcss.com/bootstrap-table/1.9.1/extensions/editable/bootstrap-table-editable.js"></script>
+<link href="//cdn.bootcss.com/x-editable/1.5.1/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet">
+<script src="//cdn.bootcss.com/x-editable/1.5.1/bootstrap-editable/js/bootstrap-editable.js"></script>
+<script src="//cdn.bootcss.com/bootstrap-table/1.9.1/locale/bootstrap-table-zh-CN.js"></script>
+{% endblock %}
+{% block content %}
+   {% if error %}
+        <p style="color: red;">Please submit a search term.</p>
+   {% endif %}
+
+   <h4 value = {{ query }}>简历一览</h1>
+    <script >
+    
+    function connect()
+    {
+        var PName=document.getElementById("PName").value;
+        var a=String("{{ query }}");
+           if ( a != '')
+            { 
+            PName=a +'+'+PName;
+            }
+            document.getElementById("PName").value=PName;
+            return true;
+           
+    }
+      </script>     
+<div class="container-fluid">
+    <div class="row">
+    {% if Csex %}
+    <div class="col-md-2"> 
+        <a class="btn btn-danger btn-xs" href="/talents/search_form/?Csex=&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu={{ Cedu }}">性别：{{ Csex }}
+        <i class="glyphicon glyphicon-remove"></i>
+        </a>
+    </div>
+    {% endif %}
+    {% if Cpro %}
+    <div class="col-md-2"> 
+        <a class="btn btn-danger btn-xs" href="/talents/search_form/?Csex={{ Csex }}&Cpro=&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu={{ Cedu }}">工作年限：>= {{ Cpro }}年
+        <i class="glyphicon glyphicon-remove"></i>
+        </a>
+    </div>   
+    {% endif %}
+    {% if Cpos %} 
+    <div class="col-md-2"> 
+        <a class="btn btn-danger btn-xs" href="/talents/search_form/?Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos=&Cage={{ Cage }}&Cedu={{ Cedu }}">职位：{{ Cpos }}
+        <i class="glyphicon glyphicon-remove"></i>
+        </a>
+    </div>   
+    {% endif %}
+    {% if Cage %}
+    <div class="col-md-2"> 
+        <a class="btn btn-danger  btn-xs" href="/talents/search_form/?Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage=&Cedu={{ Cedu }}">年龄 >={{ Cage }}岁
+        <i class="glyphicon glyphicon-remove"></i>
+        </a>
+    </div> 
+    {% endif %}
+    {% if Cedu %}
+    <div class="col-md-2 "> 
+        <a class="btn btn-danger btn-xs" href="/talents/search_form/?Csex={{ Csex }}&Cpro={{ Cpro }}&Cpos={{ Cpos }}&Cage={{ Cage }}&Cedu=">学历 >={{ Cedu }}
+        <i class="glyphicon glyphicon-remove"></i>
+        </a>
+    </div>      
+    {% endif %}
+    </div>
+</div>
+<p>
+   <div >
+    <form action="{% url 'talents:search_form' %}" method="get"  onsubmit="return connect();">
+        <input placeholder='性别' type="text" id="Csex" name="Csex" value={{ Csex }}>
+        <input placeholder='工作年限' type="number" id="Cpro" name="Cpro" value={{ Cpro }}>
+        <input placeholder='职位' type="text"  id="Cpos" name="Cpos"value={{ Cpos }}>
+        <input placeholder='年龄' type="number" id="Cage" name="Cage" value={{ Cage }}>
+        <input placeholder='学历' type="text"  id="cedu" name="Cedu" value={{ Cedu }}>
+        <input class="btn btn-default btn-sm" type="submit" value="搜索" >
+       <a class="btn btn-default btn-sm" role="button" href={% url "talents:resumemanage" %}>返回</a>
+        
+    </form>
+    </div>
+{% if resumes %}
+
+<div >
+<table id="table"
+           data-toolbar="#toolbar"
+           data-search="true"
+           data-show-refresh="true"
+           data-show-toggle="true"
+           data-show-columns="true"
+           data-show-export="true"
+           data-detail-view="true"
+           data-detail-formatter="detailFormatter"
+           data-minimum-count-columns="2"
+           data-show-pagination-switch="true"
+           data-pagination="true"
+           data-id-field="id"
+           data-page-list="[10, 25, 50, 100, ALL]"
+           data-show-footer="true"
+           data-side-pagination="server"
+           data-response-handler="responseHandler">
+<!-- <table data-toggle="table">
+	    <thead>
+		<tr>
+		    <th scope="col">姓名</th>
+		    <th scope="col">性别</th>
+            {% if age_id == 1 %}
+		    <th scope="col">年龄 <a href={% url "talents:resume_sort" age_id %} >▼</a></th>
+            {% else %}
+		    <th scope="col">年龄 <a href={% url "talents:resume_sort" age_id %}>▲</a></th>
+            {% endif %} 
+            {% if exper_id == 3 %}
+		    <th scope="col">工作年限<a href={% url "talents:resume_sort" exper_id %}>▼</a></th>
+            {% else %}
+            <th scope="col">工作年限<a href={% url "talents:resume_sort" exper_id %}>▲ </a></th>
+            {% endif %} 
+            {% if edu_id == 5 %}
+			<th scope="col">学历<a href={% url "talents:resume_sort" edu_id %}>▼</a></th>
+            {% else %}
+            <th scope="col">学历<a href={% url "talents:resume_sort" edu_id %}>▲</a></th>
+            {% endif %} 
+		    <th scope="col">联系电话</th>
+		    <th scope="col">邮箱</th>
+		    <th scope="col">职位名称</th>
+		   
+            {% if date_id == 0 %}
+		    <th scope="col">投递日期<a href={% url "talents:resume_sort" date_id %}>▼</a> </th>
+            {% else %}
+            <th scope="col">投递日期<a href={% url "talents:resume_sort" date_id %}>▲</a> </th>
+            {% endif %} 
+		    <th scope="col">操作</th>
+		</tr>
+	    </thead>  
+-->
+	    <tbody >
+	     {% for resume in resumes %}
+	     <tr>
+		    <td>{{ resume.CandidateName }}</td>
+		    <td>{{ resume.CandidateSex }}</td>
+		    <td>{{ resume.CandidateAge }}</td>
+            {% if resume.CandidateProfile %}
+		        <td class="autocut">{{ resume.CandidateProfile }} 年工作经验</td>     
+            {% else %}
+                <td class="autocut"> </td>
+            {% endif %}
+            
+			<td>{{ resume.Candidate_edu }}</td>
+		    <td class="autocut">{{ resume.CandidatePhone }}</td>
+		    <td class="autocut">{{ resume.CandidateEmail }}</td>
+		    <td class="autocut">{{ resume.PositionName }}</td>
+		    
+		    <td class="autocut">{{ resume.Time|date:"Y-m-d" }}</td>
+		    <td>
+		    <a href={{ resume.Addr }} id="w" value={{ resume.id }}   onclick="loadXMLDoc2(this,{{ resume.id }})" >查看</a>/
+		    <a href="{% url 'talents:input_pool' resume.id %}">锁定</a></td>
+		</tr>
+	     
+	     {% endfor %}
+	</tbody>
+</table>
+<!--
+    <script type="text/javascript">
+    function loadXMLDoc2(obj,resm)
+    {
+    var xmlhttp;
+    if (window.XMLHttpRequest)
+      {// code for IE7+, Firefox, Chrome, Opera, Safari
+      xmlhttp=new XMLHttpRequest();
+      }
+    else
+      {// code for IE6, IE5
+      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+      }
+    xmlhttp.onreadystatechange=function()
+      {
+      if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+       // alert("已写入");
+        }
+      }
+     var url = "/mywrite/"+resm+"/"+"?t="+ Math.random();
+     xmlhttp.open("GET",url,true);
+     xmlhttp.send();
+     }
+      </script>     
+-->
+   
+<div>
+{% if resumes.has_previous %}
+    <a class='paginator' title='上一页' href='?page={{ resumes.previous_page_number }}'><span>&lt;&lt;</span></a>
+{% endif %}
+{% for page in resumes.paginator.page_range %}
+	
+    {% if page = resumes.number %} 
+        <a class='paginator_current' title='当前页:{{ page }}'><span>{{ page }}</span></a>
+	{% elif page <= 3 or page == resumes.paginator.num_pages %}
+    <a class='paginator' href='?page={{ page }}' title='{{ page }}'><span>{{ page }}</span></a>
+	{% elif page = resumes.number|add:"-5" and page > 4 %}
+	<a class='paginator' href='?page={{ page }}' title='{{ page }}'><span>......{{ page }}</span></a>
+	{% elif page = resumes.number|add:"5" and page < resumes.paginator.num_pages %}
+	<a class='paginator' href='?page={{ page }}' title='{{ page }}'><span>{{ page }}......</span></a>
+	{% elif page <= resumes.number|add:"5" and page >= resumes.number|add:"-5"  %}
+    
+	<a class='paginator' href='?page={{ page }}' title='{{ page }}'><span>{{ page }}</span></a>
+    {% endif %} 
+{% endfor %}
+{% if resumes.has_next %}
+    <a class='paginator' title='下一页' href='?page={{ resumes.next_page_number }}'><span>&gt;&gt;</span></a>
+{% endif %}
+</div>
+
+</div>
+{% else %}
+<p align="left"> 没有记录 </p>
+{% endif %}
+<script>
+    var $table = $('#table'),
+        $remove = $('#remove'),
+        selections = [];
+    $(function () {
+        $table.bootstrapTable({
+            height: getHeight(),
+            columns: [
+                [
+                    {
+                        field: 'state',
+                        checkbox: true,
+                        rowspan: 2,
+                        align: 'center',
+                        valign: 'middle'
+                    }, {
+                        title: 'Item ID',
+                        field: 'id',
+                        rowspan: 2,
+                        align: 'center',
+                        valign: 'middle',
+                        sortable: true,
+                        footerFormatter: totalTextFormatter
+                    }, {
+                        title: 'Item Detail',
+                        colspan: 3,
+                        align: 'center'
+                    }
+                ],
+                [
+                    {
+                        field: 'name',
+                        title: 'Item Name',
+                        sortable: true,
+                        editable: true,
+                        footerFormatter: totalNameFormatter,
+                        align: 'center'
+                    }, {
+                        field: 'price',
+                        title: 'Item Price',
+                        sortable: true,
+                        align: 'center',
+                        editable: {
+                            type: 'text',
+                            title: 'Item Price',
+                            validate: function (value) {
+                                value = $.trim(value);
+                                if (!value) {
+                                    return 'This field is required';
+                                }
+                                if (!/^$/.test(value)) {
+                                    return 'This field needs to start width $.'
+                                }
+                                var data = $table.bootstrapTable('getData'),
+                                    index = $(this).parents('tr').data('index');
+                                console.log(data[index]);
+                                return '';
+                            }
+                        },
+                        footerFormatter: totalPriceFormatter
+                    }, {
+                        field: 'operate',
+                        title: 'Item Operate',
+                        align: 'center',
+                        events: operateEvents,
+                        formatter: operateFormatter
+                    }
+                ]
+            ]
+        });
+        // sometimes footer render error.
+        setTimeout(function () {
+            $table.bootstrapTable('resetView');
+        }, 200);
+        $table.on('check.bs.table uncheck.bs.table ' +
+                'check-all.bs.table uncheck-all.bs.table', function () {
+            $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
+            // save your data, here just save the current page
+            selections = getIdSelections();
+            // push or splice the selections if you want to save all data selections
+        });
+        $table.on('expand-row.bs.table', function (e, index, row, $detail) {
+            if (index % 2 == 1) {
+                $detail.html('Loading from ajax request...');
+                $.get('LICENSE', function (res) {
+                    $detail.html(res.replace(/\n/g, '<br>'));
+                });
+            }
+        });
+        $table.on('all.bs.table', function (e, name, args) {
+            console.log(name, args);
+        });
+        $remove.click(function () {
+            var ids = getIdSelections();
+            $table.bootstrapTable('remove', {
+                field: 'id',
+                values: ids
+            });
+            $remove.prop('disabled', true);
+        });
+        $(window).resize(function () {
+            $table.bootstrapTable('resetView', {
+                height: getHeight()
+            });
+        });
+    });
+    function getIdSelections() {
+        return $.map($table.bootstrapTable('getSelections'), function (row) {
+            return row.id
+        });
+    }
+    function responseHandler(res) {
+        $.each(res.rows, function (i, row) {
+            row.state = $.inArray(row.id, selections) !== -1;
+        });
+        return res;
+    }
+    function detailFormatter(index, row) {
+        var html = [];
+        $.each(row, function (key, value) {
+            html.push('<p><b>' + key + ':</b> ' + value + '</p>');
+        });
+        return html.join('');
+    }
+    function operateFormatter(value, row, index) {
+        return [
+            '<a class="like" href="javascript:void(0)" title="Like">',
+            '<i class="glyphicon glyphicon-heart"></i>',
+            '</a>  ',
+            '<a class="remove" href="javascript:void(0)" title="Remove">',
+            '<i class="glyphicon glyphicon-remove"></i>',
+            '</a>'
+        ].join('');
+    }
+    window.operateEvents = {
+        'click .like': function (e, value, row, index) {
+            alert('You click like action, row: ' + JSON.stringify(row));
+        },
+        'click .remove': function (e, value, row, index) {
+            $table.bootstrapTable('remove', {
+                field: 'id',
+                values: [row.id]
+            });
+        }
+    };
+    function totalTextFormatter(data) {
+        return 'Total';
+    }
+    function totalNameFormatter(data) {
+        return data.length;
+    }
+    function totalPriceFormatter(data) {
+        var total = 0;
+        $.each(data, function (i, row) {
+            total += +(row.price.substring(1));
+        });
+        return '$' + total;
+    }
+    function getHeight() {
+        return $(window).height() - $('h1').outerHeight(true);
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,387 @@
+<!doctype html> 
+<html> 
+<head> 
+<meta charset="UTF-8"> 
+<title></title> 
+<link rel="stylesheet" type="text/css" media="screen" href="/static/style-table/css-table1.css"/>
+<script type="text/javascript" src="//cdn.bootcss.com/jquery/1.11.0/jquery.js"></script> 
+<script type="text/javascript" src="http://cdn.hcharts.cn/highcharts/highcharts.js"></script>
+<script type="text/javascript" src="http://cdn.hcharts.cn/highcharts/modules/exporting.js"></script>
+<script type="text/javascript"> 
+     $(function(){ 
+        Highcharts.setOptions({
+            lang: {
+               　 printChart:"打印图表",
+                  downloadJPEG: "下载JPEG 图片" , 
+                  downloadPDF: "下载PDF文档"  ,
+                  downloadPNG: "下载PNG 图片"  ,
+                  downloadSVG: "下载SVG 矢量图" , 
+                  exportButtonTitle: "导出图片" 
+            }
+        });
+         $('#resume').highcharts({ 
+             chart: { 
+                 backgroundColor: {
+                linearGradient: [0, 0, 500, 500],
+                stops: [
+                    [0, 'rgb(255, 255, 255)'],
+                    [1, 'rgb(200, 200, 255)']
+                ]
+                },
+                 type: 'line' 
+             }, 
+             title: { 
+                 text: '{{ year }}年简历筛选统计' 
+             }, 
+             subtitle: { 
+                 text: '按月统计' 
+             }, 
+             xAxis: { 
+                 categories: [ 
+                     '一月', 
+                     '二月', 
+                     '三月', 
+                     '四月', 
+                     '五月', 
+                     '六月', 
+                     '七月', 
+                     '八月', 
+                     '九月', 
+                     '十月', 
+                     '十一月', 
+                     '十二月' 
+                 ] 
+             }, 
+             yAxis: { 
+                 min: 0, 
+                 title: { 
+                     text: '人数 (人)' 
+                 } 
+             }, 
+             tooltip: { 
+                 headerFormat: '<span style="font-size:20px">{point.key}</span><table>', 
+                 pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' + 
+                     '<td style="padding:0"><b>{point.y:.1f} 人</b></td></tr>', 
+                 footerFormat: '</table>', 
+                 shared: true, 
+                 useHTML: true 
+             }, 
+             credits: {
+                     enabled: false
+             }, 
+             plotOptions: { 
+                 column: { 
+                     pointPadding: 0.2, 
+                     borderWidth: 0 
+                 } 
+             }, 
+             series: [{ 
+                 name: '筛选简历数', 
+                 data: {{ readnum|safe }} 
+        
+             },{ 
+                 name: '适岗简历数', 
+                 data: {{ suitnum|safe }}
+             }]
+         }); 
+     }); 
+	 $(function(){   
+         $('#side').highcharts({ 
+             chart: { 
+                 backgroundColor: {
+                linearGradient: [0, 0, 500, 500],
+                stops: [
+                    [0, 'rgb(255, 255, 255)'],
+                    [1, 'rgb(200, 200, 255)']
+                ]
+                },
+                 type: 'line' 
+             }, 
+             title: { 
+                 text: '{{ year }}年面试情况统计' 
+             }, 
+             subtitle: { 
+                 text: '按月统计' 
+             }, 
+             xAxis: { 
+                 categories: [ 
+                     '一月', 
+                     '二月', 
+                     '三月', 
+                     '四月', 
+                     '五月', 
+                     '六月', 
+                     '七月', 
+                     '八月', 
+                     '九月', 
+                     '十月', 
+                     '十一月', 
+                     '十二月' 
+                 ] 
+             }, 
+             yAxis: { 
+                 min: 0, 
+                 title: { 
+                     text: '人数 (人)' 
+                 } 
+             }, 
+             tooltip: { 
+                 headerFormat: '<span style="font-size:20px">{point.key}</span><table>', 
+                 pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' + 
+                     '<td style="padding:0"><b>{point.y:.1f} 人</b></td></tr>', 
+                 footerFormat: '</table>', 
+                 shared: true, 
+                 useHTML: true 
+             }, 
+            credits: {
+                     enabled: false
+             }, 
+             plotOptions: { 
+                 column: { 
+                     pointPadding: 0.2, 
+                     borderWidth: 0 
+                 } 
+             }, 
+             series: [{ 
+                 name: '面试通知人数', 
+                 data: {{ infromnum|safe }} 
+        
+             }, { 
+                 name: '实际面试人数', 
+                 data: {{ internum|safe }} 
+             }] 
+         }); 
+     }); 
+	 $(function(){ 
+			document.getElementById("df").style.display = "";
+         $('#entry').highcharts({ 
+             chart: { 
+                 backgroundColor: {
+                linearGradient: [0, 0, 500, 500],
+                stops: [
+                    [0, 'rgb(255, 255, 255)'],
+                    [1, 'rgb(200, 200, 255)']
+                ]
+                },
+                 type: 'line' 
+             }, 
+             title: { 
+                 text: '{{ year }}年录用统计' 
+             }, 
+             subtitle: { 
+                 text: '按月统计' 
+             }, 
+             xAxis: { 
+                 categories: [ 
+                     '一月', 
+                     '二月', 
+                     '三月', 
+                     '四月', 
+                     '五月', 
+                     '六月', 
+                     '七月', 
+                     '八月', 
+                     '九月', 
+                     '十月', 
+                     '十一月', 
+                     '十二月' 
+                 ] 
+             }, 
+             yAxis: { 
+                 min: 0, 
+                 title: { 
+                     text: '人数 (人)' 
+                 } 
+             }, 
+             tooltip: { 
+                 headerFormat: '<span style="font-size:20px">{point.key}</span><table>', 
+                 pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' + 
+                     '<td style="padding:0"><b>{point.y:.1f} 人</b></td></tr>', 
+                 footerFormat: '</table>', 
+                 shared: true, 
+                 useHTML: true 
+             }, 
+            credits: {
+                     enabled: false
+             }, 
+             plotOptions: { 
+                 column: { 
+                     pointPadding: 0.2, 
+                     borderWidth: 0 
+                 } 
+             }, 
+             series: [{ 
+                 name: '通知录用数', 
+                 data: {{ offernum|safe }} 
+        
+             }, { 
+                 name: '实际入职人数', 
+                 data: {{ staffnum|safe }} 
+             }] 
+         }); 
+     }); 
+</script> 
+<style>
+table {
+    border-collapse: collapse;
+}
+
+table, td {
+    border: 1px solid black;
+	text-align: center;
+}
+
+	</style>
+</head> 
+<body> 
+<br>
+<div style="float:center">
+<form method="POST" action="" class="form-horizontal">
+<b> 请输入要查询 </b><input type="number" id="year" name="year" min="2015" value={{ year }}></input><b> 年 </b><b>的统计</b><input type="submit" value="查询" class="btn btn-primary">
+</form>
+</div>
+<br><br>
+   <div id="resume" style="min-width: 85%; height: 250px;margin-right:10px;margin-left:10px;"></div> 
+    <hr>
+   <div id="side" style="min-width: 85%; height: 250px;margin-right:10px;margin-left:10px;"></div> 
+    <hr>
+   <div id="entry" style="min-width: 85%; height: 250px; margin-right:10px;margin-left:10px;"></div> 
+    <hr>
+<div>
+<table style="display:none;min-width: 80%;margin-right:5px;margin-left:5px;" id="df" >
+    <thead><tr>
+        <th></th>
+        <th>一月</th>
+		<th>二月</th>
+		<th>三月</th>
+		<th>四月</th>
+		<th>五月</th>
+		<th>六月</th>
+		<th>七月</th>
+		<th>八月</th>
+		<th>九月</th>
+		<th>十月</th>
+		
+        <th>十一月</th>
+        <th>十二月</th>
+        <th>总计</th>
+        </tr>
+    </thead>
+    <tbody>
+         <tr>
+			<th>适岗简历数</th>
+            <td>{{ suitnum.0 }}</td>
+            <td>{{ suitnum.1 }}</td>
+			<td>{{ suitnum.2 }}</td>
+			<td>{{ suitnum.3 }}</td>
+			<td>{{ suitnum.4 }}</td>
+			<td>{{ suitnum.5 }}</td>
+			<td>{{ suitnum.6 }}</td>
+			<td>{{ suitnum.7 }}</td>
+			<td>{{ suitnum.8 }}</td>
+			<td>{{ suitnum.9 }}</td>
+			<td>{{ suitnum.10 }}</td>
+			<td>{{ suitnum.11 }}</td>
+			<td>{{ suitnumy }}</td>
+        </tr>
+		<tr>
+			<th>筛选简历数</th>
+            <td>{{ readnum.0 }}</td>
+            <td>{{ readnum.1 }}</td>
+			<td>{{ readnum.2 }}</td>
+			<td>{{ readnum.3 }}</td>
+			<td>{{ readnum.4 }}</td>
+			<td>{{ readnum.5 }}</td>
+			<td>{{ readnum.6 }}</td>
+			<td>{{ readnum.7 }}</td>
+			<td>{{ readnum.8 }}</td>
+			<td>{{ readnum.9 }}</td>
+			<td>{{ readnum.10 }}</td>
+			<td>{{ readnum.11 }}</td>
+			<td>{{ readnumy }}</td>
+        </tr>
+		<tr>
+			<th>实际面试人数</th>
+            <td>{{ internum.0 }}</td>
+            <td>{{ internum.1 }}</td>
+			<td>{{ internum.2 }}</td>
+			<td>{{ internum.3 }}</td>
+			<td>{{ internum.4 }}</td>
+			<td>{{ internum.5 }}</td>
+			<td>{{ internum.6 }}</td>
+			<td>{{ internum.7 }}</td>
+			<td>{{ internum.8 }}</td>
+			<td>{{ internum.9 }}</td>
+			<td>{{ internum.10 }}</td>
+			<td>{{ internum.11 }}</td>
+			<td>{{ internumy }}</td>
+        </tr>
+		<tr>
+			<th>面试通知人数</th>
+            <td>{{ infromnum.0 }}</td>
+            <td>{{ infromnum.1 }}</td>
+			<td>{{ infromnum.2 }}</td>
+			<td>{{ infromnum.3 }}</td>
+			<td>{{ infromnum.4 }}</td>
+			<td>{{ infromnum.5 }}</td>
+			<td>{{ infromnum.6 }}</td>
+			<td>{{ infromnum.7 }}</td>
+			<td>{{ infromnum.8 }}</td>
+			<td>{{ infromnum.9 }}</td>
+			<td>{{ infromnum.10 }}</td>
+			<td>{{ infromnum.11 }}</td>
+			<td>{{ infromnumy }}</td>
+        </tr>
+		<tr>
+			<th>实际入职人数</th>
+            <td>{{ staffnum.0 }}</td>
+            <td>{{ staffnum.1 }}</td>
+			<td>{{ staffnum.2 }}</td>
+			<td>{{ staffnum.3 }}</td>
+			<td>{{ staffnum.4 }}</td>
+			<td>{{ staffnum.5 }}</td>
+			<td>{{ staffnum.6 }}</td>
+			<td>{{ staffnum.7 }}</td>
+			<td>{{ staffnum.8 }}</td>
+			<td>{{ staffnum.9 }}</td>
+			<td>{{ staffnum.10 }}</td>
+			<td>{{ staffnum.11 }}</td>
+			<td>{{ staffnumy }}</td>
+        </tr>
+		<tr>
+			<th>通知录用数</th>
+            <td>{{ offernum.0 }}</td>
+            <td>{{ offernum.1 }}</td>
+			<td>{{ offernum.2 }}</td>
+			<td>{{ offernum.3 }}</td>
+			<td>{{ offernum.4 }}</td>
+			<td>{{ offernum.5 }}</td>
+			<td>{{ offernum.6 }}</td>
+			<td>{{ offernum.7 }}</td>
+			<td>{{ offernum.8 }}</td>
+			<td>{{ offernum.9 }}</td>
+			<td>{{ offernum.10 }}</td>
+			<td>{{ offernum.11 }}</td>
+			<td>{{ offernumy }}</td>
+        </tr>
+		<tr>
+			<th>招聘效率(实际入职人数/适岗简历数)</th>
+            <td>{% widthratio staffnum.0 suitnum.0 100 %}%</td>
+            <td>{% widthratio staffnum.1 suitnum.1 100 %}%</td>
+			<td>{% widthratio staffnum.2 suitnum.2 100 %}%</td>
+			<td>{% widthratio staffnum.3 suitnum.3 100 %}%</td>
+			<td>{% widthratio staffnum.4 suitnum.4 100 %}%</td>
+			<td>{% widthratio staffnum.5 suitnum.5 100 %}%</td>
+			<td>{% widthratio staffnum.6 suitnum.6 100 %}%</td>
+			<td>{% widthratio staffnum.7 suitnum.7 100 %}%</td>
+			<td>{% widthratio staffnum.8 suitnum.8 100 %}%</td>
+			<td>{% widthratio staffnum.9 suitnum.9 100 %}%</td>
+			<td>{% widthratio staffnum.10 suitnum.10 100 %}%</td>
+			<td>{% widthratio staffnum.11 suitnum.11 100 %}%</td>
+			<td>{% widthratio staffnumy suitnumy 100 %}%</td>
+        </tr>
+    </tbody> 
+</table>
+</div>
+</body> 
+</html>

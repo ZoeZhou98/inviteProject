@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<script src="//cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+<link href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+<script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>我发起的面试</title>
+<!--
+<style>
+body,ul,li{margin:0; padding:0; font:12px/1.5 arial;}
+ul,li{list-style:none;}
+.wrap{width:100%; margin:20px auto;}
+.hide{display:none;}
+#tab_t{height:100%;border-bottom:1px solid #ccc;}
+#tab_t li{float:left; width:33%; height:100%;
+line-height:24px; margin:0 0px; text-align:center;
+border:1px solid #ccc; border-bottom:none;
+background:#f5f5f5; cursor:pointer}
+#tab_t .act{ position:relative; height:25px;
+margin-bottom:-1px; background:#fff;}
+</style>
+-->
+<script language="javascript"> 
+function change1() 
+{ 
+document.getElementById("stuck").className="active";
+document.getElementById("process").className="";
+document.getElementById("interviews").className="";
+
+} 
+function change2() 
+{ 
+document.getElementById("stuck").className="";
+document.getElementById("process").className="active";
+document.getElementById("interviews").className="";
+
+} 
+function change3() 
+{ 
+document.getElementById("stuck").className="";
+document.getElementById("process").className="";
+document.getElementById("interviews").className="active";
+
+} 
+</script>
+</head>
+<body>
+<div class="row">
+    <div class="col-sm-6">
+        <ol class="breadcrumb" style="margin-bottom: 0px;">
+            <li><a href="/talents/first_page/">首页</a></li>
+            <li><a href="/talents/first_page/">面试管理</a></li>
+            <li class="active">我发起的面试</li>
+        </ol>
+    </div>
+</div>
+<div class="wrap">
+<!--
+ <ul id="tab_t">
+ <a href=/side/mystucked/ target="myr" ><li class="act">未处理</li></a>
+ <a href=/side/processed/ target="myr" ><li>处理中</li></a>
+<a href=/side/interviews/ target="myr" > <li>已完成</li></a>
+ </ul>
+-->
+    <ul class="nav nav-tabs">
+        <li role="presentation" id = "stuck" class="active"><a target="myr" href="/side/mystucked/" onclick="change1()">待处理</a></li>
+        <li role="presentation" id = "process"><a target="myr" href="/side/processed/" onclick="change2()">处理中</a></li>
+        <li role="presentation" id="interviews"><a target="myr" href="/side/interviews/" onclick="change3()">已完成</a></li>
+    </ul>
+     <script language="javascript" type="text/javascript"> 
+     function dyniframesize(down) { 
+      var pTar = null; 
+      if (document.getElementById){ 
+      pTar = document.getElementById(down); 
+      } 
+      else{ 
+      eval('pTar = ' + down + ';'); 
+      } 
+      if (pTar && !window.opera){ 
+      //begin resizing iframe 
+      pTar.style.display="block" 
+      if (pTar.contentDocument && pTar.contentDocument.body.offsetHeight){ 
+      //ns6 syntax 
+      pTar.height = pTar.contentDocument.body.offsetHeight+20; 
+    //  pTar.width = pTar.contentDocument.body.scrollWidth+20; 
+      } 
+      else if (pTar.Document && pTar.Document.body.scrollHeight){ 
+      //ie5+ syntax 
+      pTar.height = pTar.Document.body.scrollHeight; 
+     // pTar.width = pTar.Document.body.scrollWidth; 
+      } 
+      } 
+      } 
+      </script>
+    <div class="embed-responsive embed-responsive-16by9">
+        <!--
+        <iframe allowtransparency="true" style="background-color=transparent;" name="myr" id="ir" lign="top" onload="javascript:dyniframesize('ir');" src=/side/mystucked/></iframe>
+        -->
+        <iframe name="myr" id="ir" onload="javascript:dyniframesize('ir');" src=/side/mystucked/></iframe>
+    </div>
+</div>
+</body>
+</html>

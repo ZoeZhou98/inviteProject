@@ -1,0 +1,271 @@
+{% extends 'base1.html' %}
+{% load staticfiles %}
+{% load bootstrap_toolkit %}
+{% load url from future %} 
+{% block title %}新的面试{% endblock %}
+{% block last_head %}
+<style type="text/css">
+    input {height:30px}
+    text {height:30px}
+</style>
+<SCRIPT LANGUAGE="javascript"> 
+$(document).ready(function(){
+     var  shi= "{{ finish  }}";
+    if(shi=="goto")
+    {
+       
+       document.getElementById("Save").disabled="disabled"; 
+        window.opener.refresh1(); 
+        <!--window.opener.ifm.location.reload(true);-->
+        <!--window.opener.location.href=window.opener.location.href;--> 
+        <!--alert(window.opener.location.href);-->
+        if(window.opener.location.href.indexOf("/stucked/")>0)
+        {
+            window.opener.parent.scroll();
+        }
+        if(window.opener.location.href.indexOf("/mystucked/")>0)
+        {
+            window.opener.parent.parent.scroll();
+        }
+        window.close();
+    }   
+    var nan = "{{ error1 }}";
+    if(nan == "请选择下一步候选人状态")
+    {
+        document.getElementById("error1").className="control-group error required";
+    }
+    var nan1 = "{{ error2 }}";
+    if(nan1 == "推荐锁定人不能为空")
+    {
+        document.getElementById("sent").className="control-group error required";
+    }
+    var nan2 = "{{ error3 }}";
+    if(nan2 == "招聘岗位不能为空")
+    {
+        document.getElementById("pro").className="control-group error required";
+    }
+    
+    });
+<!--  
+function ohelp(){
+window.open ('/side/exhelp', 'newwindow', 'height=220, width=730, top=0,left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=no,status=no')
+}
+--> 
+</SCRIPT> 
+{% endblock %}  
+{% block content %}
+<div class="modal fade" id="myModal" style="left:400px;width:860px;" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel">
+  <div class="modal-dialog" role="document" style="width: 800px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="gridModalLabel">面试流程：</h4>
+      </div>
+      <div class="modal-body">
+        <table border="1" style="width:800px;">
+        <tr>
+          <th>面试过程</th>
+          <th>面试人</th>
+          <th>候选人下一步状态</th>
+          <th>下一步面试官</th>
+        </tr>
+        <tr>
+          <td align="center" valign="middle">电话面试</td>
+          <td align="center" valign="middle">二级部门经理/招聘专员</td>
+          <td align="center" valign="middle">一面|淘汰  </td>
+          <td align="center" valign="middle">二级部门经理/招聘专员|锁定人(默认)</td>
+        </tr>
+        <tr>
+          <td align="center" valign="middle">  一面  </td>
+          <td align="center" valign="middle">二级部门经理/招聘专员</td>
+          <td align="center" valign="middle">二面|淘汰|发offer</td>
+          <td align="center" valign="middle">一级部门经理|锁定人(默认)|人力(默认)</td>
+        </tr>
+        <tr>
+          <td align="center" valign="middle">  二面  </td>
+          <td align="center" valign="middle">一级部门经理</td>
+          <td align="center" valign="middle">三面(如果需要)|淘汰|发offer</td>
+          <td align="center" valign="middle">部门总经理|锁定人(默认)|人力(默认)</td>
+        </tr>
+        <tr>
+          <td align="center" valign="middle">  三面  </td>
+          <td align="center" valign="middle">部门总经理</td>
+          <td align="center" valign="middle">淘汰|发offer</td>
+          <td align="center" valign="middle">锁定人(默认)|人力(默认)</td>
+        </tr>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container-fluid" style="padding-right:0px;padding-left:0px;">
+    <div class="row" style="display:none">
+      <div class="col-sm-6">
+        <ol class="breadcrumb" style="margin-bottom: 0px;">
+            <li><a href="/talents/first_page/">首页</a></li>
+            <li><a href="/talents/first_page/">面试管理</a></li>
+            <li><a href="/side/stucked/">待处理的面试</a></li>
+            <li class="active">新的面试</li>
+        </ol>
+      </div>
+    </div>
+
+    <!--
+    <div style="overflow:hidden;disply:none">
+        <input type="button" onclick="ohelp()" style="float:right;" value="面试流程"/>
+    </div>
+    -->
+        <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#myModal" style="float:right;">面试流程</button>
+{% if error %}
+        <p style="color: red;">
+          {{ error }}
+        </p>
+{% endif %}
+
+
+  <form method="POST" action="" class="form-horizontal">
+    {% csrf_token %}
+    <table class="table table-condensed table-responsive table-hover" style="font-size:12px;">
+      <tr>
+        <td>
+          <div class="control-group required">
+            <label class="control-label" >*候选人</label>
+              <div class="controls">
+                <input style="height:30px" class="" type="text" readonly="readonly" value={{ dis }}>
+              </div>
+          </div>
+        </td>
+          <td>{{ form.Time|as_bootstrap:"horizontal" }}</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="control-group required">
+            <label class="control-label" >*面试官</label>
+              <div class="controls">
+                <input style="height:30px" type="text" value={{ member }} readonly="readonly"/>
+              </div>
+          </div>
+        </td>
+        <td>{{ form.Level|as_bootstrap:"form-control" }}</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="control-group required">
+            <label class="control-label" for="id_InterviewProcess">*当前状态</label>
+              <div class="controls">
+                <input id="id_InterviewProcess" style="height:30px" name="InterviewProcess" type="text" value="{{ Inp }}" readonly="readonly"/>
+              </div>
+          </div>
+        </td>
+        <td>
+          <div id ="error1" class="control-group required">
+            <label class="control-label" for="id_Status">*候选人下一步状态</label>
+              <div class="controls">   
+                {% if Inp == "电话面试" %}
+                  <select id="id_Status" name="Status">
+                    <option value="ooo"></option>
+                    <option value="一面">一面</option>
+                    <option value="淘汰">淘汰</option>
+                  </select>
+                {% endif %}
+                {% if Inp == "一面" %}
+                  <select id="id_Status" name="Status" onchange="sunc(this)" >
+                    <option value=""></option>
+                    <option value="二面">二面</option>
+                    <option value="淘汰">淘汰</option>
+                    <option value="推荐">推荐</option>
+                  </select>
+                {% endif %}
+                {% if Inp == "二面" %}
+                  <select id="id_Status" name="Status" onchange="sunc(this)">
+                    <option value=""></option>
+                    <option value="填写offer信息">填写offer信息</option>
+                    <option value="三面">三面</option>
+                    <option value="淘汰">淘汰</option>
+                    <option value="推荐">推荐</option>
+                  </select>
+                {% endif %}
+                {% if Inp == "三面" %}
+                  <select id="id_Status" name="Status" onchange="sunc(this)">
+                    <option value=""></option>
+                    <option value="填写offer信息">填写offer信息</option>
+                    <option value="淘汰">淘汰</option>
+                    <option value="推荐">推荐</option>
+                  </select>
+                {% endif %}
+                    <span class="help-inline error" style="color: red;">{{ error1 }}</span>
+              </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>{{ form.InterviewResults|as_bootstrap:"horizontal" }}</td>
+        <td><p>您可以从以下几点进行记录:<br>1、技术方向及专长（如：路由/交换、安全、负载均衡、语音、研发等）<br>2、厂家产品经验（如：思科、华为、华三等），产品线（中、高、低端产品）及熟悉程度<br>3、技术理论基础范围及水平<br>4、项目经验（承担职责）及主要领域<br>5、项目管理经验（如有）<br>6、能力素质印象（如表达和沟通能力、学习和钻研能力、工作态度和承压能力、团队精神及人际关系等）<br>7、是否在职、应聘意向强弱及到岗时间（并判断稳定度及发展方向）<br>8、期望税前薪金<br>。。。</p></td></tr>
+      <script type="text/javascript" src="/static/js/datetime.js" charset="UTF-8"></script>
+ <tr >
+   <td id = "mi" style="display:none">
+    <div id = "sent" class="control-group">  
+      <label class="control-label">*推荐锁定人</label>  
+        <div class="controls">
+			<select id="id_NextUser" name="NextUser" >
+		    <option value="1" >-------------</option>
+            {% for nextuer in nextuers %}
+
+		    <option value="{{ nextuer.id }}" >{{ nextuer.username }}</option>
+            {% endfor %}
+		    </select>
+        <span class="help-inline error" style="color: red;">{{ error2  }}</span>
+       </div>
+       </div>
+    </div>
+ </td>
+   <td>
+    <div id = "pro" class="control-group">  
+      <label class="control-label">*招聘岗位</label>  
+        <div class="controls">
+			<select id="id_station" name="station" >
+                    {% if not station or station == "None" %}
+				    <option value="None" >-------------</option>
+
+                    {% endif %}
+					{% for position in positions %}
+				    {% if station == position %}
+				    <option value="{{ position.id }}" selected="true">{{ position }}</option>
+				    {% elif station == position.id  %}
+				    <option value="{{ position.id }}" selected="true">{{ position }}</option>
+				    {% else %}
+				    <option value="{{ position.id }}"  >{{ position }}</option>
+				    {% endif %}
+				    {% endfor %}
+		    </select>
+            <span class="help-inline error" style="color: red;">{{ error3  }}</span>
+       </div>
+    </div>
+ </td>
+</tr>
+    </table>
+    <p class="col-sm-offset-5">  
+        <input type="submit" value="保存" id="Save" class="btn btn-primary"></input>  
+        <a href="javascript:void(0);" type="button" class="btn btn-warning" onclick=winclose()> 返回</a>
+    </p> 
+  </form>
+</div>
+{% endblock %}
+{% block script %}
+     <script type="text/javascript">
+   function sunc(obj){
+         var shi=document.getElementById("id_InterviewProcess").value
+        if(obj.value == "推荐")
+        {
+            document.getElementById("mi").style.display = "";
+        }
+        else
+        {
+            document.getElementById("mi").style.display = "none";
+        }
+        }
+    </script>
+{% endblock %}

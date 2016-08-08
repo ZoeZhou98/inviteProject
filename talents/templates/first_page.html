@@ -1,0 +1,229 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="/static/index/dist/css/AdminLTE.min.css">
+    <link href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet" media="screen">
+	<title>Insert title here</title>
+<script>
+function openwin() 
+{ window.open ("/talents/positionform.html", "", "height=1000px,width=1000px")} 
+function refreshPage()
+{
+//alert('OK')
+setTimeout(function () {  window.location.reload(); }, 1000);
+
+}
+</script>
+  </head>
+  <body style="overflow:auto">
+	<div class="wrapper row-offcanvas row-offcanvas-left">
+	  <!-- Right side column. Contains the navbar and content of the page -->
+	  <aside class="">
+		<!-- Content Header (Page header) -->
+		<section class="content-header" style="padding:15px 0px 50px">
+			<h1>
+			    首页	
+			</h1>
+		</section>
+			<div class="row">
+				<div class="col-md-4">
+					<!-- Default box -->
+					<div class="box">
+						<div class="box-header">
+							<h3 class="box-title">我的账户</h3>
+						</div>
+						<div class="box-body">
+							<ul class="list-group">
+						  		<a class="list-group-item" href="/accounts/change_account/">
+									账户信息
+								</a>
+						  		<a class="list-group-item" href="/accounts/changepwd/">
+									修改密码
+								</a>
+							</ul>
+						</div><!-- /.box-body -->
+						<!--
+						<div class="box-footer">
+							<code>.box-footer</code>
+						</div>
+						-->
+					</div><!-- /.box -->
+				</div><!-- /.col -->
+
+				<div class="col-md-4">
+					<!-- Primary box -->
+					<div class="box box-primary">
+						<div class="box-header" data-toggle="tooltip" title="Header tooltip">
+							<h3 class="box-title">我的待办事项</h3>
+						</div>
+						<div class="box-body">
+							<ul class="list-group">
+                            {% if 1 in Powers %}
+						  		<a class="list-group-item" href="/talents/handleposition">
+                                  {% if amount %}
+								  <span class="badge">{{ amount }}</span>
+                                  {% endif %}
+								  	待处理的岗位申请
+								</a>
+                            {% endif %}
+						  		<a class="list-group-item" href="/side/stucked/">
+                                  {% if length %}
+								  <span class="badge">
+                                  {{ length }}
+                                  </span>
+                                  {% endif %}
+                                    待处理的面试
+								</a>
+                            
+                                {% if 4 in Powers %}
+						  		<a class="list-group-item" href="/side/seize/">
+                                  {% if seizelength %}
+								  <span class="badge">
+                                  {{ seizelength }}
+                                  </span>
+                                  {% endif %}
+                                    需要抢占的简历
+								</a>
+                                {% endif %}
+                                
+                                {% if 8 in Powers %}
+						  		<a class="list-group-item" href="/check_importid">
+                                  {% if downrelength %}
+								  <span class="badge">
+                                  {{ downrelength }}
+                                  </span>
+                                  {% endif %}
+								    待下载的简历
+								</a>
+                                {% endif %}
+                                <!--
+						  		<a class="list-group-item" href="/talents/positiontask">
+								  <span class="badge">{{ num }}</span>
+								    待完成的招聘职位
+								</a>
+                                -->
+                                {% if 7 in Powers %}
+                                <a class="list-group-item" href={% url "talents:publishing_position" %}>
+                                  {% if publishing %}
+                                  <span class="badge">
+                                  {{ publishing }}
+                                  </span>
+                                  {%  endif %}
+                                    待发布的招聘申请
+                                </a>
+                                {% endif %}
+                                {% if 5 in Powers %}
+                                <a class="list-group-item" href={% url "side:entry" %}>
+                                  {% if stalength %}
+                                  <span class="badge">
+                                  {{ stalength }}
+                                  </span>
+                                  {% endif %}
+                                    待处理的入职
+                                </a>
+                                {% endif %}
+							</ul>
+						</div><!-- /.box-body -->
+					</div><!-- /.box -->
+				</div><!-- /.col -->
+
+				<div class="col-md-4">
+					<!-- Info box -->
+					<div class="box box-info">
+						<div class="box-header">
+							<h3 class="box-title">我的文件</h3>
+						</div>
+						<div class="box-body">
+						  <ul class="list-group">
+							<a class="list-group-item" href="/talents/handleingposition">
+						  	  <span class="badge">{{ len_post }}</span>
+							  	我发布的岗位申请
+							</a>
+						  	<a class="list-group-item" href="/talents/handledposition">
+							  <span class="badge">{{ handled_posit_num }}</span>
+							    我处理过的岗位申请
+							</a>
+						  	<a class="list-group-item" href="/side/myresume/">
+							  <span class="badge">{{ len_resume }}</span>
+							    我发起的面试
+							</a>
+						  	<a class="list-group-item" href="/side/worked/">
+							  <span class="badge">{{ len_inter }}</span>
+							    我处理过的面试
+							</a>
+						  </ul>
+						</div><!-- /.box-body -->
+					</div><!-- /.box -->
+				</div><!-- /.col -->
+			</div><!-- /.row -->
+
+			<div class="row">
+				<div class="col-md-4">
+					<!-- Default box -->
+					<div class="box box-danger">
+						<div class="box-header">
+							<h3 class="box-title">岗位管理</h3>
+						</div>
+						<div class="box-body">
+						  <ul class="list-group">
+							<a class="list-group-item" href=" " onclick="openwin()">
+							  	新的岗位申请
+							</a>
+						  	<a class="list-group-item" href="/talents/positionmanage">
+								正在发布的岗位
+							</a>
+						  	<a class="list-group-item" href="/talents/filing">
+								已归档的岗位
+							</a>
+						  </ul>
+						</div><!-- /.box-body -->
+					</div><!-- /.box -->
+				</div><!-- /.col -->
+				<div class="col-md-4">
+					<!-- Default box -->
+					<div class="box box-success">
+						<div class="box-header">
+							<h3 class="box-title">简历管理</h3>
+						</div>
+						<div class="box-body">
+						  <ul class="list-group">
+							<a class="list-group-item" href="/talents/resumemanage">
+								简历一览
+							</a>
+						  	<a class="list-group-item" href="/import_ResumeID">
+								导入简历ID
+							</a>
+						  	<a class="list-group-item" href="/import_choice">
+								导入简历文件
+							</a>
+						  </ul>
+						</div><!-- /.box-body -->
+					</div><!-- /.box -->
+				</div><!-- /.col -->
+				<div class="col-md-4">
+					<!-- Default box -->
+					<div class="box box-warning">
+						<div class="box-header">
+							<h3 class="box-title">统计管理</h3>
+						</div>
+						<div class="box-body">
+						  <ul class="list-group">
+							<a class="list-group-item" href="/side/statisticsmon/">
+								月度统计	
+							</a>
+						  	<a class="list-group-item" href="/side/statisticsyea/">
+								年度统计
+							</a>
+						  	<a class="list-group-item" href="">
+								自定义统计
+							</a>
+						  </ul>
+						</div><!-- /.box-body -->
+					</div><!-- /.box -->
+				</div><!-- /.col -->
+
+			</div><!-- /.row -->
+	</div>
+  </body>
+</html>

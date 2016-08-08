@@ -1,0 +1,161 @@
+{% extends 'Base.html'%} 
+{% block head %}
+	{% if refresh %}
+		<script language="javascript">
+			alert('ceshi')
+			//parent.scroll();
+		</script >
+	{% endif%}
+    <script language="javascript">
+
+function get_checkid(name)
+{
+	var checkid="";
+	var arrSon = document.getElementsByName(name);
+	for(i=0;i<arrSon.length;i++) {
+		if(arrSon[i].checked) {
+			checkid = checkid+"|"+arrSon[i].value;
+		}
+	}
+	document.getElementById('allid').value = checkid;
+
+}
+	
+// --列头全选框被单击---
+function ChkAllClick(sonName, cbAllId){
+
+    var arrSon = document.getElementsByName(sonName);
+ var cbAll = document.getElementById(cbAllId);
+ 
+ var tempState=cbAll.checked;
+ for(i=0;i<arrSon.length;i++) {
+  if(arrSon[i].checked!=tempState)
+	  {
+           arrSon[i].click();   
+ 		}
+  }
+
+}
+
+// --子项复选框被单击---
+function ChkSonClick(sonName, cbAllId) {
+
+ var arrSon = document.getElementsByName(sonName);
+ var cbAll = document.getElementById(cbAllId);
+ for(var i=0; i<arrSon.length; i++) {
+     if(!arrSon[i].checked) {
+	  cbAll.checked = false;
+	  //get_checkid(sonName);
+     return;
+     }
+ }
+ cbAll.checked = true;
+ //get_checkid(sonName);
+}
+
+// --反选被单击---
+function ChkOppClick(sonName){
+ var arrSon = document.getElementsByName(sonName);
+ for(i=0;i<arrSon.length;i++) {
+  arrSon[i].click();
+ }
+}
+</script>
+<script type="text/javascript">
+function method1() {
+
+    var curTbl = document.getElementById("tableExcel");
+    var oXL = new ActiveXObject("Excel.Application");
+    var oWB = oXL.Workbooks.Add();
+    var oSheet = oWB.ActiveSheet;
+    var sel = document.body.createTextRange();
+    sel.moveToElementText(curTbl);
+                            //sel.select();
+    sel.execCommand("Copy");
+    oSheet.Paste();
+    oXL.Visible = true;
+
+ }
+</script>
+{% endblock %}
+{% block content %}
+<div class="row">
+     <div class="col-sm-6">
+        <ol class="breadcrumb" style="margin-bottom: 0px;">
+            <li><a href="/talents/first_page/">首页</a></li>
+            <li><a href="/talents/first_page/">简历管理</a></li>
+            <li class="active">管理导入的ID</li>
+        </ol>
+     </div>
+<div class="class="col-xs-1 col-xs-offset-5" style="text-align:right;">
+<input type = "button"  name = "tableExcel" value = "导出表格" onclick = "method1()">
+</div>
+  </div>
+ <!--
+<div class="row">
+    <div class="col-sm-2">
+        <h3 style="margin:8px"><span class="label label-success">管理导入的ID</span></h3>
+    </div>
+    <div class="col-sm-4 col-sm-offset-2">
+        <h3>管理导入的ID</h3>
+    </div>
+</div>
+-->
+<p>
+
+<form class="form-horizontal" enctype="multipart/form-data" method="POST" >
+  
+	<div ><style>table.customTableClassName {margin-bottom: 10px;border-collapse: collapse;display: table;}.customTableClassName td, .customTableClassName th {border: 1px solid #ddd;}</style></div>
+	<div class="customTableClassName" cellspacing="0">
+
+	<table cellspacing="0" id = "tableExcel" align = center table.customTableClassName {margin-bottom: 10px;border-collapse: collapse;display: table;}.customTableClassName td, .customTableClassName th {border: 1px solid #ddd;}>
+		<tr height=40>
+			<td width=200 style="font-family:黑体">推荐人*</td>
+			<td width=200  style="font-family:verdana;font-size:12px; line-height:150%">{{ gruop.referrerID.username }} </td>
+			<td width=200  style="font-family:黑体">锁定人*</td>
+			<td width=200  style="font-family:verdana;font-size:12px; line-height:150%">{{ gruop.userID.username }}</td>
+		</tr>
+		<tr height=40>
+			<td style="font-family:黑体" width=120>上传时间</td>
+			<td width=120 style="font-family:verdana;font-size:12px; line-height:150%">{{ gruop.Time|date:"Y-m-d H:i:s"  }}</td>
+			<td style="font-family:黑体" width=120>备注信息</td>
+			<td width=120 style="font-family:verdana;font-size:12px; line-height:150%">{{ gruop.remark }}</td>
+		</tr>
+		<tr height=40>
+			<td style="font-family:黑体" colspan=4 width=480 align="center">ID信息</td>
+		</tr>
+		<tr height=40>
+			<td style="font-family:黑体" width=120><INPUT name="chkAll" id="chkAll" title="全选" onClick="ChkAllClick('chkSon','chkAll')" type="checkbox" />全选</td>
+			<td style="font-family:黑体" width=240 colspan=2>ID号</td>
+			<td style="font-family:黑体" width=120>ID来源</td>
+		</tr height=40>
+		{% for ID_info in ID_infoes %}
+	      <tr>
+			<td><INPUT name="chkSon"  type="checkbox"  value='{{ ID_info.id }}' onclick="ChkSonClick('chkSon','chkAll')" /></td>
+		    <td width=240 colspan=2>{{ ID_info.resume_id }}</td>		    
+		    <td>{{ ID_info.source }}</td>
+	      </tr>
+	      {% endfor %}
+		  <tr height=40>
+			<td style="font-family:黑体" width=120>备注信息</td>
+			<td width=360 colspan=3 style="font-family:verdana;font-size:12px; line-height:150%">
+				<input name = "remark" width="100%" height="100%" placeholder="填写退回原因等" >
+				</input> 
+			</td>
+		</tr>
+	</table>
+      <p>
+      <div class="row">  
+        <div class="col-sm-1 col-sm-offset-5">
+            <input type="submit" value="提交" class="btn btn-info" onclick = "get_checkid('chkSon');">  
+        </div>
+        <div class="col-sm-1"> 
+            <a class="btn btn-danger" href="" role="button">清除内容</a>
+        </div>
+      </div>  
+  </div>
+
+	<input id = "allid" name = "allid" style="display:none" > </input>
+</form>
+
+{% endblock %}

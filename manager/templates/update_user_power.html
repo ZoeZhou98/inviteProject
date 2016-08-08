@@ -1,0 +1,42 @@
+{% extends 'Base.html' %}
+{% load staticfiles %}
+{% load bootstrap_toolkit %}
+{% load url from future %}  
+{% block content %}
+<form class="form-horizontal" method="POST" >
+  <div class="container-fluid">
+    {% csrf_token %}
+    <div class="row">        
+        <div class="col-sm-3">
+          <div class="input-group">
+            <span class="input-group-addon" id="2_department">* 姓名:</span>
+            <input type="text" class="form-control" name="username" value={{ user_power.UserID.username }} disabled='true'> 
+          </div>
+        </div>    
+  </div> 
+  <div class="row">        
+        <div class="col-sm-3">
+          <div class="input-group">
+            <span class="input-group-addon" id="2_department">* 权限:</span>
+            <select class="form-control" name='power' id="power" aria-describedby="power">
+                {% for x in powers %}
+					{% if x.id == user_power.PowerID.id %}
+                    <option value ="{{ x.id }}" selected="selected">{{ x }}</option>
+					{% else %}
+					<option value ="{{ x.id }}" >{{ x }}</option>
+					{% endif %}
+				{% endfor %}
+			</select>
+          </div>
+        </div>    
+  </div> 
+  <div class="row">  
+        <div class="col-sm-3">
+            <input type="submit" value="修改" class="btn btn-primary" id="btn1">  
+        </div>
+        <div class="col-sm-3"> 
+            <a class="" align="right" role="button" name="Submit" onclick="javascript:history.back(-1);">返回</a>
+        </div>
+    </div>
+</form>
+{% endblock %}

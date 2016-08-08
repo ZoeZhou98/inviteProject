@@ -1,0 +1,67 @@
+{% extends 'Base.html' %}
+
+{% block title %}上传失败的简历信息{% endblock%}
+{% block content %}
+<div class="container-fluid ">
+<div class="row">
+    <div class="col-sm-6">
+        <ol class="breadcrumb" style="margin-bottom: 0px;">
+            <li><a href="/talents/first_page/">首页</a></li>
+            <li><a href="/talents/first_page/">简历管理</a></li>
+            <li class="active">导入失败的简历</li>
+        </ol>
+    </div>
+</div>
+{% if inters %}
+<!--
+<h3>只显示与本系统保存的重复的简历信息</h3>
+-->
+<br>
+<table class="table table-condensed table-bordered table-responsive table-hover">
+  <thead>
+    <tr>
+      <th>姓名</th>
+      <th>候选人状态</th>
+      <th>锁定的用户</th>
+	  <th>时间</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+  <tbody>
+            {% for inter,rep in inters %}
+            {%for int in inter %}
+				<tr>
+				<td>{{ int.CandidateName }}</td>
+				<td>{{ int.Status }}</td>
+				<td>{{ int.UserID.username }}</td>
+				<td>{{ rep.Time|date:"Y-m-d H:i:s"}}</td>
+                <td><a href={{ int.Addr }}>查看简历</a>/<a href={% url 'side:Interview_resume' int.id %}>面试记录</a></td>
+				</tr>
+				{% endfor %}
+				
+            {% endfor %}
+
+	      
+  </tbody>
+</table>
+{% if inters.has_previous %}
+    <a class='paginator' title='上一页' href='?page={{ inters.previous_page_number }}'><span>&lt;&lt;</span></a>
+{% endif %}
+{% for page in inters.paginator.page_range %}
+    {% if page = inters.number %}
+        <a class='paginator_current' title='当前页:{{ page }}'><span>{{ page }}</span></a>
+    {% else %}
+        <a class='paginator' href='?page={{ page }}' title='{{ page }}'><span>{{ page }}</span></a>
+    {% endif %} 
+{% endfor %}
+{% if inters.has_next %}
+    <a class='paginator' title='下一页' href='?page={{ inters.next_page_number }}'><span>&gt;&gt;</span></a>
+{% endif %}
+</div>
+{% else %}
+<p> 没有记录 </p>
+{% endif %}
+
+</div>
+	        
+{% endblock %}

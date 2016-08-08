@@ -1,0 +1,59 @@
+{% extends 'Base.html'%}
+{% block head %}
+<link href="//cdn.bootcss.com/bootstrap-table/1.9.1/bootstrap-table.css" rel="stylesheet">
+<link href="//cdn.bootcss.com/x-editable/1.5.1/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+{% endblock %}
+{% block content %}
+  <div class="row">
+        <div class="col-sm-3">
+          <ol class="breadcrumb" style="margin-bottom: 0px;">
+            <li><a href="/talents/first_page/">首页</a></li>
+            <li class="active">招聘任务</li>
+          </ol>
+        </div>
+  </div>
+
+		<h1>招聘职位一览</h1>
+{% if positions %}		
+<div>
+<table class="table table-condensed table-bordered table-responsive table-hover" style="font-size:12px;margin-bottom:-5px">
+	<thead><tr>
+		<th>岗位名称</th>
+		<th>岗位地点</th>
+		<th>负责人</th>
+		<th>电话</th>
+		<th>部门</th>
+		<th>二级部门</th>
+		<th>现有人数</th>
+		<th>招聘人数</th>
+        <th>已招聘人数</th>
+		<th>操作</th>
+	    </tr>
+	</thead>
+	<tbody>
+	     {% for position in positions %}
+	     <tr>
+		    <td>{{ position.PositionName }}</td>
+		    <td>{{ position.Workplace }}</td>
+		    <td>{{ position.UserID.username }}</td>
+		    <td>{{ position.UserID.mobile }}</td>
+		    <td>{{ position.Depart }}</td>
+		    <td>{{ position.SecondDepartment }}</td>
+		    <td>{{ position.ExistingPersonNum }}</td>
+		    <td>{{ position.NeedPersonNum }}</td>
+		    <td>{{ position.recruitednum }}</td>
+            <td><a href={% url 'talents:positionprofile' position.id %}>详情</a></td>
+		</tr>
+	    {% endfor %} 
+	  
+	</tbody>
+
+</table>
+</div>
+ {% else %}
+ <p align="left"> 没有找到相关记录.</p>
+   {% endif %}
+{% endblock %}

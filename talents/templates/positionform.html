@@ -1,0 +1,192 @@
+{% extends 'Base.html' %}
+{% load staticfiles %}
+{% load bootstrap_toolkit %}
+{% load url from future %}  
+{% block content %}
+
+<div class="container-fluid">
+  <div class="row">
+     <div class="col-sm-6">
+        <ol class="breadcrumb" style="margin-bottom: 0px;">
+            <li><a href="/talents/first_page/">首页</a></li>
+            <li><a href="/talents/first_page/">岗位管理</a></li>
+            <li class="active">新的岗位申请</li>
+        </ol>
+    </div>
+  </div>
+</div>
+<p>
+             
+  <!-- 岗位申请表单 -->  
+<form class="form-horizontal" method="POST" >
+  <div class="container-fluid">
+    {% csrf_token %}
+    <div class="row">        
+        <div class="col-sm-3">
+          <div class="input-group">
+            <span class="input-group-addon" id="2_department">* 二级部门:</span>
+            <select class="form-control" name='SecondDepartment' id="SecondDepartment" aria-describedby="2_department">
+                {% for x in departments %}
+                    <option value ="{{ x.id }}">{{ x.name }}</option>
+				{% endfor %}
+			</select>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="input-group">
+            <span class="input-group-addon" id="position">* 招聘岗位:</span>
+            <input type="text" class="form-control" aria-describedby="position" name="position" value={{ PositionName }} >
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="input-group">
+            <span class="input-group-addon" id="staff_now">* 现有人数:</span>
+            <input type="number" class="form-control" name="staff_now" min="0" aria-describedby="staff_now" value={{ ExistingPersonNum }} >
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="input-group">
+            <span class="input-group-addon" id="staff_invite">* 招聘人数:</span>
+            <input type="number" class="form-control" name="staff_invite"min="0" aria-describedby="staff_invite" value ={{ NeedPersonNum }} >
+          </div>
+        </div>
+    </div>
+    <div class="row">        
+        <div class="col-sm-3">
+          <div class="input-group">
+            <span class="input-group-addon" id="project">* 三级项目小组:</span>
+          <select class="form-control" name='project'' id="project" aria-describedby="project">
+                {% for x in projects %}
+                    <option value ="{{ x.name }}">{{ x.name }}</option>
+				{% endfor %}
+			</select>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="input-group">
+            <span class="input-group-addon" id="place">* 工作地点:</span>
+            <input type="text" class="form-control" name="place"  aria-describedby="place" value={{ Workplace }} >
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="input-group">
+            <span class="input-group-addon" id="salary">* 薪资范围:</span>
+            <input type="text" class="form-control" name="salary" aria-describedby="salary" value={{ Salary }} >
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="input-group">
+            <span class="input-group-addon" id="period">* 招聘周期:</span>
+            <input type="text" class="form-control" aria-describedby="period" name="period" value={{ RecruitTime }}  >
+          </div>
+        </div>
+    </div>
+    <div class="row">        
+        <div class="col-sm-6">
+          <div class="input-group">
+            <span class="input-group-addon" id="id_reason">* 招聘理由:</span>
+            <select class="form-control" id="reason" name="reason" onchange = "addreason(this)"> 
+                <option value="1">1.原有人员离职后增补人员</option>
+                <option value="2">2.业务拓展后新增岗位</option>
+                <option value="3" >3.其他</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="input-group">
+            <span class="input-group-addon" id="place">* 招聘渠道:</span>
+            <select class="form-control" id="id_RecruitWay" name="RecruitWay" onchange = 'show(this)'>
+                <option value="1">1.在招聘网站发布职位</option>
+                <option value="2">2.伯乐奖职位</option>
+                <option value="3">3.其他渠道</option>
+            </select>
+          </div>
+        </div>
+    </div>
+    <div class="row">
+	    <div class="col-sm-6 " style="display:none" id ="kk">
+            <div class="input-group">
+             <span class="input-group-addon" id="add_reason">* 补充原因:</span>
+             <textarea class="form-control" name="add_reason" rows="10" value = {{ add_reason }} >{{ add_reason }}</textarea>   
+            </div>
+        </div>
+        <div class="col-sm-6 col-sm-offset-6" style="display:none" id ='display'>
+            <div class="input-group">
+                <span class="input-group-addon" id="bonus">* 伯乐奖金额:</span>
+                <input class="form-control" id="id_Awarding" name="Awarding" type="number" min="0" value="0"/>
+                <span class="input-group-addon"> 元</span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="input-group">
+                <span class="input-group-addon" id="requirement">* 招聘要求:</span>
+                <textarea class="form-control" name="CandidateRequirement" rows="10" value={{ CandidateRequirement }}>{{ CandidateRequirement }}</textarea>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="input-group">
+                <span class="input-group-addon" id="requirement">* 工作内容:</span>
+                <textarea class="form-control" name="WorkContent" rows="10" value = {{ WorkContent }} >{{ WorkContent }}</textarea>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6 has-error">
+            <fieldset disabled>
+                <input class="form-control" type="text" placeholder="请顺序写清性别、年龄、学历、经历、特殊技能等要求">
+            </fieldset>
+        </div>
+        <div class="col-sm-6 has-error">
+            <fieldset disabled>
+                <input class="form-control" type="text" placeholder="请简单描述工作的主要内容等">
+            </fieldset>
+        </div>
+    </div>
+    <p>
+    <div class="row">  
+        <div class="col-sm-1 col-sm-offset-5">
+            <input type="submit" value="申请" class="btn btn-primary" id="btn1">  
+        </div>
+        <div class="col-sm-1"> 
+            <a class="btn btn-danger" href="/talents/positionform" role="button">清除内容</a>
+        </div>
+    </div>
+  </div> 
+</form>
+{% if error_mess %}
+    {{ error_mess }}
+{% endif %}
+<script type="text/javascript" src="/static/js/datetime1.js"></script>
+<script type="text/javascript" src="/static/js/datetime2.js"></script>
+<script>
+	function show(obj)
+        {
+            if(obj.value=="2")
+            {
+                document.getElementById("display").style.display = ""
+            }
+            else
+                document.getElementById("display").style.display = "none"
+        }
+	function addreason(obj)
+        {
+           // alert("邮件更新完成")
+            if(obj.value =="3")
+            {
+                document.getElementById("kk").style.display = ""
+            }
+            else
+                document.getElementById("kk").style.display = "none"
+        }
+$(function refreshParent(){ 
+if ({{ shu }} == 1 )
+{
+window.opener.refreshPage();
+window.close();
+window.opener.parent.scroll();
+}
+})
+</script>
+{% endblock %}

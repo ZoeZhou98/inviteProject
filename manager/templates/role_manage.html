@@ -1,0 +1,46 @@
+{% extends 'Base.html'%}
+{% block head %}
+<link href="//cdn.bootcss.com/bootstrap-table/1.9.1/bootstrap-table.css" rel="stylesheet">
+<link href="//cdn.bootcss.com/x-editable/1.5.1/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+{% endblock %}
+{% block content %}
+  <div class="row">
+        <div class="col-sm-3">
+          <ol class="breadcrumb" style="margin-bottom: 0px;">
+            <li><a href="/talents/first_page/">首页</a></li>
+            <li><a href="/talents/first_page/">系统管理</a></li>
+            <li class="active">职位管理</li>
+          </ol>
+        </div>
+  </div>
+ <div class="row">
+		<div class="col-sm-3">
+            <a href="/manager/add_role">添加职位</a>   
+        </div>
+  </div>
+<table class="table table-condensed table-bordered table-responsive table-hover" style="font-size:12px;margin-bottom:-5px">
+<thead>
+<tr> 
+<th scope="col">角色名称</th>
+<th scope="col" >所属部门</th>
+<th scope="col">上级角色</th>
+<th scope="col"> 操作</th>
+</tr>
+</thead>
+{% for role in roles %}
+<tbody>
+<tr>
+<td> {{ role.name }}</td>
+<td> {{ role.DepartmentID.name }}</td>
+<td> {{ role.superior_role }}</td>
+
+<td><a href="/manager/delete_role/{{ role.id }}">删除</a>/<a href="/manager/update_role/{{ role.id }}">修改</a></td>
+</tr>
+</tbody>
+{% endfor %}
+</table>
+</body>
+{% endblock %}

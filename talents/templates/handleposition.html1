@@ -1,0 +1,147 @@
+{% extends 'Base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-sm-6">
+        <h3 style="margin:8px"><span class="label label-success">待审批的申请</span></h3>
+    </div>
+ <!--   
+    <div class="col-sm-6 ">
+        <form action="/talents/handleposition/" method="get">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search for...">
+                <span class="input-group-btn">
+                    <button class="btn btn-info" type="submit">搜索</button>
+                </span>
+            </div>
+        </form>
+    </div>
+    -->
+</div>
+<p>
+
+{% if Position_Exam %}
+<div>
+<table class="table table-condensed table-bordered table-responsive table-hover">
+	<thead><tr>
+		<th>岗位名称</th>
+		<th>负责人</th>
+		<th>一级部门</th>
+		<th>二级部门</th>
+		<th>现有人数</th>
+        	<th>招聘人数</th>
+        	<th>当前状态</th>
+		<th>操作</th>
+	    </tr>
+	</thead>
+      {% for position,position_exams,position_exam_id in Position_Exam %} 
+	<tbody>
+	     
+	     <tr id={{ position.id }} onclick="opid(this)">
+		    <td>{{ position.PositionName }}</td>
+		    
+		    <td>{{ position.UserID.username }}</td>
+		    
+		    <td>{{ position.Depart }}</td>
+		    <td>{{ position.SecondDepartment }}</td>
+		    <td>{{ position.ExistingPersonNum }}</td>
+		    <td>{{ position.NeedPersonNum }}</td>
+            	    <td>{{ position.States }}</td>
+            <td>
+            
+    	   {% if position.Filing == 2 and position.Approver != position.UserID %}
+            <a href={% url 'talents:examine' position.id %}>审批</a>
+            {% elif position.UserID == position.Approver %}
+            <a href={% url 'talents:update_position' position.id %}>修改</a>
+           {% else %}
+            <a href={% url 'talents:mail_failed' position.id %}>发邮件</a>
+           {% endif %}</td>
+		</tr>
+	    
+	 </tbody> 
+<tbody id= {{ position_exam_id }} style="color:red;display:none;">
+    {% if position_exams %}
+    <tr>
+    <td colspan="8">
+	{{ position.UserID.username }}(申请)
+	 {% for position_exam in position_exams %}
+     -->{{ position_exam.UserID.username }}({{ position_exam.Result }}{% if position_exam.comment and  position.Approver.username != "罗艳丽" %} :{{ position_exam.comment }} {% endif %})
+	  {% endfor %}
+    </td>
+</tr>
+      
+        {% endif %}
+         
+   </tbody>
+{% endfor %}
+{% comment %}
+   {% else %}
+    
+    <thead><tr>
+
+		<th>岗位名称</th>
+		<th>二级部门</th>
+		<th>一级部门</th>
+		<th>申请人</th>
+		<th>审批人</th>
+		<th>审批意见</th>
+		<th>现有人数</th>
+		<th>招聘人数</th>
+		<th>操作</th>
+       </tr>
+   </thead>
+	<tbody>
+	     {% for examine in examines %}
+	     <tr>
+		    <td>{{ examine.PositionID.PositionName }}</td>
+		    
+		    <td>{{ examine.PositionID.SecondDepartment }}</td>
+		    <td>{{ examine.PositionID.Department }}</td>
+		    <td>{{ examine.PositionID.UserID.username }}</td>
+		   
+		    <td>{{ examine.UserID.username }}</td>
+            <td>{{ examine.Result }}</td>  
+		    <td>{{ examine.PositionID.ExistingPersonNum }}</td>
+		    <td>{{ examine.PositionID.NeedPersonNum }}</td>
+		   
+            <td><a href={% url 'talents:examine' examine.PositionID.id %}>审批</a></td>
+		</tr>
+	    {% endfor %} 
+	  
+	</tbody>
+    {% endif %}
+{% endcomment %}
+</table>
+{% if positions.length > 15 %}
+{% if positions.has_previous %}
+    <a class='paginator' title='上一页' href='?page={{positions.previous_page_number }}'><span>&lt;&lt;</span></a>
+{% endif %}
+{% for page in positionss.paginator.page_range %}
+    {% if page = positions.number %}
+        <a class='paginator_current' title='当前页:{{ page }}'><span>{{ page }}</span></a>
+    {% else %}
+        <a class='paginator' href='?page={{ page }}' title='{{ page }}'><span>{{ page }}</span></a>
+    {% endif %} 
+{% endfor %}
+{% if positions.has_next %}
+    <a class='paginator' title='下一页' href='?page={{ positions.next_page_number }}'><span>&gt;&gt;</span></a>
+{% endif %}
+{% endif %}
+</div>
+ {% else %}
+   <p align="left">没有找到相关记录.</p>
+   {% endif %}
+<script type="text/javascript">
+   function opid(obj){
+    var df = obj.id+"id";
+
+    if(document.getElementById(df).style.display == "")
+    {
+        document.getElementById(df).style.display = "none";
+    }
+    else 
+    document.getElementById(df).style.display = "";
+   }
+
+
+</script>
+  {% endblock %}

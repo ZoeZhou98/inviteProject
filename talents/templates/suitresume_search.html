@@ -1,0 +1,65 @@
+{% extends 'Base.html'%}  
+{% block content %}
+
+    {% for position,resume1 in resumes %}
+
+      职位：{{ position.PositionName }}
+     
+{% if resume1 %}
+<div >
+<table>
+	    <thead>
+		<tr>
+		    <th scope="col">姓名</th>
+		    <th scope="col">性别</th>
+		    <th scope="col">年龄</th>
+		    <th scope="col">概况</th>
+		    <th scope="col">电话</th>
+		    <th scope="col">邮箱</th>
+		    <th scope="col">职位</th>
+		    
+		    <th scope="col">入库日期</th>
+		    <th scope="col">操作</th>
+		</tr>
+	    </thead>
+	    <tbody >
+	     {% for resume in resume1 %}
+	     <tr>
+		    <td>{{ resume.CandidateName }}</td>
+		    <td>{{ resume.CandidateSex }}</td>
+		    <td>{{ resume.CandidateAge }}</td>
+		    <td class="autocut">{{ resume.CandidateProfile }}</td>
+		    <td class="autocut">{{ resume.CandidatePhone }}</td>
+		    <td class="autocut">{{ resume.CandidateEmail }}</td>
+		    <td class="autocut">{{ resume.PositionName }}</td>
+		    
+		    <td class="autocut">{{ resume.Time|date:"Y-m-d" }}</td>
+		    <td>
+		    <a href={{ resume.Addr }}>查看</a>/
+		    <a href="{% url 'talents:input_pool' resume.id %}" onclick=" window.parent.location.reload()">锁定</a></td>
+		</tr>
+	     
+	     {% endfor %}
+	</tbody>
+</table>
+
+{% if resumes.has_previous %}
+    <a class='paginator' title='涓婁竴椤�' href='?page={{resumes.previous_page_number }}'><span>&lt;&lt;</span></a>
+{% endif %}
+{% for page in resumes.paginator.page_range %}
+    {% if page = resumes.number %}
+        <a class='paginator_current' title='褰撳墠椤�:{{ page }}'><span>{{ page }}</span></a>
+    {% else %}
+        <a class='paginator' href='?page={{ page }}' title='{{ page }}'><span>{{ page }}</span></a>
+    {% endif %} 
+{% endfor %}
+{% if resumes.has_next %}
+    <a class='paginator' title='涓嬩竴椤�' href='?page={{ resumes.next_page_number }}'><span>&gt;&gt;</span></a>
+{% endif %}
+</div>
+{% else %}
+<p align="left">没有记录 </p>
+{% endif %}
+{% endfor %}
+{% endblock %}
+

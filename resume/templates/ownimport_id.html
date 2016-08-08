@@ -1,0 +1,93 @@
+{% extends 'Base.html' %}
+
+{% block title %}我上传的简历{% endblock%}
+{% block content %}
+{% if id_list %}
+<div class="container-fluid ">
+  <div class="row">
+     <div class="col-sm-6">
+        <ol class="breadcrumb" style="margin-bottom: 0px;">
+            <li><a href="/talents/first_page/">首页</a></li>
+            <li><a href="/talents/first_page/">简历管理</a></li>
+            <li class="active">我导入的ID</li>
+        </ol>
+     </div>
+     <div class="col-sm-6" style="text-align:right;">
+        <input class="btn btn-danger" type="button" name="tableExcel" value="导出表格" onclick="method1()">
+     </div>
+  </div>
+  <p>
+  <div class="row">
+    <table class="table table-condensed table-bordered table-responsive table-hover" id = "tableExcel">
+      <thead>
+        <tr>
+          <th>锁定的用户</th>
+          <th>简历ID</th>
+	      <th>简历来源</th>
+          <th>推荐人</th>
+          <th>处理时间</th>
+		  <th>当前状态</th>
+		  <th>处理人</th>
+		  <th>备注信息</th>
+        </tr>
+      </thead>
+      <tbody>
+          {% for id in id_list %}
+	      <tr>
+		    <td>{{ id.user_name }}</td>
+		    <td>{{ id.resume_id }}</td>
+		    <td>{{ id.source }}</td>
+            <td>{{ id.referrerID.username }}</td>
+            <td>{{ id.Time|date:"Y-m-d H:i:s" }}</td>
+			{% ifequal id.Status 0 %}
+			<td>未处理</td>
+			{% endifequal %} 
+			{% ifequal id.Status 1 %}
+			<td>已上传</td>
+			{% endifequal %} 
+			{% ifequal id.Status 2 %}
+			<td>已退回</td>
+			{% endifequal %} 
+			<td>{{ id.UploaderID.username }}</td>
+			<td>{{ id.remark }}</td>
+	      </tr>
+	      {% endfor %}
+		  
+      </tbody>
+    </table>
+  </div>
+{% if id_list.has_previous %}
+    <a class='paginator' title='上一页' href='?page={{ id.previous_page_number }}'><span>&lt;&lt;</span></a>
+{% endif %}
+{% for page in id.paginator.page_range %}
+    {% if page = id_list.number %}
+        <a class='paginator_current' title='当前页:{{ page }}'><span>{{ page }}</span></a>
+    {% else %}
+        <a class='paginator' href='?page={{ page }}' title='{{ page }}'><span>{{ page }}</span></a>
+    {% endif %} 
+{% endfor %}
+{% if id_list.has_next %}
+    <a class='paginator' title='下一页' href='?page={{ id_list.next_page_number }}'><span>&gt;&gt;</span></a>
+{% endif %}
+</div>
+{% else %}
+<p> 没有记录 </p>
+{% endif %}
+</div>
+<script type="text/javascript">
+function method1() {
+
+    var curTbl = document.getElementById("tableExcel");
+    var oXL = new ActiveXObject("Excel.Application");
+    var oWB = oXL.Workbooks.Add();
+    var oSheet = oWB.ActiveSheet;
+    var sel = document.body.createTextRange();
+    sel.moveToElementText(curTbl);
+                            //sel.select();
+    sel.execCommand("Copy");
+    oSheet.Paste();
+    oXL.Visible = true;
+
+ }
+</script>
+{% endblock %}

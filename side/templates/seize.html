@@ -1,0 +1,87 @@
+{% extends 'Base.html' %}
+{% block title %}需要抢占的简历{% endblock %}
+{% block content %}
+
+<div class="row">
+    <div class="col-sm-6">
+        <ol class="breadcrumb" style="margin-bottom: 0px;">
+            <li><a href="/talents/first_page/">首页</a></li>
+            <li><a href="/talents/first_page/">面试管理</a></li>
+            <li class="active">需要抢占的简历</li>
+        </ol>
+    </div>
+</div>
+<p>
+
+<div class="container-fluid ">
+<table class="table table-condensed table-bordered table-responsive table-hover">
+  <thead>
+    <tr>
+      <th>姓名</th>
+      <th>性别</th>
+      <th>年龄</th>
+      <th>联系电话</th>
+      <th>邮箱</th>
+      <th>工作年限</th>
+      <th>候选人状态</th>
+      <th>求职的职位</th>
+      <th>候选人水平</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+    
+   {% for inter,side1,interss in sides %}		
+	      
+  <tbody>
+          <tr id={{ inter.resume.id }} onclick="opid2(this)">
+		  <td>{{ inter.resume.CandidateName }}</td>
+		  <td>{{ inter.resume.CandidateSex }}</td>
+		  <td>{{ inter.resume.CandidateAge }}</td>
+		  <td class="autocut">{{ inter.resume.CandidatePhone }}</td>
+		  <td class="autocut">{{ inter.resume.CandidateEmail }}</td>
+		  <td>{{ inter.resume.CandidateProfile }}</td>
+		  <td>{{ inter.resume.Status }}</td>
+		  <td class="autocut">{{ inter.resume.PositionName }}</td>
+		  <td>{{ inter.resume.Level }}</td>
+          <td>
+            <a href={% url 'side:invitation' inter.id %}>抢占</a>/<a href={{ inter.resume.Addr }}>查看简历</a>/<a href={% url 'side:Interview_resume' inter.resume.id %}>面试记录</a></td>
+	      </tr>
+  </tbody>
+  <tbody id={{ interss }} style="color:red;display:none;">
+
+          {% if side1 %} 
+  		  {% for side in side1 %}
+	      <tr>
+          <td  colspan="10" class="autocut" style ="text-align:left;">
+		    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>面试过程:</label>&nbsp;{{ side.InterviewProcess }}&nbsp;&nbsp;&nbsp;&nbsp;<label>面试官:</label>&nbsp;{{ side.user.username }}&nbsp;&nbsp;&nbsp;&nbsp;<label>候选人水平:</label>&nbsp;{{ side.Level }}&nbsp;&nbsp;&nbsp;&nbsp;<label>面试时间:</label>&nbsp;{{ side.Time|date:"Y-m-d" }}&nbsp;&nbsp;&nbsp;&nbsp;<label>面试评价:</label>&nbsp;{{ side.InterviewResults }}
+          </td>
+	      </tr>
+	      {% endfor %}
+          {% endif %}
+	      {% endfor %} 
+          
+  </tbody>	      
+
+</table>
+
+
+	    </div>
+{% endblock %}
+{% block script %}
+
+<script type="text/javascript">
+   function opid2(obj){
+    var df = obj.id+"ss";
+
+    if(document.getElementById(df).style.display == "")
+    {
+        document.getElementById(df).style.display = "none";
+    }
+    else 
+    document.getElementById(df).style.display = "";
+   }
+
+
+</script>
+{% endblock %}
+

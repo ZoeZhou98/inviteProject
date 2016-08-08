@@ -1,0 +1,79 @@
+{% extends 'base1.html' %}
+{% load staticfiles %}
+{% load bootstrap_toolkit %}
+{% load url from future %} 
+{% block title %}新的入职{% endblock %}
+{% block last_head %}
+<SCRIPT LANGUAGE="javascript"> 
+$(document).ready(function(){
+     var  shi= "{{ finish  }}";
+    if(shi=="goto")
+    {
+       
+        window.opener.refresh1(); 
+        <!--window.opener.ifm.location.reload(true);-->
+        <!--window.opener.location.href=window.opener.location.href;--> 
+        window.close();
+    }    
+    
+    });
+</SCRIPT> 
+{% endblock %}  
+		
+{% block content %}
+<div class="container-fluid" style="padding-right:0px;padding-left:0px;">
+    <div class="row">
+        <div class="col-sm-6">
+            <h3 style="margin:8px"><span class="label label-success">新的入职</span></h3>
+        </div>
+    </div>
+{% if error1 %}
+        <p style="color: red;">
+            {{ error1 }}
+        </p>
+{% endif %}
+<form method="POST" action="" class="form-horizontal">
+            {% csrf_token %}
+            <table>
+            <tr><div class="control-group required"><label class="control-label" >*候选人</label><div class="controls"><input  type="text" value={{ dis }} readonly="readonly"/></div></div></tr>
+ <tr>
+    <div class="control-group">  
+      <label class="control-label">*招聘岗位</label>  
+        <div class="controls">
+			<select id="id_position" name="position" >
+                    <!--{% if not station %}
+				    <option value=None >-------------</option>
+                    {% endif %}
+                    -->
+					{% for station in stations %}
+				    {% if position == station or position == station.id %}
+				    <option value="{{ station.id }}" selected="true">{{ station }}</option>
+				    {% else %}
+				    <option value="{{ station.id }}"  >{{ station }}</option>
+				    {% endif %}
+				    {% endfor %}
+		    </select>
+       </div>
+    </div>
+  <span class="help-inline error" style="color: red;"></span>
+ </tr>
+            
+			
+			<tr>{{ form.EntryResults|as_bootstrap:"horizontal" }}</tr>
+            <tr><div class="control-group required"><label class="control-label" >*操作人</label><div class="controls"><input  type="text" value={{ member }} readonly="readonly"/></div></div></tr>
+			<div>
+			<tr>{{ form.Time|as_bootstrap:"horizontal" }}</tr>
+    		<script type="text/javascript" src="/static/js/datetime.js" charset="UTF-8"></script>
+    		</div>
+    		<tr>{{ form.Status1|as_bootstrap:"horizontal" }}</tr>
+    		
+    		</table>       
+            <p class="form-actions">  
+                <input type="submit" value="保存" class="btn btn-primary">  
+                <a href="javascript:void(0);" type="button" class="btn btn-warning" onclick=winclose()> 返回</a>
+            </p>             
+</form>
+ 
+
+	    </div>
+{% endblock %}

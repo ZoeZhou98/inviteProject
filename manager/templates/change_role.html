@@ -1,0 +1,24 @@
+{% extends 'base1.html' %}
+
+{% block content %}
+<form method="POST" action="" class="form-horizontal">
+{% csrf_token %}
+<div>
+    <label class="control-label" for="id_role">角色</label>
+    <select id="id_role" name="role" >
+    <option value="" >---------</option>
+    {% for position in positions %}
+    <option value="{{ position.id }}" >{{ position.PositionName }}</option>
+    {% endfor %}
+</select>
+</div>
+<div>
+    <label class="control-label" for="id_Ename">用户</label>
+    <input id="id_Ename" name="Ename" type="text" value="{{ Ename|default_if_none:"" }}" />
+</div>
+<p class="form-actions">  
+    <input type="submit" value="修改"  class="btn btn-primary" > 
+    <a href="/side/stucked/" type="button" class="btn btn-warning"> 返回</a>
+</p> 
+</form>
+{% endblock %}  

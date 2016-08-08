@@ -1,0 +1,49 @@
+{% extends 'Base.html' %}
+{% block content %}
+
+<h1>正在审批的申请</h1>
+{% if examines %}
+
+		
+<div>
+<table>
+	<thead><tr>
+		<th>岗位名称</th>
+		<th>审批人</th>
+		<th>意见</th>
+		<th>审批时间</th>
+	    </tr>
+	</thead>
+	<tbody>
+	     {% for examine in examines %}
+	     <tr>
+		    <td>{{ examine.PositionID.PositionName }}</td>
+		    <td>{{ examine.UserID.username }}</td>
+		    <td>{{ examine.Result }}</td>
+		    <td>{{ examine.Time|date:"Y-m-d H-m-s" }}</td>
+		</tr>
+	    {% endfor %} 
+	  
+	</tbody>
+
+</table>
+{% if examines.length > 15 %}
+{% if examines.has_previous %}
+    <a class='paginator' title='上一页' href='?page={{examines.previous_page_number }}'><span>&lt;&lt;</span></a>
+{% endif %}
+{% for page in examines.paginator.page_range %}
+    {% if page = examines.number %}
+        <a class='paginator_current' title='当前页:{{ page }}'><span>{{ page }}</span></a>
+    {% else %}
+        <a class='paginator' href='?page={{ page }}' title='{{ page }}'><span>{{ page }}</span></a>
+    {% endif %} 
+{% endfor %}
+{% if examines.has_next %}
+    <a class='paginator' title='下一页' href='?page={{ examines.next_page_number }}'><span>&gt;&gt;</span></a>
+{% endif %}
+{% endif %}
+</div>
+ {% else %}
+ <p align="left"> 没有找到相关记录.</p>
+   {% endif %}
+  {% endblock %}

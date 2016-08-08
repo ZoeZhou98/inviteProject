@@ -1,0 +1,65 @@
+{% comment %}
+表单填写模版
+{% endcomment %}
+<!DOCTYPE html>
+<!-- 表单页面css django需求载入 -->
+{% block uper%}
+{% load staticfiles %}
+{% load bootstrap_toolkit %}
+{% load url from future %}  
+{% endblock %}
+<html>
+  <head>
+    <meta http-equiv=Content-Type  content="text/html; charset=UTF-8" />
+    <title>{% block title %}{% endblock %}</title>
+    {% block head %}
+<script src="//cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+<link href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet" media="screen">
+<script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <!--下一步面试官选框css -->
+    {% endblock %}
+    {% block extra_head %}
+    <!-- 表单页面css -->
+    <meta name="description" content="">  
+    {% bootstrap_stylesheet_tag %}  
+    {% bootstrap_stylesheet_tag "responsive" %}    
+    {% bootstrap_javascript_tag %} 
+    {% endblock %}
+    {% block last_head %}
+    {% endblock %}  
+  </head>
+  <body>
+    {% block thead %}
+    <!--下一步面试官选框css定义 -->
+    <div style="top:0;left:0;z-index:1000;POSITION: absolute;">
+      <div style="overflow: hidden; left: 323px; top: 90.5px; display: none;" id="form_cities">
+          <div id="top_cities">简码/汉字或↑↓</div>
+              <div id="panel_cities"></div>
+                  <div style="display: block;" id="flip_cities">
+                    «&nbsp;向前&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="" class="cityflip" onclick="city_showlist(1);return false;">向后&nbsp;»</a>
+          </div>
+      </div>
+    </div>
+
+    <div style="top:0;left:0;z-index:1000;POSITION: absolute;">
+    <div style="overflow: hidden; display: none; left: 323px; top: 90.5px;" id="form_cities2">
+    <div id="top_cities1"> </div>
+    <div id="panel_cities2"></div>
+    </div>
+    </div>
+    {% endblock %}
+    {% block content %}
+    {% endblock %}
+    {% block middle %}
+    {% endblock %}
+{% block script %}
+
+{% endblock %}
+<script language=javascript> 
+function winclose() { //父页面刷新
+window.opener.location.reload();//刷新 
+window.close();//关闭 
+} 
+</script> 
+  </body>
+</html>

@@ -1,0 +1,1400 @@
+# -*- encoding: utf-8 -*-
+import os
+import hashlib
+from django.core.mail import send_mail,EmailMultiAlternatives
+from django.core import mail
+import datetime
+from django.utils.timezone import now,timedelta
+from django.shortcuts import render
+from django.http import HttpResponse
+from django.template import loader,Context,RequestContext
+from talents.models import Position as Position1,Examine
+from talents.forms import PositionForm,ExamineForm
+from django.shortcuts import render_to_response
+from django.contrib.sessions.models import Session
+from resume.models import Resume
+from accounts.models import MyUser
+from manager.models import Cor_role_user_depart,Roles,Department,Power,Cor_user_Power
+from side.models import Interview
+from django.contrib import auth
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login,logout
+from django.contrib.auth import get_user_model
+from django.db.models import Q,F
+from django.core.paginator import Paginator
+from django.core.paginator import PageNotAnInteger
+from django.core.paginator import EmptyPage
+from django.http import HttpResponseRedirect
+import codecs,string
+# Create your views here.
+@login_required    
+def talents(request):
+    return render(request,'talents.html')
+
+@login_required    
+def connect(request):
+    return render(request,'connect.html')
+
+#显示所申请职位的详细信息
+@login_required    
+def positionprofile(request,position_id):
+    UserModel = get_user_model()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    User = UserModel.objects.get(id = user_id)
+    position=Position1.objects.get(pk=position_id)
+   # updateing=False
+    #if position.Approver.rule == u"一级部门经理" and position.States == u"未处理" and position.UserID == user_id:
+     #   updateing = True
+    if position.LowSalary and position.HighSalary:
+        Low=str(position.LowSalary)
+        High=str(position.HighSalary)
+        salary=Low+'--'+High
+    elif position.HighSalary:
+            High=str(position.HighSalary)
+            salary=High+'-'
+    elif position.LowSalary:
+            Low=str(position.LowSalary)
+            salary=Low+'+'
+    else:
+        salary=u'面议'
+    return render(request,'positionprofile.html',{'position':position ,'salary':salary})
+
+#职位审批
+@login_required
+def examine(request,position_id):
+
+    date=datetime.datetime.now()
+    UserModel = get_user_model()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    User = UserModel.objects.get(id = user_id)
+    position=Position1.objects.get(pk=position_id)
+    errors=[]
+    receiver=[]
+    sender = User.email
+
+    #显示工资
+    if position.LowSalary and position.HighSalary:
+        Low=str(position.LowSalary)
+        High=str(position.HighSalary)
+        salary=Low+'--'+High
+    elif position.HighSalary:
+            High=str(position.HighSalary)
+            salary=High+'-'
+    elif position.LowSalary:
+            Low=str(position.LowSalary)
+            salary=Low+'+'
+    else:
+        salary=u'面议'
+    # receiver='linana@nantian.com.cn'
+    roles = get_role(User)
+    for role in roles:
+        if role.name == u"总经理":
+            rule = u"总经理"
+            break;
+        else: 
+            rule = "其他"
+    
+    #POST方式接受数据
+
+    if request.method == 'POST':
+        #从POST得到表单
+        form = ExamineForm(request.POST)
+        #从POST得到部分数据
+        #Username = request.POST.get('fromStationText','') 
+        sender=request.POST.get('txtUserName','')
+        rec=request.POST.get('receiver','')
+        receiver.append(rec)
+        password = request.POST.get('txtPassword','')
+        User.mail_password = hashlib.sha1(password).hexdigest()
+        User.save()
+        #password = User.mail_password
+        if not rec:
+            receiver.append('linana@nantian.com.cn')#设置默认接受邮箱
+        
+        '''nextusers=MyUser.objects.filter(username=Username)
+        for nextuser in nextusers:
+              pass
+        '''
+        #form表单验证
+        if form.is_valid():
+            #cleaned_data读取表单返回的值
+            cd = form.cleaned_data
+            #new_examine=form.save(commit=False)
+            #new_examine.UserID=User
+            #new_examine.PositionID=position
+            result=request.POST['Result']
+            time = request.POST['Time']
+            comment = request.POST['comment']
+            Examine.objects.filter(PositionID=position,UserID=User).update(Time=time,Result=result,comment=comment)
+            
+            
+            #保存基本信息
+         
+            
+            #保存关联信息
+            #form.save_m2m()
+            approver = get_leader( User )
+            if rule == "其他":
+                if request.POST['Result'] == u"不同意":
+                    #Position1.objects.filter(pk=position_id).update(States=u"未通过",Filing=1,Approver=None)
+                    exa=Examine.objects.get(PositionID=position,UserID=User)
+                    Position1.objects.filter(pk=position_id).update(States=u"未通过",Approver=exa.last_user)
+                else: 
+                    
+                    Position1.objects.filter(pk=position_id).update(States=u"未处理",Approver = approver)
+                    Examine.objects.filter(PositionID=position,UserID=approver).update(Time=time,Result="审批中")
+                return HttpResponseRedirect('/talents/handleposition/')
+            if rule == u"总经理":
+                if request.POST['Result'] == u"不同意":
+                    exa=Examine.objects.get(PositionID=position,UserID=User)
+                    Position1.objects.filter(pk=position_id).update(States=u"未通过",Approver=exa.last_user)
+                   
+                    return HttpResponseRedirect('/talents/handleposition/')
+                else:
+                    Position1.objects.filter(pk=position_id).update(States=u"未处理")
+                    Position1.objects.filter(pk=position_id).update(Approver=approver)
+                    if set_Email(position_id,sender,receiver,salary,password) is False:
+                        Position1.objects.filter(pk=position_id).update(States=u"处理中")
+                        Position1.objects.filter(pk=position_id).update(Approver=user_id)
+                        errors.append('密码错误')
+                        return HttpResponseRedirect('/talents/mail_failed/'+position_id)
+                    else:
+                        return HttpResponseRedirect('/talents/handleposition/') 
+        else:
+            #print form
+            print 'examine_error1'
+    else:
+        ##获得表单对象
+        form = ExamineForm() 
+        print form
+        print 'examine_error2'
+    return render(request,'examine.html',{'date':date,'position':position,'User':User,'form':form,'member': User,'rule': rule,'salary':salary})
+
+#邮件发送出错
+@login_required 
+def mail_failed(request,position_id):
+    UserModel = get_user_model()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    User = UserModel.objects.get(id = user_id)
+    position=Position1.objects.get(pk=position_id)
+    errors=[]
+    receiver=[]
+    sender = User.email
+    errors='密码错误或邮箱错误'
+    if position.LowSalary and position.HighSalary:
+        Low=str(position.LowSalary)
+        High=str(position.HighSalary)
+        salary=Low+'--'+High
+    elif position.HighSalary:
+            High=str(position.HighSalary)
+            salary=High+'-'
+    elif position.LowSalary:
+            Low=str(position.LowSalary)
+            salary=Low+'+'
+    else:
+        salary=u'面议'
+    if request.method == 'POST':
+        rec=request.POST.get('receiver','')
+        sender=request.POST.get('txtUserName','')
+        receiver.append(rec)
+        password = request.POST.get('txtPassword','')
+        if not rec:
+            receiver.append('linana@nantian.com.cn')
+            #设置默认接受邮箱
+        if set_Email(position_id,sender,receiver,salary,password) is False:
+            errors='密码错误或邮箱错误'
+            return render_to_response('mail_failed.html',{'errors':errors})
+        else:
+            Position1.objects.filter(pk=position_id).update(States=u"未处理")
+            Position1.objects.filter(pk=position_id).update(Approver=None)
+            return HttpResponseRedirect('/talents/handleposition/')
+    return render_to_response('mail_failed.html',{'errors':errors,'User':User})
+
+
+
+#招聘完成情况
+@login_required    
+def positiontask(request):
+    UserModel=get_user_model()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    user=UserModel.objects.get(id=user_id)    
+    positions=Position1.objects.filter(UserID=user_id).filter(Filing=0)
+    t=loader.get_template("positiontask.html")
+    c=Context({'positions': positions})
+    return HttpResponse(t.render(c))
+
+#对应某一个职位招聘完成情况    
+@login_required    
+def positiontask1(request,position_id):    
+    UserModel=get_user_model()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    user=UserModel.objects.get(id=user_id)
+    positions=Position1.objects.filter(UserID=user_id).filter(pk=position_id)
+    t=loader.get_template("positiontask1.html")
+    c=Context({'positions': positions})
+    return HttpResponse(t.render(c))
+
+#将所发布职位显示出来    
+@login_required    
+def position(request):
+    UserModel=get_user_model()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    user=UserModel.objects.get(id=user_id)    
+    positions=Position1.objects.filter(Filing=0)
+    Position_Exam = []
+    for position in positions:
+        position_exams = Examine.objects.filter(PositionID = position.id)
+        position_exam_id = str(position.id)+'id'
+        Position_Exam.append([position,position_exams,position_exam_id])
+    paginator=Paginator(Position_Exam,15)
+    page_num=request.GET.get('page')
+    try:
+        Position_Exam=paginator.page(page_num)
+    except PageNotAnInteger:
+        Position_Exam=paginator.page(1)
+    except EmptyPage:
+        Position_Exam=paginator.page(paginator.num_pages)
+    t=loader.get_template("positionmanage.html")
+    c=Context({'Position_Exam':Position_Exam})
+    return HttpResponse(t.render(c))
+
+#职位申请表    
+@login_required    
+def positionform(request):
+    departments=[]
+    roles=[]
+    UserModel=get_user_model()
+    date=datetime.datetime.now()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    user=UserModel.objects.get(id=user_id)
+    departments = get_depart( user )
+    errors=[]
+    
+    # PositionForm.UserID = user_id
+    Awarding = ''
+    NeedPersonNum = ''
+    ExistingPersonNum = ''
+    ProjectName = ''
+    Workplace = ''
+    Salary = ''
+    RecruitTime = ''
+    CandidateRequirement = ''
+    WorkContent =''
+    PositionName = ''
+    get_leader(user)
+    #return HttpResponse(get_leader(user))
+    if request.method == 'POST':
+        #form = PositionForm(request.POST)
+        #tmps = request.POST.get('fromStationText','')
+        Awarding = request.POST.get('Awarding','')
+        department = request.POST['SecondDepartment']
+        NeedPersonNum = request.POST['staff_invite']
+        ExistingPeronNum = request.POST['staff_now']
+        ProjectName = request.POST['project']
+        Workplace = request.POST['place']
+        Salary = request.POST['salary']
+        RecruitTime = request.POST['period']
+        RecruitReason = request.POST['reason']
+        RecruitWay = request.POST['RecruitWay']
+        CandidateRequirement = request.POST['CandidateRequirement']
+        WorkContent = request.POST['WorkContent']
+        PositionName = request.POST['position']
+        if PositionName and Salary and ExistingPersonNum and NeedPersonNum and Workplace and RecruitReason and WorkContent and CandidateRequirement and RecruitWay and RecruitTime  and  ProjectName:
+            position1=Position1()
+            position1.PositionName=PositionName
+            position1.ExistingPersonNum=ExistingPersonNum
+            position1.NeedPersonNum=NeedPersonNum
+            position1.Workplace=Workplace
+            position1.RecruitReason=RecruitReason
+            position1.WorkContent=WorkContent
+            position1.CandidateRequirement=CandidateRequirement
+            position1.RecruitWay=RecruitWay
+            position1.RecruitTime=RecruitTime
+            position1.ProjectName=ProjectName
+            depar=Department.objects.get(id = department)
+            position1.Depart = depar.superior_department
+            #depar=Department.objects.get(id = department)
+            position1.SecondDepartment = depar
+            position1.UserID = user
+            approver=get_leader( user )
+            position1.Approver = get_leader( user )
+            position1.Awarding = Awarding
+            position1.save()
+            position1.Headline=now()
+            for i in range(10):
+                if user:
+                    user = get_leader(user)
+                    if user:
+                        examine = Examine()
+                        examine.UserID = user
+                        examine.PositionID = position1
+                        examine.next_approver = get_leader(user)
+                        if user == position1.approver:
+                            examine.last_user = position1.UserID
+                        else:
+                            exa = Examine.objects.get(next_approver = user,PositionID = position1 )
+                            examine.last_user = exa.UserID
+                        examine.Is_resultful = 1
+                        examine.conut=1
+                        examine.save()
+                    else:
+                        break
+                else:
+                    break
+        
+            Examine.objects.filter(PositionID=position,UserID=approver).update(Result="审批中")                
+        else:
+            errors="所有字段均不可以为空"
+            return render_to_response('position_form.html',RequestContext(request,{'date':date,'errors':errors,'Awarding':Awarding,'PositionName':PositionName,'departments':departments,'ExistingPersonNum':ExistingPersonNum,'NeedPersonNum':NeedPersonNum,'Workplace':Workplace,'RecruitReason':RecruitReason,'WorkContent':WorkContent,'CandidateRequirement':CandidateRequirement,'RecruitWay':RecruitWay,'RecruitTime':RecruitTime,'Salary':Salary, 'ProjectName':ProjectName}))
+        return HttpResponseRedirect('/talents/handleingposition')
+    return render(request,'positionform.html',{'date':date,'departments':departments,'Awarding':Awarding,'PositionName':PositionName,'ExistingPersonNum':ExistingPersonNum,'NeedPersonNum':NeedPersonNum,'Workplace':Workplace,'WorkContent':WorkContent,'CandidateRequirement':CandidateRequirement,'RecruitTime':RecruitTime,'Salary':Salary, 'ProjectName':ProjectName})
+
+#显示人才库中的简历     
+@login_required    
+def talents_pool(request):
+    UserModel=get_user_model()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    user=UserModel.objects.get(id=user_id)
+    delete=[u'未处理']
+    inters1 = Resume.objects.filter(Status=u"未处理")
+    inters = inters1.filter(Q(UserID=user_id,Agency=None)|Q(Agency=user_id))
+    inters2 = Interview.objects.filter(Q(resume__Status=u"一面",InterviewProcess=u"电话面试") | Q(resume__Status=u"二面",InterviewProcess=u"一面")| Q(resume__Status=u"三面",InterviewProcess=u"二面")|Q(resume__Agency=user_id)).filter(NextUser=user_id,resume__Agency=None).filter(lockuser=F('resume__UserID')).values_list('resume__id',flat=True)
+    #positions=Position.objects.all()
+    '''if user.rule==u"人力经理" or user.rule==u"人力助理":
+        resumes=Resume.objects.exclude(Q(UserID=None)|Q(Status=u'淘汰')|Q(Status=u'已入职')).order_by('-Time')
+    else:
+    '''
+    resumes=Resume.objects.filter(UserID= user_id).exclude(Q(Status=u'淘汰')|Q(Status=u'已入职')).order_by('-Time')
+    RESUIN=[]
+    for resume in resumes:
+       if resume in inters or resume.id in inters2:
+           inte=1
+       else:
+           inte=0
+       RESUIN.append([resume,inte])
+           
+    paginator=Paginator(resumes,15)
+    page_num=request.GET.get('page')
+    try:
+        resumes=paginator.page(page_num)
+    except PageNotAnInteger:
+        resumes=paginator.page(1)
+    except EmptyPage:
+        resumes=paginator.page(paginator.num_pages)
+    t=loader.get_template("talents_pool.html")
+    c=Context({'RESUIN': RESUIN,'delete':delete})
+    #Position.objects.annotate(Count(resumes))
+    return HttpResponse(t.render(c))
+
+#查询人才库
+@login_required    
+def search_talentform(request):
+    UserModel=get_user_model()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    user=UserModel.objects.get(id=user_id)
+    delete=[u'未处理']
+    RESUIN=[]
+    inters1 = Resume.objects.filter(Status=u"未处理")
+    inters = inters1.filter(Q(UserID=user_id,Agency=None)|Q(Agency=user_id))
+    inters2 = Interview.objects.filter(Q(resume__Status=u"一面",InterviewProcess=u"电话面试") | Q(resume__Status=u"二面",InterviewProcess=u"一面")| Q(resume__Status=u"三面",InterviewProcess=u"二面")|Q(resume__Agency=user_id)).filter(NextUser=user_id,resume__Agency=None).filter(lockuser=F('resume__UserID')).values_list('resume__id',flat=True)
+    if 'PName' in request.GET and request.GET['PName']:
+        q1=request.GET['PName']
+        '''if user.rule==u"人力经理" or user.rule==u"人力助理":
+            resumelist=Resume.objects.filter(Q(PositionName__icontains=q1)|Q(CandidateName__icontains=q1)|Q(UserID__username__icontains=q1)|Q(CandidateSex__icontains=q1)|Q(CandidateAge__icontains=q1)|Q(Status__icontains=q1)).exclude(UserID=None).order_by('-Time')
+        else:
+        '''
+        resumes=Resume.objects.filter(Q(PositionName__icontains=q1)|Q(CandidateName__icontains=q1)|Q(UserID__username__icontains=q1)|Q(CandidateSex__icontains=q1)|Q(CandidateAge__icontains=q1)|Q(Status__icontains=q1)).filter(UserID=user_id).order_by('-Time')
+    
+        for resume in resumes:
+            if resume in inters or resume.id in inters2:
+                inte=1
+            else:
+                inte=0
+            RESUIN.append([resume,inte])
+  #      paginator=Paginator(resumelist,15)
+   #     page_num=request.GET.get('page')
+    #    try:
+     #       resumelist=paginator.page(page_num)
+      #  except PageNotAnInteger:
+       #     resumelist=paginator.page(1)
+        #except EmptyPage:
+         #   resumelist=paginator.page(paginator.num_pages)
+        #t=loader.get_template("search_talentform.html")
+        #c=Context({'resumelist': resumelist,'query': q1})
+        #Position.objects.annotate(Count(resumes))
+        return render_to_response('talents_pool.html',{'RESUIN': RESUIN, 'query': q1,'delete':delete})
+       # return HttpResponse(t.render(c))
+    else:
+        return HttpResponse('Please submit a search term.')
+
+"""
+简历一览
+2015-11-13 by 李宝焜
+增加简历过滤功能，在过滤基础上进行服务器端分页
+"""
+@login_required    
+def resumemanage(request):
+    q_sex = ''
+    q_pos = ''
+    q_pro = ''
+    q_age = ''
+    q_edu = ''
+    age_id = 1
+    exper_id = 3
+    edu_id = 5
+    date_id = 0
+    resumelist = Resume.objects.all()
+    #提取request中的过滤条件，并生产过滤后简历列表
+    if 'Csex' in request.GET and request.GET['Csex']: 
+        q_sex = request.GET['Csex']
+        resumelist = resumelist.filter(CandidateSex__icontains=q_sex)
+    if 'Cpos' in request.GET and request.GET['Cpos']:
+        q_pos = request.GET['Cpos']
+        resumelist = resumelist.filter(PositionName__icontains=q_pos)
+    if 'Cpro' in request.GET and request.GET['Cpro']: 
+        q_pro = request.GET['Cpro']
+        resumelist = resumelist.filter(CandidateProfile__gte=q_pro)
+    if 'Cage' in request.GET and request.GET['Cage']: 
+        q_age = request.GET['Cage']
+        resumelist = resumelist.filter(CandidateAge__gte=q_age)
+    if 'Cedu' in request.GET and request.GET['Cedu']:
+        q_edu = request.GET['Cedu']
+        if q_edu:
+            resumelist = resumelist.filter(Candidate_edu__gte=q_edu)
+    resumelist = resumelist.filter(UserID=None).order_by('-Time')
+    if not request.GET.get('page_size'):
+        page_size = 15
+    else:
+        page_size = int(request.GET.get('page_size'))
+    #根据request中的每页大小，对生成的简历列表进行切片
+    paginator = Paginator(resumelist,page_size)
+    page_num = request.GET.get('page')
+    try:
+        resumes = paginator.page(page_num)
+    except PageNotAnInteger:
+        resumes = paginator.page(1)
+    except EmptyPage:
+        resumes = paginator.page(paginator.num_pages)
+    page_right = page_size * resumes.number
+    page_left = page_right - page_size + 1
+    t=loader.get_template("resumemanage.html")
+    c=Context({'resumes': resumes,'resumelist':resumelist,'page_size':page_size,'record_count':len(resumelist),'age_id':age_id,'date_id':date_id,'exper_id':exper_id,'edu_id':edu_id,'Csex':q_sex,'Cpos':q_pos,'Cpro':q_pro,'Cage':q_age,'Cedu':q_edu,'page_right':page_right,'page_left':page_left,})
+    return HttpResponse(t.render(c))
+    
+#查询简历  
+def resume_sort(request,id):
+    q1=''
+    q2=''
+    q3=''
+    q4=''
+    q5=''
+    q=''
+    date_id = 0
+    age_id = 1
+    exper_id = 3
+    edu_id = 5
+    resumes=Resume.objects.filter(UserID = None)
+   
+    if 'Csex' in request.GET and request.GET['Csex']: 
+        q1=request.GET['Csex']
+        resumes=resumes.filter(CandidateSex__icontains=q1)
+    if 'Cpos' in request.GET and request.GET['Cpos']:
+        q2=request.GET['Cpos']
+        resumes=resumes.filter(PositionName__icontains=q2)
+    if 'Cpro' in request.GET and request.GET['Cpro']: 
+        q3=request.GET['Cpro']
+        resumes=resumes.filter(CandidateProfile__gte=q3)
+    if 'Cage' in request.GET and request.GET['Cage']: 
+        q4=request.GET['Cage']
+        resumes=resumes.filter(CandidateAge__gte=q4)
+    if 'Cedu' in request.GET and request.GET['Cedu']: 
+        
+        q5=request.GET['Cedu']
+        if q5:
+            resumes=resumes.filter(Candidate_edu__gte=q5)
+   
+    
+    if id == '1':
+        resumes=resumes.order_by('-CandidateAge')
+        age_id = 2
+    elif id =='2':
+        resumes=resumes.order_by('CandidateAge')
+        age_id= 1
+    elif id == '3':
+        resumes=resumes.order_by('-CandidateProfile')
+        exper_id= 4
+    elif id == '4':
+        resumes=resumes.order_by('CandidateProfile')
+        exper_id= 3
+    elif id == '5':
+        resumes=resumes.order_by('-Candidate_edu')
+        edu_id = 6
+    elif id == '6':
+        resumes=resumes.order_by('Candidate_edu')
+        edu_id = 5
+    elif id == '0':
+        resumes=resumes.order_by('-Time')
+        date_id = 7
+    elif id == '7':
+        resumes=resumes.order_by('Time')
+        date_id = 0
+    if request.GET['Csex'] or request.GET['Cpos'] or request.GET['Cpro'] or request.GET['Cage'] or request.GET['Cedu']:
+        p=0
+    else:
+        paginator=Paginator(resumes,15)
+        page_num=request.GET.get('page')
+        try:
+            resumes=paginator.page(page_num)
+        except PageNotAnInteger:
+            resumes=paginator.page(1)
+        except EmptyPage:
+            resumes=paginator.page(paginator.num_pages)
+        p=1
+    t=loader.get_template("resumemanage.html")
+    c=Context({'resumes':resumes,'p':p,'date_id':date_id,'age_id':age_id,'exper_id':exper_id,'edu_id':edu_id,'Csex':q1,'Cpos':q2,'Cpro':q3,'Cage':q4,'Cedu':q5})
+    return HttpResponse(t.render(c))
+"""
+@login_required    
+#搜索简历
+def search_form(request):
+     
+    age_id = 1
+    exper_id = 3
+    edu_id = 5
+    date_id = 0
+    q1=''
+    q2=''
+    q3=''
+    q4=''
+    q5=''
+    resumes=Resume.objects.all()
+    if 'Csex' in request.GET and request.GET['Csex']: 
+        q1=request.GET['Csex']
+        resumes=resumes.filter(CandidateSex__icontains=q1)
+    if 'Cpos' in request.GET and request.GET['Cpos']:
+        q2=request.GET['Cpos']
+        resumes=resumes.filter(PositionName__icontains=q2)
+    if 'Cpro' in request.GET and request.GET['Cpro']: 
+        q3=request.GET['Cpro']
+        resumes=resumes.filter(CandidateProfile__gte=q3)
+    if 'Cage' in request.GET and request.GET['Cage']: 
+        q4=request.GET['Cage']
+        resumes=resumes.filter(CandidateAge__gte=q4)
+    if 'Cedu' in request.GET and request.GET['Cedu']:
+        q5=request.GET['Cedu']
+        if q5:
+            resumes=resumes.filter(Candidate_edu__gte=q5)
+    resumes=resumes.filter(UserID=None).order_by('-Time')
+    if not q1 and not q2 and not q3 and not q4 and not q5:
+        return HttpResponseRedirect('/talents/resumemanage')
+    else:
+        return render_to_response('resumemanage.html',
+            {'Csex':q1,'Cpos':q2,'Cpro':q3,'Cage':q4,'Cedu':q5,'resumes':resumes,'date_id':date_id,'age_id':age_id,'exper_id':exper_id,'edu_id':edu_id})
+"""
+ 
+#锁定简历
+@login_required    
+def input_pool(request,resume_id):
+    
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+#    user=UserModel.objects.get(id=user_id)
+   
+    resume1 = Resume.objects.filter(id=resume_id).exclude(UserID=None)
+    if len(resume1):
+        pass
+    else:
+        Resume.objects.filter(pk=resume_id).update(UserID=user_id)
+    return HttpResponseRedirect('/talents/resumemanage')
+    #return render_to_response("resumemanage.html")
+
+#解除锁定
+@login_required
+def delete(request,resume_id):
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+#    user=UserModel.objects.get(id=user_id)
+    Resume.objects.filter(pk=resume_id).update(UserID = None)
+    Resume.objects.filter(pk=resume_id).update(Agency = None)
+    return HttpResponseRedirect('/talents/talent_pool')
+      
+#锁定简历按钮保存id        
+def mywrite(request,resume_id):
+    with codecs.open(r'/home/resume/project/media/TMP/data', 'w', 'UTF-8') as f:
+                          f.write(resume_id)
+    return HttpResponse("ok")
+
+#防止多次点击事件触发保护
+def xie():
+    with codecs.open(r'/home/resume/project/media/TMP/data', 'w', 'UTF-8') as f:
+                          f.write("l")
+    
+#锁定简历按钮读取id并锁定        
+def myread(request):    
+    with codecs.open(r'/home/resume/project/media/TMP/data', 'r', 'UTF-8') as f:
+               resume_id = f.read()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    resume1 = Resume.objects.filter(id=resume_id).exclude(UserID=None)
+    if len(resume1):
+         pass
+    else:
+        Resume.objects.filter(pk=resume_id).update(UserID=user_id)
+    xie()
+    return HttpResponse("ok")
+
+def maych_with_position(postions,resumes):
+    rt_list = []
+    for position in postions:
+        count_list = []
+        need_pos_list = []
+        length = len(position.PositionName)
+        for resume in resumes:          
+            
+            count=0
+            index=0      
+            for i in range(length):
+                if i+1 <=  length:
+                    c = resume.PositionName.find(position.PositionName[i:i+1])
+                    if c != -1:
+                        count += 1
+            if count > 0.7*length:
+    
+                if  len( count_list)!=0:
+               
+                    for i in count_list:
+                        index += 1
+                        if i < count:
+                            break
+                    count_list.insert(index-1,count)
+                    need_pos_list.insert(index-1,resume)
+                         
+                else:
+                    need_pos_list.append(resume)
+                    count_list.append(count)
+        rt_list.append([position,need_pos_list])
+    return rt_list
+#符合所发布职位的简历
+@login_required
+def find_suitable(request):
+    UserModel=get_user_model()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    user=UserModel.objects.get(id=user_id)
+    positions=Position1.objects.filter(UserID=user_id,Filing=0)
+    length=len(positions)
+    positionlength=range(length)
+    resumes=[]
+   
+    if positions:
+        resume1=Resume.objects.filter(UserID=None).order_by('-Time')
+        resumes = maych_with_position(positions,resume1)
+#         for position in positions:
+#             resume1=Resume.objects.filter(PositionName__contains=position.PositionName).filter(UserID=None).order_by('-Time')
+#             
+            #resumes.append([position,resume1])
+            #resumes.append(Resume.objects.filter(PositionName__icontains=positions[i].PositionName).filter(UserID=None))
+        
+    t=loader.get_template("suitresume.html")
+    c=Context({'resumes': resumes})
+    return HttpResponse(t.render(c))
+#     return HttpResponse(resumes)
+
+#在符合所发布职位中查询需要的简历
+@login_required
+def suitresume_search(request):
+    UserModel=get_user_model()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    user=UserModel.objects.get(id=user_id)
+    positions=Position1.objects.filter(UserID=user_id).filter(Filing=0)
+    resumes=[]
+    if positions:
+        resume1=Resume.objects.filter(UserID=None).order_by('-Time')
+        resumes2 = maych_with_position(positions,resume1)
+        #for position in positions:
+            #resume1=Resume.objects.filter(PositionName__contains=position.PositionName).filter(UserID=None).order_by('-Time')
+        #if 'PName' in request.GET and request.GET['PName']: 
+            #q1=request.GET['PName']
+        for position,resumelist in resumes2:
+            re_list=[]
+            for resume in resumelist:
+                
+                if 'Csex' in request.GET and request.GET['Csex']: 
+                    q1=request.GET['Csex']
+                    if resume.CandidateSex.find(q1) == -1:
+                        continue
+                    else:
+                        pass
+                if 'Cpos' in request.GET and request.GET['Cpos']:
+                    q2=request.GET['Cpos']
+                    if resume.PositionName.find(q2) == -1:
+                        continue
+                    else:
+                        pass
+                if 'Cpro' in request.GET and request.GET['Cpro']: 
+                    q3=request.GET['Cpro']
+                    if resume.CandidateProfile < int(q3):
+                        continue
+                    else:
+                        pass
+                if 'Cage' in request.GET and request.GET['Cage']: 
+                    q4=request.GET['Cage']
+                    if resume.CandidateAge < q4:
+                        continue
+                    else:
+                        pass
+
+                if 'Cedu' in request.GET and request.GET['Cedu']: 
+                    q5=request.GET['Cedu']
+                    if resume.Candidate_edu.find(q5) == -1:
+                        continue
+                    else:
+                        pass
+                re_list.append(resume)
+            position_exam_id=str(position.id) +'id'
+            resumes.append([position,re_list,position_exam_id])
+                #resume=resume(Q(PositionName__icontains=q1)|Q(CandidateName__icontains=q1)|Q(CandidateSex__icontains=q1)|Q(CandidateProfile__icontains=q1)|Q(UserID__username__icontains=q1)|Q(CandidateAge__icontains=q1)).filter(UserID=None).order_by('-Time')
+
+            #resumes.append([position,resume])
+       # paginator=Paginator(resumelist,15)
+        #page_num=request.GET.get('page')
+        #try:
+           # resumelist=paginator.page(page_num)
+        #except PageNotAnInteger:
+            #resumelist=paginator.page(1)
+        #except EmptyPage:
+            #resumelist=paginator.page(paginator.num_pages)
+        t=loader.get_template("suitresume_search.html")
+        c=Context({'resumes': resumes})
+        return HttpResponse(t.render(c))
+    else:
+        return HttpResponse('Please submit a search term.')
+
+#复制别人发布的职位
+@login_required
+def copy_position(request,position_id):
+    UserModel=get_user_model()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    user=UserModel.objects.get(id=user_id)
+    approver = get_leader(user)
+    departments = get_depart( user )
+    errors=[]
+    date=datetime.datetime.now()
+    position=Position1.objects.get(pk=position_id)  
+    PositionName=position.PositionName
+    Phone1=position.Phone1
+    ExistingPersonNum=position.ExistingPersonNum
+    NeedPersonNum=position.NeedPersonNum
+    Workplace=position.Workplace
+    ProjectName=position.ProjectName
+    LowSalary=position.LowSalary
+    HighSalary=position.HighSalary
+    RecruitReason=position.RecruitReason
+    WorkContent=position.WorkContent
+    CandidateRequirement=position.CandidateRequirement
+    RecruitWay=position.RecruitWay
+    RecruitTime=position.RecruitTime
+    Awarding=position.Awarding
+    Approver=position.Approver
+    Headline=position.Headline
+    if request.method == 'POST':   
+       # form = PositionForm(request.POST)
+       # if form.is_valid():  
+        PositionName=request.POST['PositionName']
+        Phone1=request.POST['Phone1']
+        ExistingPersonNum=request.POST['ExistingPersonNum']
+        NeedPersonNum=request.POST['NeedPersonNum']
+        Workplace=request.POST['Workplace']
+        ProjectName=request.POST['ProjectName']
+        LowSalary=request.POST['LowSalary']
+        HighSalary=request.POST['HighSalary']
+        RecruitReason=request.POST['RecruitReason']
+        WorkContent=request.POST['WorkContent']
+        CandidateRequirement=request.POST['CandidateRequirement']
+        RecruitWay=request.POST['RecruitWay']
+        RecruitTime=request.POST['RecruitTime']
+        Headline=request.POST['Headline']
+        Awarding=request.POST['Awarding']
+         
+        department = request.POST['SecondDepartment']
+        '''
+        temp=request.POST.get('fromStationText','')
+        if temp:       
+           approver=MyUser.objects.get(username=temp)
+        else:
+           errors.append('下一步审批人不可以为空')
+           return render_to_response('copy_position.html',RequestContext(request,{'date':date,'errors':errors,'Approver':Approver,'Awarding':Awarding,'PositionName':PositionName,'Phone1':Phone1,'Department':Department,'SecondDepartment':SecondDepartment,'ExistingPeronNum':ExistingPersonNum,'NeedPersonNum':NeedPersonNum,'Workplace':Workplace,'RecruitReason':RecruitReason,'WorkContent':WorkContent,'CandidateRequirement':CandidateRequirement,'RecruitWay':RecruitWay,'RecruitTime':RecruitTime,'Headline':Headline ,'LowSalary':LowSalary,'HighSalary':HighSalary,'ProjectName':ProjectName}))
+         
+        # for approver1 in Approvers:
+        #    pass
+        '''
+        if PositionName and Phone1 and ExistingPersonNum and NeedPersonNum and Workplace and RecruitReason and WorkContent and CandidateRequirement and RecruitWay and RecruitTime  and Headline :
+            position1=Position1()
+            position1.PositionName=PositionName
+            position1.Phone1=Phone1
+            position1.ExistingPersonNum=ExistingPersonNum
+            position1.NeedPersonNum=NeedPersonNum
+            position1.Workplace=Workplace
+            position1.RecruitReason=RecruitReason
+            position1.WorkContent=WorkContent
+            position1.CandidateRequirement=CandidateRequirement
+            position1.RecruitWay=RecruitWay
+            position1.RecruitTime=RecruitTime
+            position1.Headline=Headline
+            position1.ProjectName=ProjectName
+            depar=Department.objects.get(id = department)
+            position1.Depart = depar.superior_department
+            #depar=Department.objects.get(id = department)
+            position1.SecondDepartment = depar
+            if LowSalary:
+                position1.LowSalary=LowSalary
+            else:
+                position1.LowSalary=0
+            if HighSalary:
+                position1.HighSalary=HighSalary
+            else:
+                position1.HighSalary=0
+            position1.UserID = user
+            position1.Approver=approver
+            if Awarding is not None:           
+                Position1.Awarding = Awarding
+            else:
+                position1.Awarding=None   
+            
+            position1.save()
+            for i in range(10):
+                if user:
+                    user = get_leader(user)
+                    if user:
+                        examine = Examine()
+                        examine.UserID = user
+                        examine.PositionID = position1
+                        if get_leader(user):
+                            examine.next_approver = get_leader(user)
+                        if user == position1.Approver:
+                            examine.last_user = position1.UserID
+                        else:
+                            exa = Examine.objects.get(next_approver = user,PositionID = position1 )
+                            examine.last_user = exa.UserID
+                        examine.Is_resultful = 1
+                        examine.conut=1
+                        examine.save()
+                    else:
+                        break
+                else:
+                    break
+            
+            Examine.objects.filter(PositionID=position1,UserID=approver).update(Result="审批中") 
+ #            form.save()
+            
+            return HttpResponseRedirect('/talents/handleingposition')
+        else:
+            errors.append("带星号的地方不能为空")
+            return render_to_response('copy_position.html',RequestContext(request,{'date':date,'errors':errors,'Approver':Approver,'Awarding':Awarding,'PositionName':PositionName,'Phone1':Phone1,'departments':departments,'ExistingPersonNum':ExistingPersonNum,'NeedPersonNum':NeedPersonNum,'Workplace':Workplace,'RecruitReason':RecruitReason,'WorkContent':WorkContent,'CandidateRequirement':CandidateRequirement,'RecruitWay':RecruitWay,'RecruitTime':RecruitTime,'Headline':Headline ,'LowSalary':LowSalary,'HighSalary':HighSalary,'ProjectName':ProjectName}))
+    else:
+        #form = PositionForm()
+        return render_to_response('copy_position.html',RequestContext(request,{'date':date,'Approver':Approver,'Awarding':Awarding,'PositionName':PositionName,'Phone1':Phone1,'departments':departments,'ExistingPersonNum':ExistingPersonNum,'NeedPersonNum':NeedPersonNum,'Workplace':Workplace,'RecruitReason':RecruitReason,'WorkContent':WorkContent,'CandidateRequirement':CandidateRequirement,'RecruitWay':RecruitWay,'RecruitTime':RecruitTime,'Headline':Headline ,'LowSalary':LowSalary,'HighSalary':HighSalary,'ProjectName':ProjectName}))
+
+#处理申请的招聘职位
+@login_required   
+def pending_application(request,position_id):
+    position=Position1.objects.get(pk=position_id)
+    return render(request,'pending_application.html',{'position':position })
+
+#现实归档的简历
+@login_required
+def filing(request):    
+    positions=Position1.objects.filter(Filing=1)
+    Position_Exam = []
+    for position in positions:
+        position_exam = Examine.objects.filter(PositionID = position.id)
+        position_exam_id = str(position.id)+'id'
+        Position_Exam.append([position,position_exam,position_exam_id])
+    paginator=Paginator(Position_Exam,15)
+    page_num=request.GET.get('page')
+    try:
+        Position_Exam=paginator.page(page_num)
+    except PageNotAnInteger:
+        Position_Exam=paginator.page(1)
+    except EmptyPage:
+        Position_Exam=paginator.page(paginator.num_pages)
+    t=loader.get_template("filing.html")
+    c=Context({'Position_Exam': Position_Exam,'record_count':len(positions),})
+    return HttpResponse(t.render(c))
+
+#达到截止时间是归档处理
+def inspectiontime():
+    date = now().date() + timedelta(days=-365)    
+    inters = Position1.objects.filter(RecruitTime__lte=date).exclude(Filing=1)
+    for p in inters:
+        Position1.objects.filter(pk = p.id).update(Filing = 1)
+
+#待处理的职位申请，任务
+@login_required
+def handleposition(request):
+    UserModel=get_user_model()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    user=UserModel.objects.get(id=user_id)
+   # role = 0
+    #if user.rule == u'总部门经理':
+     #   role = 1
+    positions=Position1.objects.exclude(UserID = user_id)
+    positions=positions.filter(Approver=user_id,Filing=2)
+  #  examines=Examine.objects.filter(PositionID__Approver=user_id,PositionID__States=u'未处理')
+    Position_Exam = []
+    for position in positions:
+        position_exams = Examine.objects.filter(PositionID = position.id)
+        position_exam_id = str(position.id)+'id'
+        Position_Exam.append([position,position_exams,position_exam_id])
+    t=loader.get_template("handleposition.html")
+    c=Context({'Position_Exam':Position_Exam})
+   # c=Context({'positions': positions})
+    return HttpResponse(t.render(c))
+
+#正在处理的职位申请，针对发布职位申请的人
+@login_required
+def handleingposition(request):    
+    UserModel=get_user_model()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    user=UserModel.objects.get(id=user_id)
+    
+    positions=[]
+    positions=Position1.objects.filter(UserID=user_id).filter(Filing=2)         
+    examines=Examine.objects.filter(PositionID__UserID=user_id).filter(PositionID__Filing=2)
+    Position_Exam = []
+    for position in positions:
+        #if position.Filing == 2 and position.Approver==None:
+        position_exams = Examine.objects.filter(PositionID = position.id)
+        position_exam_id = str(position.id)+'id'
+        Position_Exam.append([position,position_exams,position_exam_id])
+    pids=[]
+    for examine in examines:
+        pids.append(examine.PositionID)
+    t=loader.get_template("handleingposition.html")
+    c=Context({'positions': positions,'pids':pids,'Position_Exam':Position_Exam})
+    return HttpResponse(t.render(c))
+
+@login_required
+def handing(request,position_id):
+    UserModel=get_user_model()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    user=UserModel.objects.get(id=user_id)
+    examines=Examine.objects.filter(PositionID=position_id).filter(PositionID__Filing=2)
+    t=loader.get_template("handing.html")
+    c=Context({'examines': examines})
+    return HttpResponse(t.render(c))
+
+#发邮件时的页面
+@login_required
+def exrecord(request,position_id):    
+    UserModel=get_user_model()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    user=UserModel.objects.get(id=user_id)
+    position=Position1.objects.get(pk=position_id)
+    if position.LowSalary and position.HighSalary:
+        Low=str(position.LowSalary)
+        High=str(position.HighSalary)
+        salary=Low+'--'+High
+    elif position.HighSalary:
+            High=str(position.HighSalary)
+            salary=High+'-'
+    elif position.LowSalary:
+            Low=str(position.LowSalary)
+            salary=Low+'+'
+    else:
+        salary=u'面议'
+    examines=Examine.objects.filter(PositionID=position_id).filter(PositionID__Filing=2)
+    t=loader.get_template("exrecord.html")
+    c=Context({'examines': examines,'position':position,'salary':salary})
+    return HttpResponse(t.render(c))
+
+#修改发布的职位
+@login_required
+def update_position(request,position_id):
+    UserModel=get_user_model()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    user=UserModel.objects.get(id=user_id)
+    approver = get_leader(user)
+    departments = get_depart( user )
+    date=datetime.datetime.now()
+    errors=[]
+    position=Position1.objects.get(pk=position_id)  
+    PositionName=position.PositionName
+    Phone1=position.Phone1
+    ExistingPersonNum=position.ExistingPersonNum
+    NeedPersonNum=position.NeedPersonNum
+    Workplace=position.Workplace
+    ProjectName=position.ProjectName
+    LowSalary=position.LowSalary
+    HighSalary=position.HighSalary
+    RecruitReason=position.RecruitReason
+    WorkContent=position.WorkContent
+    CandidateRequirement=position.CandidateRequirement
+    RecruitWay=position.RecruitWay
+    RecruitTime=position.RecruitTime
+    Awarding=position.Awarding
+    Approver=position.Approver
+    Headline=position.Headline
+    UserModel=get_user_model()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    user=UserModel.objects.get(id=user_id)
+    if request.method == 'POST':   
+       # form = PositionForm(request.POST)
+       # if form.is_valid():  
+         PositionName=request.POST['PositionName']
+         Phone1=request.POST['Phone1']
+         
+         ExistingPersonNum=request.POST['ExistingPersonNum']
+         NeedPersonNum=request.POST['NeedPersonNum']
+         Workplace=request.POST['Workplace']
+         ProjectName=request.POST['ProjectName']
+         LowSalary=request.POST['LowSalary']
+         HighSalary=request.POST['HighSalary']
+         RecruitReason=request.POST['RecruitReason']
+         WorkContent=request.POST['WorkContent']
+         CandidateRequirement=request.POST['CandidateRequirement']
+         RecruitWay=request.POST['RecruitWay']
+         RecruitTime=request.POST['RecruitTime']
+         Headline=request.POST['Headline']
+         Awarding=request.POST['Awarding']
+         department = request.POST['SecondDepartment']
+         '''
+         temp=request.POST.get('fromStationText','')
+         if temp:       
+            approver=MyUser.objects.get(username=temp)
+         else:
+            errors.append('下一步审批人不可以为空')
+            return render_to_response('copy_position.html',RequestContext(request,{'date':date,'errors':errors,'Approver':Approver,'Awarding':Awarding,'PositionName':PositionName,'Phone1':Phone1,'Department':Department,'SecondDepartment':SecondDepartment,'ExistingPersonNum':ExistingPersonNum,'NeedPersonNum':NeedPersonNum,'Workplace':Workplace,'RecruitReason':RecruitReason,'WorkContent':WorkContent,'CandidateRequirement':CandidateRequirement,'RecruitWay':RecruitWay,'RecruitTime':RecruitTime,'Headline':Headline ,'LowSalary':LowSalary,'HighSalary':HighSalary,'ProjectName':ProjectName}))
+         '''
+         if PositionName and Phone1 and ExistingPersonNum  and NeedPersonNum and Workplace and RecruitReason and WorkContent and CandidateRequirement and RecruitWay and RecruitTime and Headline:
+        #     position1=Position1()
+             position.PositionName=PositionName
+             position.Phone1=Phone1
+             #position.Department=Department
+             #position.SecondDepartment=SecondDepartment
+             position.ExistingPersonNum=ExistingPersonNum
+             position.NeedPersonNum=NeedPersonNum
+             position.Workplace=Workplace
+             position.RecruitReason=RecruitReason
+             position.WorkContent=WorkContent
+             position.CandidateRequirement=CandidateRequirement
+             position.RecruitWay=RecruitWay
+             position.RecruitTime=RecruitTime
+             position.Headline=Headline
+             position.ProjectName=ProjectName
+             if LowSalary:
+                position.LowSalary=LowSalary
+             else:
+                position.LowSalary=0
+             if HighSalary:
+                position.HighSalary=HighSalary
+             else:
+                position.HighSalary=0
+             depar=Department.objects.get(id = department)
+             position.Depart = depar.superior_department
+             #depar=Department.objects.get(id = department)
+             position.SecondDepartment = depar
+             position.UserID = user
+             position.Approver=approver
+             position.Awarding=Awarding
+           #  if Awarding is not None:           
+            #     Position1.Awarding = Awarding
+             #else:
+              #   position1.Awarding=None   
+            
+             position.save()
+ #            form.save()
+             for i in range(10):
+                 if user:
+                     user = get_leader(user)
+                     if user:
+                         examine = Examine()
+                         examine.UserID = user
+                         examine.PositionID = position
+                         examine.save()
+                     else:
+                         break
+                 else:
+                     break
+            
+             Examine.objects.filter(PositionID=position,UserID=approver).update(Result="审批中") 
+             return HttpResponseRedirect('/talents/handleingposition')
+         else:
+             errors.append("带星号的地方不能为空")
+             return render_to_response('copy_position.html',RequestContext(request,{'date':date,'errors':errors,'Approver':Approver,'Awarding':Awarding,'PositionName':PositionName,'Phone1':Phone1,'departments':departments,'ExistingPersonNum':ExistingPersonNum,'NeedPersonNum':NeedPersonNum,'Workplace':Workplace,'RecruitReason':RecruitReason,'WorkContent':WorkContent,'CandidateRequirement':CandidateRequirement,'RecruitWay':RecruitWay,'RecruitTime':RecruitTime,'Headline':Headline ,'LowSalary':LowSalary,'HighSalary':HighSalary,'ProjectName':ProjectName}))
+    else:
+        #form = PositionForm()
+        return render_to_response('copy_position.html',RequestContext(request,{'date':date,'Awarding':Awarding,'PositionName':PositionName,'Phone1':Phone1,'departments':departments,'ExistingPersonNum':ExistingPersonNum,'NeedPersonNum':NeedPersonNum,'Workplace':Workplace,'RecruitReason':RecruitReason,'WorkContent':WorkContent,'CandidateRequirement':CandidateRequirement,'RecruitWay':RecruitWay,'RecruitTime':RecruitTime,'Headline':Headline ,'LowSalary':LowSalary,'HighSalary':HighSalary,'ProjectName':ProjectName}))
+
+#发邮件所调用的函数
+def set_Email(position_id,sender,receiver,salary,password):   
+    position=Position1.objects.get(pk=position_id)
+    to=[]
+    subject,from_email,to, auth_password=position.PositionName+u'职位申请',sender,receiver,password
+    examines=Examine.objects.filter(PositionID=position_id).filter(PositionID__Filing=2)
+   # posititon=Position1.Objects.get(pk=position_id)
+    text_content = 'This is an important message.'
+    t=loader.get_template("exrecord.html")
+    c=Context({'position': position,'examines': examines,'salary':salary})
+    html_content = t.render(c)
+    connection =mail.get_connection(username=sender,password=auth_password,fail_silently=False)
+    msg = EmailMultiAlternatives(subject, text_content,from_email, to,connection=connection)
+    msg.attach_alternative((html_content), "text/html") 
+    try:
+        msg.send()
+    except:
+        return False
+    else:
+        return True
+   
+    
+    
+    #return HttpResponseRedirect('/talents/handleingposition') 
+
+#邮件中同意按钮
+def agree_application(request,position_id):
+    position=Position1.objects.get(pk=position_id)
+    if position.Filing==2:
+        positions=Position1.objects.filter(pk=position_id).update(Filing=0,Approver=None)
+        position=Position1.objects.get(pk=position_id)
+        if position.LowSalary and position.HighSalary:
+            Low=str(position.LowSalary)
+            High=str(position.HighSalary)
+            salary=Low+'--'+High
+        elif position.HighSalary:
+            High=str(position.HighSalary)
+            salary=High+'-'
+        elif position.LowSalary:
+            Low=str(position.LowSalary)
+            salary=Low+'+'
+        else:
+            salary=u'面议'
+
+        subject,from_email, auth_password=position.PositionName+u'职位申请','si_zhaopin@nantian.com.cn','sizhaopin123456'
+        '''to=['luoyanli@nantian.com.cn','zhenghong@nantian.com.cn']'''
+        to=['linana@nantian.com.cn']
+        examines=Examine.objects.filter(PositionID=position_id).filter(PositionID__Filing=0)
+        # posititon=Position1.Objects.get(pk=position_id)
+        text_content = 'This is an important message.'
+        t=loader.get_template("positionnotice.html")
+        c=Context({'position': position,'examines': examines,'salary':salary})
+        html_content = t.render(c)
+        connection =mail.get_connection(username=from_email,password=auth_password,fail_silently=False)
+        msg = EmailMultiAlternatives(subject, text_content,from_email, to,connection=connection)
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+   # receiver=['luoyanli@nantian.com.cn','zhenghong@nantian.com.cn']
+   # receiver=['linana@nantian.com.cn']
+    #set_Email(position_id,'si_zhaopin@nantian.com.cn',receiver,salary,'sizhaopin123456')
+        return HttpResponse('您同意了该岗位申请')
+    else:
+        return HttpResponse('您已经审批了该岗位的申请')
+
+#邮件中不同意按钮
+def disagree_application(request,position_id):
+    #position_id=request.GET['position_id']
+    #position_id=int(position_id)
+    position=Position1.objects.get(pk=position_id)
+    if position.Filing==2:
+        Position1.objects.filter(pk=position_id).update(Filing=1,Approver=None)
+        return HttpResponse('您拒绝了该岗位申请')
+    else:
+        return HttpResponse('您已经审批了该岗位的申请')
+
+#第一个页面
+def first_page(request):
+    renli=False
+    secondrule=False
+    UserModel = get_user_model()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    user = UserModel.objects.get(id = user_id)
+    positions=Position1.objects.filter(UserID=user_id).filter(Filing=0)
+    handlepositions=Position1.objects.filter(Approver=user_id,Filing=2).filter(States=u"未处理")
+    amount=len(handlepositions)
+    handleingposition=Position1.objects.filter(UserID=user_id,Filing=2)
+    handleing=len(handleingposition)
+    inters1 = Resume.objects.filter(Status=u"未处理")
+    inters = inters1.filter(Q(UserID=user_id,Agency=None)|Q(Agency=user_id))
+    inters2 = Interview.objects.filter(Q(resume__Status=u"一面",InterviewProcess=u"电话面试") | Q(resume__Status=u"二面",InterviewProcess=u"一面")| Q(resume__Status=u"三面",InterviewProcess=u"二面")).filter(Q(NextUser=user_id,resume__Agency=None)|Q(resume__Agency=user_id)).filter(lockuser=F('resume__UserID'))
+    length=len(inters)+len(inters2)
+    Task=amount+length
+    staffs = Resume.objects.filter(Status=u"发offer")
+    stalength=len(staffs)
+    if user.rule==u"人力经理" or user.rule==u"人力助理" or user.username==u"admin":
+                renli = True
+    if user.rule==u"二级部门经理":
+        secondrule=True
+    t = loader.get_template("first_page.html")
+    c = Context({'stalength':stalength,'handleing':handleing,'member' : user,'length':length,'positions':positions,'renli':renli,'amount':amount,'secondrule':secondrule,'Task':Task})
+    return HttpResponse(t.render(c))
+
+#发布职位搜索
+@login_required   
+def position_search_form(request):
+     
+    if 'PName' in request.GET and request.GET['PName']: 
+        q1=request.GET['PName']
+     
+        positions=Position1.objects.filter(Q(PositionName__icontains=q1)|Q(Department__icontains=q1)|Q(SecondDepartment__icontains=q1)|Q(Workplace__icontains=q1)|Q(UserID__username__icontains=q1)).filter(Filing=0)
+      
+        Position_Exam = []
+        for position in positions:
+            position_exams = Examine.objects.filter(PositionID = position.id)
+            position_exam_id = str(position.id)+'id'
+            Position_Exam.append([position,position_exams,position_exam_id])
+        if not request.GET.get('page_size'):
+            page_size = 15
+        else:
+            page_size = int(request.GET.get('page_size'))
+        paginator=Paginator(Position_Exam,page_size)
+        page_num=request.GET.get('page')
+        try:
+            Position_Exam=paginator.page(page_num)
+        except PageNotAnInteger:
+            Position_Exam=paginator.page(1)
+        except EmptyPage:
+            Position_Exam=paginator.page(paginator.num_pages)
+        t=loader.get_template("positionmanage.html")
+        c=Context({'Position_Exam':Position_Exam,'page_size':page_size,})
+        return HttpResponse(t.render(c))
+    else:
+        return HttpResponse('Please submit a search term.')
+
+#归档职位搜索
+@login_required
+def Filing_search_form(request):     
+    if 'PName' in request.GET and request.GET['PName']: 
+        q1=request.GET['PName']
+        positions=Position1.objects.filter(Q(PositionName__icontains=q1)|Q(Department__icontains=q1)|Q(SecondDepartment__icontains=q1)|Q(Workplace__icontains=q1)|Q(UserID__username__icontains=q1)).filter(Filing=1)
+        Position_Exam = []
+        for position in positions:
+            position_exams = Examine.objects.filter(PositionID = position.id)
+            position_exam_id = str(position.id)+'id'
+            Position_Exam.append([position,position_exams,position_exam_id])
+        paginator=Paginator(Position_Exam,15)
+        page_num=request.GET.get('page')
+        try:
+            Position_Exam=paginator.page(page_num)
+        except PageNotAnInteger:
+            Position_Exam=paginator.page(1)
+        except EmptyPage:
+            Position_Exam=paginator.page(paginator.num_pages)
+        t=loader.get_template("positionmanage.html")
+        c=Context({'Position_Exam':Position_Exam})
+        return HttpResponse(t.render(c))
+    else:
+        return HttpResponse('Please submit a search term.')
+ 
+def sent_Email(resume_id,sender,password):   
+    resume=Resume.objects.get(pk=resume_id)
+    subject,from_email,to, auth_password=u'offer信息',sender,'fengyan@nantian.com.cn',password
+    text_content = 'This is an important message.'
+    t=loader.get_template("offer.html")
+    c=Context({'resume': resume})
+    html_content = t.render(c)
+    connection =mail.get_connection(username=sender,password=auth_password,fail_silently=False)
+    msg = EmailMultiAlternatives(subject, text_content,from_email, [to],connection=connection)
+    msg.attach_alternative(html_content, "text/html")
+    s='/home/resume/project'+resume.Addr
+    msg.attach_file(s)
+    try:
+        msg.send()
+    except:
+        return False
+    else:
+        return True
+    #return HttpResponseRedirect('/talents/handleingposition')
+def sentmail(zhilian_ID,job_ID,username):
+    subject="招聘系统上有新的简历需要下载"
+    from_email="si_zhaopin@nantian.com.cn"
+    recipient_list=['linana@nantian.com.cn']
+    auth_password='sizhaopin123456'
+    text_content = 'This is an important message.'
+    t=loader.get_template("resume_id.html")
+    c=Context({'zhilian_ID': zhilian_ID,'job_ID':job_ID,'username':username})
+    html_content = t.render(c)
+    connection =mail.get_connection(username=from_email,password=auth_password,fail_silently=False)
+def get_leader(user):
+    sup_roles = []
+    leader=''
+    cor1=Cor_role_user_depart.objects.filter(UserID = user.id)
+    for cor in cor1:
+        role = Roles.objects.get(id=cor.RoleID.id)
+        sup_role=role.superior_role
+        sup_roles.append(sup_role)
+    if sup_roles:
+        for sup_role in sup_roles: 
+            if sup_role:      
+                cor2 = Cor_role_user_depart.objects.filter( RoleID = sup_role.id )
+            #return cor.UserID.id
+                for cor in cor2:
+                    if user.id == cor.UserID.id:
+                        continue
+                    else:
+                        leader = MyUser.objects.get(id = cor.UserID.id)            
+    return leader
+def get_depart( user ):
+    departments = []
+    roles=[]
+    cors=Cor_role_user_depart.objects.filter( UserID = user.id)
+    for cor1 in cors:
+        role=Roles.objects.get( id = cor1.RoleID.id)
+
+        roles.append(role)
+    for role in roles:
+        department=Department.objects.get( id = role.DepartmentID.id)
+        departments.append(department)
+    return departments
+def get_role(user):
+    roles=[]
+    cors=Cor_role_user_depart.objects.filter(UserID = user.id )
+    for cor1 in cors:
+        role=Roles.objects.get( id=cor1.RoleID.id)
+        roles.append(role)
+    return roles
+def cancel_position(request,position_id):
+    UserModel=get_user_model()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    user=UserModel.objects.get(id=user_id)
+    reason=request.POST['reason']
+    position=Position.objects.get(id = positio_id)
+    if user!= position.UserID:
+        Position1.objects.filter(id = position_id).update(approver=User,Cancel_reason=reason)
+         
+        return HttpResponse('Please submit a search term.')
+    else:
+        Position1.objects.filter(id = positio_id).update(approver=User,cancel_reason=reason)
+     
+        return HttpResponse('Please submit a search term.')
+
+def cancel_position(request,position_id):
+    UserModel=get_user_model()
+    session_id = request.COOKIES['sessionid']
+    user_id = Session.objects.get(session_key=session_id).get_decoded().get('_auth_user_id')
+    user=UserModel.objects.get(id=user_id)
+    reason=request.POST['reason']
+    Examine.objects.filter(id = position_id).update(approver=User,Cancel_reason=reason)
+   
+def Refuse_position(request,position_id):
+    reason=request.POST['reason']
+    Position1.objects.filter(id = position_id).update(approver=UserID,Refuse_reason=reason)
+    return HttpResponse('Please submit a search term.')

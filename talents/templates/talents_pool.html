@@ -1,0 +1,90 @@
+{% extends 'Base.html' %}
+{% block content %}
+   {% if error %}
+        <p style="color: red;">Please submit a search term.</p>
+   {% endif %}
+<div class="row">
+    <div class="col-sm-6">
+        <h3 style="margin:8px"><span class="label label-success">人才库一览</span></h3>
+    </div>
+    <div class="col-sm-6 ">
+        <form action="/talents/search_talentform/" method="get">
+            <div class="input-group">
+                <input name="PName" type="text" class="form-control" placeholder="Search for...">
+                <span class="input-group-btn">
+                    <button class="btn btn-info" type="submit">搜索</button>
+                </span>
+            </div>
+        </form>
+    </div>
+</div>
+<p>
+<!--
+   <div>
+    <form action="/talents/search_talentform/" method="get">
+        <input placeholder='输入搜索内容' type="text" name="PName" >
+        <input type="submit" value="Search">
+    </form>
+    </div>
+-->
+
+<div>
+<table class="table table-condensed table-bordered table-responsive table-hover" style="font-size:12px;">
+	    <thead>
+		<tr>
+		    <th>姓名</th>
+		    <th>人才库名称</th>
+		    <th>锁定人</th>
+		    <th>性别</th>
+		    <th>年龄</th>
+		    <th>简介</th>
+		    <th>联系电话</th>
+		    <th>邮箱</th>
+		    <th>当前状态</th>	
+		    <th>创建日期</th>
+            <th>操作</th>
+		</tr>
+	    </thead>
+	    <tbody>
+	     {% for resume,inte in RESUIN %}
+	     <tr>
+		    <td>{{ resume.CandidateName }}</td>
+		    <td class="autocut">{{ resume.PositionName }}</td>
+		    <td>{{ resume.UserID.username }}</td>
+		    <td>{{ resume.CandidateSex }}</td>
+		    <td>{{ resume.CandidateAge }}</td>
+		    <td class="autocut">{{ resume.CandidateProfile }}</td>
+		    <td class="autocut">{{ resume.CandidatePhone }}</td>
+		    <td class="autocut">{{ resume.CandidateEmail }}</td>
+		    <td>{{ resume.Status }}</td>
+		    <td class="autocut">{{ resume.Time|date:"Y-m-d" }}</td>
+            <td>
+                {% if inte == 1 %}
+		    <a href={% url 'side:newinterview' resume.id %}>面试</a>/
+            {% endif %}
+            <a href={% url 'side:Interview_resume' resume.id %}>面试记录</a>/
+                {% if resume.Status in delete %}
+            <a href={% url 'talents:delete' resume.id %}>解除锁定</a>
+                {% endif %}
+            </td>
+		 </tr>
+	     
+	     {% endfor %}
+	</tbody>
+</table>
+
+{% if resumes.has_previous %}
+    <a class='paginator' title='上一页' href='?page={{resumes.previous_page_number }}'><span>&lt;&lt;</span></a>
+{% endif %}
+{% for page in resumes.paginator.page_range %}
+    {% if page = resumes.number %}
+        <a class='paginator_current' title='当前页:{{ page }}'><span>{{ page }}</span></a>
+    {% else %}
+        <a class='paginator' href='?page={{ page }}' title='{{ page }}'><span>{{ page }}</span></a>
+    {% endif %} 
+{% endfor %}
+{% if resumes.has_next %}
+    <a class='paginator' title='下一页' href='?page={{ resumes.next_page_number }}'><span>&gt;&gt;</span></a>
+{% endif %}
+</div>
+{% endblock %}

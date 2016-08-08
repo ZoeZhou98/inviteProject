@@ -1,0 +1,58 @@
+{% extends 'Base.html' %}
+{% load staticfiles %}
+{% load bootstrap_toolkit %}
+{% load url from future %}  
+{% block content %}
+<form class="form-horizontal" method="POST" >
+  <div class="container-fluid">
+    {% csrf_token %}
+    <div class="row">        
+        <div class="col-sm-3">
+          <div class="input-group">
+            <span class="input-group-addon" id="2_department">* 职位名称:</span>
+            <input type="text" class="form-control" name="name" value={{ role.name }} disabled='true'> 
+          </div>
+        </div>    
+  </div> 
+  <div class="row">        
+        <div class="col-sm-3">
+          <div class="input-group">
+            <span class="input-group-addon" id="2_department">*上级职位</span>
+            <select class="form-control" name='superior_role' id="superior_role" aria-describedby="superior_role">
+                {% for x in roles %}
+					{% if x.id == role.superior_role.id %}
+                    <option value ="{{ x.id }}" selected="selected">{{ x }}</option>
+					{% else %}
+					<option value ="{{ x.id }}">{{ x }}</option>
+					{% endif %}
+				{% endfor %}
+			</select>
+          </div>
+        </div>    
+  </div> 
+  <div class="row">        
+        <div class="col-sm-3">
+          <div class="input-group">
+            <span class="input-group-addon" id="2_level">* 部门名称:</span>
+             <select class="form-control" name='depart' id="depart" aria-describedby="depart">
+			    {% for x in departs %}
+					{% if x.id == role.DepartmentID.id %}
+                    <option value ="{{ x.id }}" selected="selected">{{ x }}</option>
+					{% else %}
+					<option value ="{{ x.id }}">{{ x }}</option>
+					{% endif %}
+				{% endfor %}    
+			</select>
+          </div>
+        </div>    
+  </div> 
+  <div class="row">  
+        <div class="col-sm-3">
+            <input type="submit" value="修改" class="btn btn-primary" id="btn1">  
+        </div>
+        <div class="col-sm-3"> 
+            <a class="" align="right" role="button" name="Submit" onclick="javascript:history.back(-1);">返回</a>
+        </div>
+    </div>
+</form>
+{% endblock %}

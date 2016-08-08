@@ -1,0 +1,234 @@
+{% extends 'base1.html' %}
+{% load bootstrap_toolkit %}
+{% block title %}offer信息{% endblock %}
+{% block last_head %}
+ <script language="JavaScript" type="text/javascript">
+$(document).ready(function(){
+     var  shi= "{{ finish  }}";
+    if(shi=="goto")
+    {
+       
+        window.opener.refresh1(); 
+        <!--window.opener.ifm.location.reload(true);-->
+        <!--window.opener.location.href=window.opener.location.href;--> 
+        if(window.opener.location.href.indexOf("/stucked/")>0)
+        {
+            window.opener.parent.scroll();
+        }
+        if(window.opener.location.href.indexOf("/mystucked/")>0)
+        {
+            window.opener.parent.parent.scroll();
+        }
+        window.close();
+    }    
+    
+    });
+</script>
+{% endblock %}  
+{% block content %}
+
+<div class="container-fluid" style="padding-right:0px;padding-left:0px;">
+<!--
+    <div class="row">
+        <div class="col-sm-6">
+            <h2 >offer信息</h2>
+        </div>
+    </div>
+ -->
+{% if error2 %}
+        <p style="color: red;">
+          {{ error2 }}
+        </p>
+{% endif %}
+<style type="text/css">  a,a:link,a:visited{color:black;text-decoration:none;}  a:hover{color:black;text-decoration:none;}  </style>
+<form method="POST" action="" class="form-horizontal">
+            {% csrf_token %}
+            <table class="table table-condensed table-bordered table-responsive table-hover" style="font-size:12px;">
+<tbody>
+           
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Ename">姓名</label><div class="controls"><input   id="id_Ename"name="Ename" type="text" value="{{ Ename|default_if_none:"" }}" /></div></div></td></tr>
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Ephone">电话</label><div class="controls"><input id="id_Ephone" name="Ephone" type="text" value="{{ Ephone|default_if_none:"" }}" /></div></div></td></tr>
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Email">邮箱</label><div class="controls"><input id="id_Email" name="Email" type="text" value="{{ Email|default_if_none:"" }}" /></div></div></td></tr>
+			<tr><td>{{ form.Eentrytime|as_bootstrap:"horizontal" }}</td></tr>
+			<tr><td>{{ form.Epost|as_bootstrap:"horizontal" }}</td></tr>
+			<tr><td>{{ form.Epostgrade|as_bootstrap:"horizontal" }}</td></tr>
+	    		<tr><td>
+			<div class="control-group required">
+				<label class="control-label" for="id_Ejob">招聘岗位</label>
+					<div class="controls">   
+						<select id="id_Ejob" name="Ejob" onchange="sunc(this)">
+						      <!--<option value="" >---------</option>-->
+						       {% for position in positions %}
+						       {% if Ejob == position.id or Ejob == position %}
+						       <option value="{{ position.id }}" selected="true">{{ position.PositionName }}</option>
+						       {% else %}
+						       <option value="{{ position.id }}"  >{{ position.PositionName }}</option>
+						       {% endif %}
+						       	{% endfor %}
+						</select>
+			            {% for position2 in positions %}
+                        {% if forloop.first %}
+                        <span id ="need" style="color:blue">该岗位还需{{ need1 }}人</span>
+                        {% endif %}
+			            {% endfor %}
+					</div>
+			</div></td></tr>
+</tbody>   
+			{% for position1 in positions %}
+            {% if Ejob == position1.id or Ejob == position1 %}
+            {% if forloop.first %}
+<tbody >
+            {% if  position1.RecruitWay == 1 %}
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Ejobin">招聘渠道</label><div class="controls"><input id="id_Ejobin" name="Ejobin" value="1.在招聘网站发布职位" type="text"  /></div></div></td></tr>
+            {% elif position1.RecruitWay == 2 %}
+            <tr><td><div class="control-group required"><label class="control-label" for="id_Ejobin">招聘渠道</label><div class="controls"><input id="id_Ejobin" name="Ejobin" value="2.伯乐奖职位" type="text"  /></div></div></td></tr>
+            {% elif position1.RecruitWay == 3 %}
+            <tr><td><div class="control-group required"><label class="control-label" for="id_Ejobin">招聘渠道</label><div class="controls"><input id="id_Ejobin" name="Ejobin" value="3.其他渠道" type="text"  /></div></div></td></tr>
+            {% endif %}
+            {% if  position1.RecruitReason == 1 %}
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Ejobaim">招聘目的</label><div class="controls"><input id="id_Ejobaim" name="Ejobaim" value="1.原有人员离职后增补人员" type="text"  /></div></div></td></tr>
+            {% elif  position1.RecruitReason == 2 %}
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Ejobaim">招聘目的</label><div class="controls"><input id="id_Ejobaim" name="Ejobaim" value="2.业务拓展后新增工作岗位" type="text"  /></div></div></td></tr>
+            {% elif  position1.RecruitReason == 3 %}
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Ejobaim">招聘目的</label><div class="controls"><input id="id_Ejobaim" name="Ejobaim" value="3.其他情况" type="text"  /></div></div></td></tr>
+            {% endif %}
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Eprimary">一级部门</label><div class="controls"><input id="id_Eprimary" name="Eprimary" value="{{ position1.Depart.name|default_if_none:"" }}" type="text"  /></div></div></td></tr>
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Esecond">二级部门</label><div class="controls"><input id="id_Esecond" name="Esecond"  type="text" value="{{ position1.SecondDepartment.name|default_if_none:"" }}" /></div></div></td></tr>
+			<tr><td><div class="control-group required">
+            <label class="control-label" for="id_Eproject">三级工作小组</label>
+                <div class="controls">
+						<select id="id_Eproject" name="Eproject">
+						      <!--<option value="" >---------</option>-->
+						       {% for Eproject in Eprojects %}
+						       {% if position1.ProjectName == Eproject.name %}
+						       <option value="{{ Eproject.name }}" selected="true">{{ Eproject|default_if_none:"" }}</option>
+						       {% else %}
+						       <option value="{{ Eproject.name }}"  >{{ Eproject|default_if_none:"" }}</option>
+						       {% endif %}
+						       	{% endfor %}
+						</select>
+                </div>
+                </div></td></tr>
+</tbody>   
+            {% else %}
+<tbody >
+            {% if  position1.RecruitWay == 1 %}
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Ejobin">招聘渠道</label><div class="controls"><input id="id_Ejobin" name="Ejobin" value="1.在招聘网站发布职位" type="text"  /></div></div></td></tr>
+            {% elif position1.RecruitWay == 2 %}
+            <tr><td><div class="control-group required"><label class="control-label" for="id_Ejobin">招聘渠道</label><div class="controls"><input id="id_Ejobin" name="Ejobin" value="2.伯乐奖职位" type="text"  /></div></div></td></tr>
+            {% elif position1.RecruitWay == 3 %}
+            <tr><td><div class="control-group required"><label class="control-label" for="id_Ejobin">招聘渠道</label><div class="controls"><input id="id_Ejobin" name="Ejobin" value="3.其他渠道" type="text"  /></div></div></td></tr>
+            {% endif %}
+            {% if  position1.RecruitReason == 1 %}
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Ejobaim">招聘目的</label><div class="controls"><input id="id_Ejobaim" name="Ejobaim" value="1.原有人员离职后增补人员" type="text"  /></div></div></td></tr>
+            {% elif  position1.RecruitReason == 2 %}
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Ejobaim">招聘目的</label><div class="controls"><input id="id_Ejobaim" name="Ejobaim" value="2.业务拓展后新增工作岗位" type="text"  /></div></div></td></tr>
+            {% elif  position1.RecruitReason == 3 %}
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Ejobaim">招聘目的</label><div class="controls"><input id="id_Ejobaim" name="Ejobaim" value="3.其他情况" type="text"  /></div></div></td></tr>
+            {% endif %}
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Eprimary">一级部门</label><div class="controls"><input id="id_Eprimary" name="Eprimary" value="{{ position1.Depart.name|default_if_none:"" }}" type="text"  /></div></div></td></tr>
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Esecond">二级部门</label><div class="controls"><input id="id_Esecond" name="Esecond"  type="text" value="{{ position1.SecondDepartment.name|default_if_none:"" }}" /></div></div></td></tr>
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Eproject">三级工作小组</label>
+                <div class="controls">
+						<select id="id_Eproject" name="Eproject">
+						      <!--<option value="" >---------</option>-->
+						       {% for Eproject in Eprojects %}
+						       {% if position1.ProjectName == Eproject.name %}
+						       <option value="{{ Eproject.name }}" selected="true">{{ Eproject|default_if_none:"" }}</option>
+						       {% else %}
+						       <option value="{{ Eproject.name }}"  >{{ Eproject|default_if_none:"" }}</option>
+						       {% endif %}
+						       	{% endfor %}
+						</select>
+                </div>
+              </div></td></tr>
+</tbody>   
+            {% endif %}
+            {% endif %}
+			{% endfor %}
+<tbody>			
+			<tr><td>{{ form.Ecompacttime|as_bootstrap:"horizontal" }}</td></tr>
+			<tr><td>{{ form.Eapplytime|as_bootstrap:"horizontal" }}</td></tr>
+</tbody>   
+    		</table>
+            <p class="form-actions">  
+                <input type="submit" value="提交"  class="btn btn-primary" > 
+		        <a href="javascript:void(0);" type="button" class="btn btn-warning" onclick=winclose()> 返回</a>
+            </p> 
+            
+</form>
+ 
+
+	    </div>
+{% endblock %}
+{% block script %}
+
+ <script language="JavaScript" type="text/javascript">
+function sunc(obj) {
+var oid=obj.value
+var xmlhttp;
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+	  xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	  {// code for IE6, IE5
+	  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	  }
+	xmlhttp.onreadystatechange=function()
+	  {
+	  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		{
+		var fsa=xmlhttp.responseText.split("^");
+        if (fsa[0]=="1")
+        {
+		document.getElementById("id_Ejobin").value= "1.在招聘网站发布职位";
+        }
+        if (fsa[0]=="2")
+        {
+		document.getElementById("id_Ejobin").value= "2.伯乐奖职位";
+        }
+        if (fsa[0]=="3")
+        {
+		document.getElementById("id_Ejobin").value= "3.其他渠道";
+        }
+        if (fsa[1]=="1")
+        {
+		document.getElementById("id_Ejobaim").value= "1.原有人员离职后增补人员";
+        }
+        if (fsa[1]=="2")
+        {
+		document.getElementById("id_Ejobaim").value="2.业务拓展后新增工作岗位";
+        }
+        if (fsa[1]=="3")
+        {
+		document.getElementById("id_Ejobaim").value="3.其他情况";
+        }
+        document.getElementById("id_Eprimary").value=fsa[2];
+        document.getElementById("id_Esecond").value=fsa[3];
+        document.getElementById("id_Eproject").value=fsa[4];
+        //document.getElementById("id_Eproject").options[1].selected = true
+        document.getElementById("need").innerHTML="该岗位还需"+fsa[5]+"人。";
+		}
+	  }
+  
+xmlhttp.open("GET","/side/get_content"+"?id="+oid+"&t="+Math.random(),true);
+xmlhttp.send();
+}
+</script>
+{% endblock %}
+            {% comment %}
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Eentrytime">办理入职时间</label><div class="controls"><input id="id_Eentrytime" name="Eentrytime" type="text" value="{{ Eentrytime|default_if_none:"" }}" readonly="readonly"/></div></div></td></tr>
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Epost">入职岗位</label><div class="controls"><input id="id_Epost" name="Epost" type="text" value="{{ Epost|default_if_none:"" }}" readonly="readonly"/></div></div></td></tr>
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Epostgrade">岗位级别</label><div class="controls"><input id="id_Epostgrade" name="Epostgrade" type="text" value="{{ Epostgrade|default_if_none:"" }}" readonly="readonly"/></div></div></td></tr>
+            <tr><td><div class="control-group required"><label class="control-label" for="id_Ejob">招聘职位</label><div class="controls"><input id="id_Ejob" name="Ejob" type="text" value="{{ Ejob|default_if_none:"" }}" readonly="readonly"/></div></div></td></tr>
+    
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Ejobin">招聘渠道</label><div class="controls"><input id="id_Ejobin" name="Ejobin" value="{{ Ejobin|default_if_none:"" }}" type="text"  readonly="readonly"/></div></div></td></tr>
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Ejobaim">招聘目的</label><div class="controls"><input id="id_Ejobaim" name="Ejobaim" value="{{ Ejobaim|default_if_none:"" }}" type="text"  readonly="readonly"/></div></div></td></tr>
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Eprimary">一级部门</label><div class="controls"><input id="id_Eprimary" name="Eprimary" value="{{ Eprimary|default_if_none:"" }}" type="text"  readonly="readonly"/></div></div></td></tr>
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Esecond">二级部门</label><div class="controls"><input id="id_Esecond" name="Esecond"  type="text" value="{{ Esecond|default_if_none:"" }}" readonly="readonly"/></div></div></td></tr>
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Eproject">项目归属</label><div class="controls"><input id="id_Eproject" name="Eproject" type="text" value="{{ Eproject|default_if_none:"" }}" readonly="readonly"/></div></div></td></tr>
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Ecompacttime">合同期限</label><div class="controls"><input id="id_Ecompacttime" name="Ecompacttime" type="text" value="{{ Ecompacttime|default_if_none:"" }}" readonly="readonly"/></div></div></td></tr>
+			<tr><td><div class="control-group required"><label class="control-label" for="id_Eapplytime">试用期限</label><div class="controls"><input id="id_Eapplytime" name="Eapplytime" type="text" value="{{ Eapplytime|default_if_none:"" }}" readonly="readonly"/></div></div></td></tr>
+			{% endcomment %}
+
